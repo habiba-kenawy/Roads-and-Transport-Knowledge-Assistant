@@ -16,11 +16,11 @@ the unfiltered portal listed 461). This is more than the 15-25 the assignment su
 2. Tick **Roads and Transport** under the main categories (not "Traffic", which is a different category) and click Search.
 3. Confirm the page says "45 Results Found" (the number may change if the portal is updated) and take a screenshot showing the ticked filter
    and the result count. Save it in `evidence/`.
-4. Save the page (Ctrl+S, "Webpage, HTML only") into `html page/`. All results appear on a single page.
+4. Save the page (Ctrl+S, "Webpage, HTML only") into `data/source_pages/`. All results appear on a single page.
 
 ### 2. Build the manifest
 ```
-python -I scripts/build_manifest.py "html page/Legislation Search Engine.html" data/manifest.csv
+python -I scripts/build_manifest.py "data/source_pages/Legislation Search Engine.html" data/manifest.csv
 ```
 Writes one row per document: doc_id (`dlp-<portal item id>`), file_name, title, source_url, content_url, primary_category,
 language, doc_type, number, year, authority, status, issue_date, retrieval_date, notes. Blank means "not available on the portal";
