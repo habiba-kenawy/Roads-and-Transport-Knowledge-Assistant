@@ -188,3 +188,6 @@ data/raw/
 
 #claude 
 CLAUDE.md
+
+# Parsed text dumps (regenerable viewing aid)
+data/parsed/
