@@ -7,3 +7,4 @@ pydantic-settings==2.16.3   # reads settings from environment / .env (secrets st
 requests==2.34.2            # used by scripts/download_pdfs.py
 beautifulsoup4==4.15.0      # used by scripts/build_manifest.py
 pytest==9.2.0               # tests
+httpx==0.28.1               # required by FastAPI's TestClient (API tests, AT-11)

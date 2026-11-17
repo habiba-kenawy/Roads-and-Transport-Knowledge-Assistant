@@ -47,6 +47,13 @@ copy .env.example .env      # then fill in your own values; .env is git-ignored
 ```
 `requirements.txt` pins direct dependencies only; LangChain/LangGraph and retrieval libraries are added in later phases.
 
+### Run the API (so far only `GET /health`)
+```
+python -m uvicorn app.api.main:app --port 8010
+```
+Then open http://127.0.0.1:8010/health (JSON) and http://127.0.0.1:8010/docs (generated OpenAPI docs). Run it from the project root so `.env` is found.
+Port 8010 is used because 8000 was occupied on the author's machine; any free port works.
+
 ### Known limitations of the data step
 - `primary_category` is assigned from the filter that was applied; the portal results do not print a category on each record.
 - `source_url` is the portal's own "View as HTML" link. The portal serves it as a raw Word-exported HTML file without the site's styling.
