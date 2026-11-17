@@ -38,13 +38,14 @@ python -I scripts/download_pdfs.py data/manifest.csv data/raw data/download_log.
 - `data/raw/` is git-ignored because redistribution of the PDFs is not confirmed. The manifest is the way to re-acquire them.
 
 ### Setup used so far
-Python 3.13.7, `requests==2.32.5`, `beautifulsoup4==4.13.5`:
+Python 3.13.7 on Windows:
 ```
 python -m venv .venv
 .venv\Scripts\activate
-pip install requests==2.32.5 beautifulsoup4==4.13.5
+pip install -r requirements.txt
+copy .env.example .env      # then fill in your own values; .env is git-ignored
 ```
-(A full pinned `requirements.txt` arrives in Phase 0.)
+`requirements.txt` pins direct dependencies only; LangChain/LangGraph and retrieval libraries are added in later phases.
 
 ### Known limitations of the data step
 - `primary_category` is assigned from the filter that was applied; the portal results do not print a category on each record.

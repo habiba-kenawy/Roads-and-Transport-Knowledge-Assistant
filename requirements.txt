@@ -1,0 +1,9 @@
+# Direct dependencies only (pip resolves the rest). Tested with Python 3.13.7.
+# LangChain / LangGraph / vector + PDF libraries are added in their own phases, after checking their docs.
+fastapi==0.163.1            # web API framework
+uvicorn==0.54.0             # server that runs the FastAPI app
+pydantic==2.14.3            # request/response/LLM-output models
+pydantic-settings==2.16.3   # reads settings from environment / .env (secrets stay out of code)
+requests==2.34.2            # used by scripts/download_pdfs.py
+beautifulsoup4==4.15.0      # used by scripts/build_manifest.py
+pytest==9.2.0               # tests
