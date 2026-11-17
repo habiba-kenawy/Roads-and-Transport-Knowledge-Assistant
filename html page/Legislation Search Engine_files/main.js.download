@@ -1,0 +1,268 @@
+$('#close_toggle').click(function () {
+    $(".navbar-collapse").toggleClass('show');
+});
+
+function myPrintFunction() {
+    window.print();
+}
+
+function ShowBannerLoader() {
+    $("#bannerLoader").show();
+    setTimeout(function () {
+        $("#bannerLoader").hide();
+    }, 10000);
+}
+
+function showPollLoader() {
+    $("#pollLoader").show();
+    setTimeout(function () {
+        $("#pollLoader").hide();
+    }, 4000);
+}
+
+
+$(document).ready(function () {
+
+    var button = $('.night-mode');
+    var wrapper = $('body');
+    var btnDefault = $('.btn-reset');
+	
+	if(getCookie('body-class') == 'nightmode'){
+		if(!wrapper.hasClass('nightmode')){
+			wrapper.addClass('nightmode');
+		}
+	}
+ 
+    button.click(function () {
+		if(wrapper.hasClass('nightmode')){
+		   wrapper.removeClass('nightmode');
+		   button.removeClass('active');
+		   if(getCookie('body-class') == 'nightmode'){
+			   delCookie('body-class');
+		   }
+		}else{
+		   wrapper.addClass('nightmode');
+		   button.addClass('active');
+		   setCookie('body-class', 'nightmode', 30);
+		}
+    });
+
+    btnDefault.click(function () {
+        wrapper.removeClass('nightmode');
+        button.removeClass('active');
+        $('.minus, .plus').removeClass('active');
+    });
+
+    /* Custom buttons */
+    $('h1,h2,h3,h4,p,td,th,li, a,span,select,input').jfontsize({
+        btnMinusClasseId: '.fsize-minus',
+        btnDefaultClasseId: '.btn-reset',
+        btnPlusClasseId: '.fsize-plus',
+        btnMinusMaxHits: 2,
+        btnPlusMaxHits: 2,
+        sizeChange: 1
+    });
+    $('.fsize-minus').click(function () {
+        $(this).addClass('active');
+        $('.fsize-plus').removeClass('active');
+    });
+
+    $('.fsize-plus').click(function () {
+        $(this).addClass('active');
+        $('.fsize-minus').removeClass('active');
+    });
+
+    SetFontSizeOption();
+});
+
+function SetFontSizeOption()
+{
+    var fontCounter = getCookie("FontSizeCounter");
+    if (fontCounter != "" && fontCounter != null) {
+        if (parseInt(fontCounter) < 0) {
+            //Font Minus Click Case
+            for (var i = parseInt(fontCounter) ; i < 0; i++) {
+                $('.fsize-minus').click();
+            }
+        }
+        else if (parseInt(fontCounter) > 0) {
+            //Font Plus Click Case 
+            for (var i = 0 ; i < parseInt(fontCounter); i++) {
+                $('.fsize-plus').click();
+            }
+        }
+    }
+}
+
+//$(window).scroll(function () {
+//    if ($(window).scrollTop() + $(window).height() == $(document).height()) {
+//        $("#scrolltop").show('fade');
+//    }
+//    else {
+//        $("#scrolltop").hide('fade');
+//    }
+//});
+
+
+$('.btn-detail').click(function () {
+    if (!$('body').hasClass('detail-open')) {
+        $('body').addClass('detail-open');
+    }
+});
+$('.close-location').click(function () {
+    $('body').removeClass('detail-open');
+});
+
+
+jQuery(".location-detail").mCustomScrollbar({
+    theme: "minimal"
+});
+
+$('#for-question-01').click(function () {
+    $('#question-01').show('fade');
+    $(this).hide('fade');
+});
+$('#for-question-02').click(function () {
+    $('#question-02').show('fade');
+    $(this).hide('fade');
+});
+$('#for-question-03').click(function () {
+    $('#question-03').show('fade');
+    $(this).hide('fade');
+});
+$('#for-result').click(function () {
+    $('#result-box').show('fade');
+    $(this).hide('fade');
+});
+
+$(".btn-detail").click(function () {
+    $('html,body').animate({
+        scrollTop: $(".location-detail").offset().top
+    },
+        'slow');
+});
+
+
+
+var scrollBottomAnimated = function (speed) {
+    var height = $(document).height() - $(window).height();
+    $("html, body").animate({ scrollTop: height }, speed);
+};
+
+
+
+
+
+/*******************************
+ * ACCORDION WITH TOGGLE ICONS
+ *******************************/
+function toggleIcon(e) {
+    $(e.target)
+        .prev('.panel-heading')
+        .find(".more-less")
+        .toggleClass('glyphicon-plus glyphicon-minus');
+}
+$('.panel-group').on('hidden.bs.collapse', toggleIcon);
+$('.panel-group').on('shown.bs.collapse', toggleIcon);
+
+
+$(".navbar-toggler").click(function () {
+    $("html").toggleClass("overflow_hidden");
+});
+
+$("#close_toggle").click(function () {
+    $("html").toggleClass("overflow_hidden");
+});
+
+
+
+
+
+
+$(document).ready(function(){
+  var flag = 0;  
+  $(".night-mode").click(function(){
+    if(flag == 0) {
+      $("#logo_one_image").attr("src","http://192.168.1.171/Style%20Library/Images/dubaiGov_logo-night.png");
+      flag = 1;
+    }
+    else if(flag == 1) {
+      $("#logo_one_image").attr("src","http://192.168.1.171/Style%20Library/Images/dubaiGov_logo.png");
+      flag = 0;
+    }
+  });
+});
+
+
+$(document).ready(function(){
+  var flag = 0;  
+  $(".night-mode").click(function(){
+    if(flag == 0) {
+      $("#logo_two_image").attr("src","http://192.168.1.171/Style%20Library/Images/slc_logo-night.png");
+      flag = 1;
+    }
+    else if(flag == 1) {
+      $("#logo_two_image").attr("src","http://192.168.1.171/Style%20Library/Images/slc_logo.png");
+      flag = 0;
+    }
+  });
+});
+
+
+$(document).ready(function(){
+  var flag = 0;  
+  $(".night-mode").click(function(){
+    if(flag == 0) {
+      $("#logo_three_image").attr("src","http://192.168.1.171/Style%20Library/Images/slc_logo-night.png");
+      flag = 1;
+    }
+    else if(flag == 1) {
+      $("#logo_three_image").attr("src","http://192.168.1.171/Style%20Library/Images/slc_logo.png");
+      flag = 0;
+    }
+  });
+});
+
+/**
+ * Detect OS & browsers
+ */
+/* Add class for mac */
+if(navigator.appVersion.indexOf("Win")!=-1) {
+	jQuery('body').addClass('window-os');
+}
+if(navigator.platform.toUpperCase().indexOf('MAC')>=0) {
+	jQuery('body').addClass('mac-os');
+}
+if(navigator.appVersion.indexOf("Linux")!=-1) {
+	jQuery('body').addClass('linux-os');
+}
+/* Add class for all ie version */
+var trident = !!navigator.userAgent.match(/Trident\/7.0/);
+var net = !!navigator.userAgent.match(/.NET4.0E/);
+var IE11 = trident && net;
+var IEold = ( navigator.userAgent.match(/MSIE/i) ? true : false );
+if(IE11 || IEold){
+	jQuery('body').addClass('ie');
+}
+var ua = navigator.userAgent.toLowerCase();
+if (ua.indexOf('safari') != -1) {
+	if (ua.indexOf('chrome') > -1) {
+		jQuery('body').addClass('chrome');
+	} else {
+		jQuery('body').addClass('safari');
+	}
+}
+var FF = !(window.mozInnerScreenX == null);
+if(FF) {
+	jQuery('body').addClass('fire-fox');
+} else {
+	//jQuery('body').addClass('not-fire-fox');
+}
+/* End */
+
+
+
+
+
+
+

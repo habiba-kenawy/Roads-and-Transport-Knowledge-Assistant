@@ -1,0 +1,373 @@
+﻿input[type=button], input[type=reset], input[type=submit], button{
+	font-family:inherit;
+}
+.inner-section-legal .filter-search h2 {
+    font-family: Roboto,sans-serif;   
+    font-size: 18px;
+    text-transform: uppercase ;
+    color: #212121 ;
+    margin-bottom: 20px ;
+}
+.filter-search .bootstrap-select>.dropdown-toggle{
+	line-height:1;
+}
+.inner-section-legal .container > div> div{
+	min-width:100%;
+}
+.legal-search-btn{
+    margin-top: 40px ;
+}
+.legal-search-btn .btn{
+    width: 90% ;
+    background-color: #0033a0 ;
+    border: none ;
+    border-radius: 0 ;
+    color: #FFF ;
+    line-height: 1.7 ;
+    padding: 12px ;
+    font-size: 16px;
+    font-weight: 500 ;
+    margin-left: -4px ;
+}
+.inner-section-legal .result-listing .listing-bg .border-b {
+    border: none;
+}
+.year-select-legalOpinion-ul {
+    float: right;
+    margin-right: -55px;
+}
+.year-select-legalOpinion-ul .filter-search .bootstrap-select.btn-group .dropdown-menu li a {
+    font-size: 14px;
+    font-weight: 300;
+    color: #8f8f8f;
+    line-height: 15px;
+    border-bottom: 1px solid #e2e2e2;
+    padding: 10px!important;
+}
+
+.inner-section-legal .listing-wrapper-loader .loader {
+    border: 10px solid #ddd;
+    border-radius: 50%;
+    border-top: 10px solid #039;
+    width: 100px;
+    height: 100px;
+    -webkit-animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
+    bottom: 0;
+    position: absolute;
+    top: 300px;
+    left: 0;
+    z-index: 999;
+    right: 0;
+    margin: auto;
+}
+
+.inner-section-legal .year-result,.swap-year .filter-wrapper ul li {
+    font-size: 16px ;
+    color: #7b7b7b ;
+}
+.inner-section-legal .swap-year {
+    border-bottom: 1px solid #ebebeb ;
+    margin-bottom: 40px ;
+}
+.inner-section-legal .In_Force{
+    background: none ;
+}
+.inner-section-legal .result-listing .status_box{
+    padding: 20px 0px ;
+    position: relative ;
+    left: 0 ;
+    top: 0 ;
+    transform: none ;
+    text-align: left ;
+}
+.inner-section-legal .result-listing .status_box h3{
+    color: #333 ;
+}
+.inner-section-legal .result-listing h3{
+    font-size: 16px ;
+    color: #333 ;
+    margin: 0 ;
+    padding-bottom: 5px ;
+    font-weight: 400 ;
+}
+.inner-section-legal .result-listing h4{
+    font-size: 16px ;
+    color: #999999 ;
+    margin: 0 ;
+    padding: 0 ;
+    font-weight: 300 ;
+}
+.inner-section-legal .result-listing .status_box a {
+    font-size: 14px ;
+    text-decoration: underline ;
+    display:block;
+}
+.mrg-btm-30{
+    margin-bottom: 50px ;
+}
+.inner-section-legal .legal-search-btn{
+    margin-top: 40px ;
+}
+.inner-section-legal .filter-search .bootstrap-select>.dropdown-toggle{
+    padding: 16px ;
+}
+.inner-section-legal .bootstrap-select.btn-group .dropdown-toggle .filter-option{
+    font-size: 16px ;
+}
+.col-sm-3.Not_Inforce label, .col-sm-3.Not_Inforce  span {
+    color: #fff ;
+}
+
+.col-sm-3.In_Force label, .col-sm-3.In_Force span {
+    color: #fff ;
+}
+.inner-section-legal .result_icons{
+       float: right;
+	    width: 28%;
+	    padding-top: 35px;
+    }
+.filter-wrapper {
+    text-align: right;
+}
+.filter-wrapper>.bootstrap-select{
+	margin-right:15px;
+}
+.filter-wrapper ul li {
+    list-style: none;
+    display: inline-block;
+    margin-right: 15px;
+    color: #161616;
+    font-size: 18px;
+}
+.filter-wrapper ul li .bootstrap-select>.dropdown-toggle {
+    width: 150px;
+    background-color: transparent;
+    border-bottom: 1px solid;}
+
+.filter-wrapper .bootstrap-select.btn-group .dropdown-menu.inner{
+	background-color:#fff;
+	overflow-x: hidden;
+	border:1px solid #8f8f8f !important;
+}
+.filter-wrapper .bootstrap-select.btn-group .dropdown-menu.inner li{
+	border-bottom:1px solid #e2e2e2;	
+}
+.filter-wrapper .bootstrap-select.btn-group .dropdown-menu.inner li{
+	color:#8f8f8f;
+}
+.filter-wrapper .dropdown-item:focus, .dropdown-item:hover{
+	background-color:#747474!important;
+	}
+.filter-wrapper .bootstrap-select>.dropdown-toggle{
+		color: #8f8f8f;
+    	border-radius: 0;
+}
+.inner-section-legal .legal-search-btn input[type=button]:hover, input[type=reset]:hover, input[type=submit]:hover{
+	
+	background: red;
+}
+ button:hover{
+	
+	background:none;
+}
+.inner-section-legal .result-listing .status_box a:visited{
+	color: #007bff;
+}
+
+
+
+/* 5-5-21  */
+.MomGeneral 
+{
+	    padding: 25px 10px;
+    background: #0033a0;
+    color: #ffffff;
+    text-align: center;
+    border-radius: 4px;
+    box-shadow: 0px 0px 9px #cecece;
+        width: 90%;
+    border-radius: 4px;
+    box-shadow: 0px 0px 9px #cecece;
+    margin: auto;
+    position:relative;
+
+}  
+
+.MomGeneral.one
+{
+	    background: #f1f1f1;
+}
+.MomGeneral.two
+{
+	    background: rgba(0, 51,160, 8%);
+}
+.MomGeneral.three
+{
+	    background: #f1f1f1;
+}
+
+.MomGeneral h3
+{
+	        
+    font-size: 20px;
+    margin-bottom: 8px;}
+.MomGeneral h4
+{
+	        
+}
+.bootstrap-select input
+{
+	
+	    border: 1px solid #8f8f8f;
+    padding: 16px;
+    font-size: 16px;
+    color: #8f8f8f;
+    background-color: #FFF;
+    border-radius: 0;
+    font-weight: 300;
+    padding: 16px;
+    line-height: 1;
+    height: 52px;
+}
+.multi-pdf
+{
+	width: 100%!important;
+    text-align: right;
+	
+}
+.multi-pdf ul
+{
+	width: 100%!important;
+	
+}
+.multi-pdf ul li
+{
+	    display: inline-block;
+    padding: 0px 15px;
+    margin: 0;	
+    border-bottom:none;
+}
+.issuenceDate h3, .issuenceDate h4
+{
+	display:inline-block;
+}
+.issuenceDate h3
+{
+	
+	padding-left:5px;
+}
+.issuenceDate
+{
+	padding-left:10px;
+}
+.issuenceDate h4
+{
+	font-weight: 600 !important;
+	color: #262626!important;
+}
+
+.inner-section-legal .legal-search-btn.searchtext
+{
+	
+	margin-top:0;
+}
+.MomGeneral h4
+{
+	color: #262626!important;
+	font-size: 18px!important;
+	font-weight:600!important;
+
+	
+}
+.MomGeneral h3
+{font-size: 18px!important;
+    margin-bottom: 5px!important;
+	
+	
+}
+.result-listing ul li p.MemorandumTitle
+{
+	
+	    font-weight: 500;
+    font-size: 18px;
+}
+
+.MomGeneral:after
+{
+	
+ font-family: FontAwesome;
+    content: "\f054";  
+        content: "\f054";
+    position: absolute;
+    right: -14%;
+    color: #c5c5c5;
+    font-size: 27px;
+    top: 50%;
+    margin-top: -15px;
+}
+
+.three.MomGeneral:after
+{
+	
+	display:none;
+}
+
+/* 5 18 21  */
+.result-listing ul.MomClss li
+{
+	border-bottom: none;
+    padding-left: 0px;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    text-align: left;
+    list-style: disc;
+    color: #333333;
+    margin-bottom:10px;
+}
+.result-listing ul.MomClss 
+{
+	    padding-left: 20px;
+    margin-top: 10px;
+    }
+
+
+.mb-10-15
+{
+	
+	margin-bottom:15px;
+}
+
+.search-btn-wrap input
+{
+	
+	width:200px!important;
+}
+
+
+/*
+Media Query*/
+@media (min-width: 768px) {
+    /*.inner-section-legal .filter-search .bootstrap-select > .dropdown-toggle {
+        padding: 15px 5px ;
+    }
+
+    .inner-section-legal .bootstrap-select.btn-group .dropdown-toggle .filter-option {
+        font-size: 14px ;
+    }
+
+    .inner-section-legal .legal-search-btn {
+        margin-top: 60px ;
+    }*/
+}
+@media (max-width: 767px) {
+.inner-section-legal .filter-search .bootstrap-select>.dropdown-toggle{
+    padding: 15px 5px ;
+}
+.inner-section-legal .bootstrap-select.btn-group .dropdown-toggle .filter-option{
+    font-size: 14px ;
+}
+.inner-section-legal .legal-search-btn {
+    margin-top: 60px ;
+}
+}

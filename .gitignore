@@ -179,3 +179,12 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+
+
+# Downloaded legislation PDFs (redistribution not confirmed)
+data/raw/
+/docs
+
+#claude 
+CLAUDE.md

@@ -1,0 +1,36 @@
+PDFJS.workerSrc = "/Style%20Library/dflip/js/lib/pdf.worker.js";
+var pdfThumbs = (function () {
+	var that = {};
+	that.init = function () {
+		if ($(".thumb-div").length > 0) {
+			$(".thumb-div").each(function () {
+				var element = $(this);
+				var dataSrc = element.closest('a').attr("data-source");
+				var img_src;
+				if (dataSrc.length > 0) {
+					PDFJS.getDocument(dataSrc).then(function (pdf) {
+						pdf.getPage(1).then(function (page) {
+							var viewport = page.getViewport(0.5);
+							var canvas = document.createElement('canvas');
+							var ctx = canvas.getContext('2d');
+							canvas.height = viewport.height;
+							canvas.width = viewport.width;
+							var renderContext = { canvasContext: ctx, viewport: viewport };
+							page.render(renderContext).then(function () {
+								ctx.globalCompositeOperation = "destination-over";
+								ctx.fillStyle = "#fff";
+								ctx.fillRect(0, 0, canvas.width, canvas.height);
+								img_src = canvas.toDataURL();
+								element.css('background-image', 'url(' + img_src + ')');
+								element.find(".loader").hide();
+								//element.attr('style', 'background-image: url(' + img_src + '); background-position: center; background-size: 100% 100%;');
+								canvas.remove();
+							});
+						});
+					});
+				}
+			});
+		}
+	}
+	return that;
+})();

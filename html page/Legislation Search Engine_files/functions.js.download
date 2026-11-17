@@ -1,0 +1,199 @@
+﻿$("#scrolltop").scrollTop(300);
+
+
+function openfilter(){
+    if ($(window).width() <= 667) {
+        $(".category_box").removeClass('d-none');
+    }
+}
+
+function closefilter()
+{
+    if ($(window).width() <= 667) {
+        $(".category_box").addClass('d-none');
+    }
+}
+
+$(document).ready(function (e) {
+	AOS.init();
+	
+    ResizeBrowseFilters();
+
+    $("#filter_m").click(function () {
+        openfilter();
+    });
+    $(".close_filter").click(function () {
+        closefilter();
+    });
+    
+
+
+
+    /**************** Gazzete Page ********************/
+    if ($(".years_col").length > 0) {
+        $(".years_col").addClass('hvr-underline');
+    }
+
+    $(".years_col").click(function () {
+        $(this).removeClass('hvr-underline');
+        $(".years_col").removeClass('years_col_active');
+        $(this).addClass('years_col_active');
+        $(".years-listing").addClass('year-listing-down');
+    });
+
+    $(".years-listing span").click(function () {
+        $(".years-listing span").removeClass("active");
+        $(this).addClass("active");
+        $(".slider-2").addClass("slider-2-down");
+    });
+	
+});
+
+$("#s4-workspace").scroll(function () {
+    console.log($("#s4-workspace").height());
+    var topDivHeight = $("#search-home").height();
+    var viewPortSize = $("#s4-workspace").height();
+
+    var triggerAt = 150;
+    var triggerHeight = (topDivHeight - viewPortSize) + triggerAt;
+    if ($(window).scrollTop() >= triggerHeight) {
+    
+        AOS.init(); 
+       // $("#search-home").css('visibility', 'visible').hide().fadeIn();
+//        $(this).off('scroll');
+ 
+    }
+});
+
+$(window).on("load", function(){
+   AOS.refresh();	
+});
+
+
+if ($('.owl-years').length > 0) {
+    $('.owl-years').owlCarousel({
+        loop: false,
+        margin: 10,
+        responsiveClass: true,
+        navText: ["<i class='arrow_left'></i>", "<i class='arrow_right'></i>"],
+        responsive: {
+            0: {
+                items: 2,
+                nav: true
+            },
+            600: {
+                items: 3,
+                nav: false
+            },
+            1000: {
+                items: 6,
+                nav: true,
+                loop: false
+            }
+        }
+    })
+}
+
+if ($('.owl-years-2').length > 0) {
+    $('.owl-years-2').owlCarousel({
+        loop: false,
+        margin: 10,
+        dot: false,
+        responsiveClass: true,
+        navText: ["<i class='arrow_left'></i>", "<i class='arrow_right'></i>"],
+        responsive: {
+            0: {
+                items: 1,
+                nav: true
+            },
+            600: {
+                items: 2,
+                nav: false
+            },
+            1000: {
+                items: 4,
+                nav: true,
+                loop: false
+            }
+        }
+    })
+}
+
+if ($('.banner-carousel').length > 0) {
+	$('.banner-carousel').owlCarousel({
+		loop: false,
+		items:1,
+		nav: true,
+		navText : ["<i class='fa fa-chevron-left'></i>","<i class='fa fa-chevron-right'></i>"],
+	});
+}
+
+if($('.logo-carousel').length > 0){
+	 $('.logo-carousel').owlCarousel({
+		loop: false,
+		items: 6,
+		nav: true,
+		pagination: false,
+		navText: ["<i class='fa fa-chevron-left'></i>", "<i class='fa fa-chevron-right'></i>"],
+		responsive: {
+			// breakpoint from 0 up
+			0: {
+				items: 2
+			},
+			// breakpoint from 480 up
+			480: {
+				items: 2
+			},
+			// breakpoint from 768 up
+			768: {
+				items: 6
+			}
+		}
+
+	})
+}
+
+
+jQuery(window).resize(function () {
+
+    ResizeBrowseFilters();
+
+
+    if (jQuery(window).width() < 1025) {
+
+        jQuery(".dropdown-toggle").attr("data-toggle", "dropdown");
+    }
+
+    //if (jQuery(window).width() < 1025) {
+    //
+    //    $(".dropdown").click(function(){
+    //        $(this).find(".dropdown-menu").toggleClass("show");
+    //    });
+    //
+    //}
+
+
+
+});
+
+
+
+function ResizeBrowseFilters() {
+    if ($(".category_listing").lenght > 0) {
+        var screenW = $(window).width();
+        if (screenW <= 667) {
+            var filter_category = $(window).height();
+            var head1 = $(".head1").height();
+            var head2 = $(".head2").height();
+            var done = $(".done").height();
+            var mobile_filter = $(".mobile_filter").height();
+            var categories_selected = $(".categories_selected").height();
+            var All_height = done + mobile_filter + categories_selected;
+            var category_listing_height = filter_category - All_height;
+            var cat_final_h = category_listing_height - 150;
+            $(".category_listing").css('height', cat_final_h + 'px');
+        } else {
+            $(".category_listing").css('height', 'auto');
+        }
+    }
+}
