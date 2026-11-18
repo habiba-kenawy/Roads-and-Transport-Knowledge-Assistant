@@ -16,3 +16,5 @@ class IngestReport(BaseModel):
     skipped: int
     failed: int
     errors: list[IngestError]
+    embedded: int = 0  # chunks newly embedded for semantic search
+    embedding_error: str | None = None  # why embedding did not run, if it did not

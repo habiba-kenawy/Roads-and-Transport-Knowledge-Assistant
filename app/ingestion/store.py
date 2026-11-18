@@ -15,6 +15,7 @@ CREATE_TABLE = (
     "doc_type TEXT, number TEXT, year INTEGER, authority TEXT, status TEXT)"
 )
 CREATE_DOCUMENTS = "CREATE TABLE IF NOT EXISTS documents (doc_id TEXT PRIMARY KEY, fingerprint TEXT NOT NULL)"
+CREATE_EMBEDDINGS = "CREATE TABLE IF NOT EXISTS embeddings (chunk_id TEXT PRIMARY KEY, model TEXT NOT NULL, vector BLOB NOT NULL)"
 INSERT = f"INSERT INTO chunks ({', '.join(COLUMNS)}) VALUES ({', '.join(':' + c for c in COLUMNS)})"
 
 
@@ -41,6 +42,7 @@ def connect(db_path: str) -> sqlite3.Connection:
     conn = sqlite3.connect(db_path)
     conn.execute(CREATE_TABLE)
     conn.execute(CREATE_DOCUMENTS)
+    conn.execute(CREATE_EMBEDDINGS)
     conn.execute("CREATE INDEX IF NOT EXISTS idx_chunks_doc ON chunks(doc_id)")
     return conn
 

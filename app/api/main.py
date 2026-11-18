@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 
 from app.config import Settings
-from app.ingestion.pipeline import ingest_all
+from app.indexing import build_index
 from app.ingestion.store import index_available
 from app.schemas.health import HealthResponse
 from app.schemas.ingest import IngestReport
@@ -23,5 +23,5 @@ def health() -> HealthResponse:
 
 @app.post("/ingest", response_model=IngestReport)
 def ingest() -> IngestReport:
-    """Ingest the approved local corpus; synchronous because the dataset is small."""
-    return ingest_all(settings)
+    """Ingest the approved local corpus and embed its chunks; synchronous because the dataset is small."""
+    return build_index(settings)
