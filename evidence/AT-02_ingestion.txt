@@ -1,0 +1,83 @@
+AT-02 ingestion evidence (real corpus, data/index.sqlite)
+
+documents: 45 | chunks: 946 | distinct chunk_ids: 946
+categories: ['Roads and Transport']
+chunk length chars: min 77 | median 715 | max 1000  (limit 1000)
+  null doc_type: 0
+  null number: 0
+  null year: 0
+  null authority: 0
+  null status: 0
+  null article: 57
+chunks spanning 2+ pages: 332
+
+Re-ingest through POST /ingest: first run indexed=45 skipped=0 failed=0; second run indexed=0 skipped=45 failed=0; row count unchanged.
+
+=== SAMPLE 1: opening text (no article)
+chunk_id=dlp-13-000-b9b3a700 | dlp-13 | None | pages 1-1 | 609 chars
+Law No. (22) of 2006 Concerning the Traffic Toll in the Emirate of Dubai | Law 22/2006 | H.H. The Ruler | In Force as Amended
+Law No. (22) of 2006
+Concerning the
+Traffic Toll in the Emirate of Dubai1
+We, Mohammed bin Rashid Al Maktoum, Ruler of Dubai,
+After perusal of:
+Federal Law No. (21) of 1995 Concerning Road Traffic and its Implementing Bylaw;
+Law No. (17) of 2005 Establishing the Roads and Transport Authority;
+Law No. (18) of 2006 Concerning Management and Realisation of the Public Funds of the Government of
+Dubai; and
+Executive Counc
+
+=== SAMPLE 2: a short whole article
+chunk_id=dlp-13-004-17e8adc1 | dlp-13 | Article (3) | pages 2-2 | 236 chars
+Law No. (22) of 2006 Concerning the Traffic Toll in the Emirate of Dubai | Law 22/2006 | H.H. The Ruler | In Force as Amended
+Article (3)
+The RTA will charge motor Vehicle Owners whose Vehicles use the Road network of the Emirate and
+pass through a Traffic Toll Gate in one direction a “Traffic Toll Fee”, whether or not the Vehicle is
+registered in the Emirate.
+
+=== SAMPLE 3a: long article, first piece
+chunk_id=dlp-13-002-5a1c705e | dlp-13 | Article (2) | pages 1-2 | 982 chars
+Law No. (22) of 2006 Concerning the Traffic Toll in the Emirate of Dubai | Law 22/2006 | H.H. The Ruler | In Force as Amended
+Article (2)
+The following words and expressions, wherever mentioned in this Law, will have the meaning indicated
+opposite each of them unless the context implies otherwise:
+Emirate: The Emirate of Dubai.
+Executive Council:  The Executive Council of the Emirate of Dubai.
+© 2015 The Supreme Legislation Committee in the Emirate of Dubai
+1Every effort has been made to produce an accurate and complete English version of t
+
+=== SAMPLE 3b: same article, second piece (note the overlap with 3a)
+chunk_id=dlp-13-003-f7de5fc8 | dlp-13 | Article (2) | pages 2-2 | 721 chars
+Law No. (22) of 2006 Concerning the Traffic Toll in the Emirate of Dubai | Law 22/2006 | H.H. The Ruler | In Force as Amended
+drives it.
+Peak Hours: The hours during which Road traffic is at its heaviest, and which are
+determined in accordance with the technical standards and guidelines
+adopted by the RTA.
+Traffic Toll: The amount paid by a Road User upon passing through a Traffic Toll Gate.
+Traffic Toll Gates: The locations where special technical equipment is installed, allowing the
+approved Traffic Toll to be deducted from the Tag of any
+
+Overlap check: last 60 chars of 3a = ' during which Road traffic is at its heaviest, and which are' 
+               appear inside 3b: True
+
+
+##### More documents for AT-02 (parsed text + locators from 3 documents in total)
+
+=== dlp-1960 | Administrative Resolution No. (351) of 2026 Concerning the Booking of 
+chunk_id=dlp-1960-002-e7d9cb91 | Article (2) | locator: page pages 1-2 | pieces for this article: 1
+Article (2)
+A Centre must provide technical inspection services, and the other services specified in Article
+(7) of the above-mentioned Executive Council Resolution No. (1) of 2026, in accordance with
+the relevant appointment-booking system approved by the RTA.
+©2026 The Supreme Legislation Committe
+
+=== dlp-1685 | Executive Council Resolution No. (9) of 2020 Amending Executive Counci
+chunk_id=dlp-1685-034-4c1187da | Article (5) | locator: page pages 13-14 | pieces for this article: 31
+Article (5)
+This Resolution will be published in the Official Gazette and will come into force on the day on
+which it is published.
+Hamdan bin Mohammed bin Rashid Al Maktoum
+Crown Prince of Dubai
+Chairman of the Executive Council
+Issued in Dubai on 15 February 2020
+Corresponding to 21 Jumada al-Than

@@ -192,3 +192,4 @@ CLAUDE.md
 # Parsed text dumps (regenerable viewing aid)
 data/parsed/
 data/parsed_clean/
+data/*.sqlite
