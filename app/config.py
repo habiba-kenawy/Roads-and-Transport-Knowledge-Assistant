@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     embedding_endpoint: str | None = None  # optional: falls back to azure_openai_endpoint
     chat_deployment: str = "gpt-4.1-mini"
     embedding_deployment: str = "text-embedding-3-small"
+    chunk_size: int = 1000  # max characters per chunk (DATA-03); articles longer than this are split
+    chunk_overlap: int = 150  # characters repeated between neighbouring pieces of a long article
 
     @property
     def embedding_base_url(self) -> str | None:

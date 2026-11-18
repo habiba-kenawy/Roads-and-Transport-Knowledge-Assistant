@@ -8,4 +8,5 @@ requests==2.34.2            # used by scripts/download_pdfs.py
 beautifulsoup4==4.15.0      # used by scripts/build_manifest.py
 pytest==9.2.0               # tests
 pypdf==7.1.0                # PDF text extraction, page by page (DATA-02)
-httpx==0.28.1              # required by FastAPI's TestClient (API tests, AT-11)
+langchain-text-splitters==1.1.3  # RecursiveCharacterTextSplitter for long articles (DATA-03)
+httpx==0.28.1             # required by FastAPI's TestClient (API tests, AT-11)
