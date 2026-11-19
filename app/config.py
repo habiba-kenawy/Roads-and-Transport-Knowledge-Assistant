@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     embedding_deployment: str = "text-embedding-3-small"
     chunk_size: int = 1000  # max characters per chunk (DATA-03); articles longer than this are split
     chunk_overlap: int = 150  # characters repeated between neighbouring pieces of a long article
+    retrieval_candidates: int = 20  # candidates each retriever returns, and the most the reranker ever sees (bounded)
     db_path: str = "data/index.sqlite"  # file-backed SQLite store for chunks (git-ignored)
 
     @property

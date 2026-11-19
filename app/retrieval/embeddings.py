@@ -5,12 +5,9 @@ import numpy as np
 from langchain_openai import OpenAIEmbeddings
 
 from app.config import Settings
+from app.errors import ModelNotConfiguredError  # noqa: F401  (re-exported for callers)
 
 BATCH = 64  # texts per API request: small enough for any deployment limit
-
-
-class ModelNotConfiguredError(Exception):
-    """A model call is needed but endpoint/key are missing; the API will turn this into a controlled error."""
 
 
 def make_embedder(settings: Settings) -> OpenAIEmbeddings:

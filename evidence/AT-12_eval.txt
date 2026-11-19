@@ -1,0 +1,54 @@
+AT-12 retrieval evaluation (document-level, top 5, no filters)
+
+Q01: How much is the departure fee for passengers leaving through Dubai airports, and who is exempt from it?
+   expected: ['dlp-1432']  (Article (1): AED 75.00 per departing passenger; exemptions for children under 2, on-duty p...)
+   lexical   rank 1  top5 docs: ['dlp-1432', 'dlp-1432', 'dlp-1432', 'dlp-1525', 'dlp-1729']
+   semantic  rank 1  top5 docs: ['dlp-1432', 'dlp-1432', 'dlp-1432', 'dlp-178', 'dlp-1432']
+   hybrid    rank 1  top5 docs: ['dlp-1432', 'dlp-1432', 'dlp-1432', 'dlp-1432', 'dlp-178']
+Q02: Which vehicles are not subject to the traffic toll law?
+   expected: ['dlp-13']  (Article (10): Armed Forces, Police and Civil Defence, student transport, RTA public buses,...)
+   lexical   rank 1  top5 docs: ['dlp-13', 'dlp-1918', 'dlp-13', 'dlp-178', 'dlp-1767']
+   semantic  rank 2  top5 docs: ['dlp-178', 'dlp-13', 'dlp-13', 'dlp-178', 'dlp-237']
+   hybrid    rank 2  top5 docs: ['dlp-178', 'dlp-13', 'dlp-13', 'dlp-178', 'dlp-13']
+Q03: Do I need a permit to import or sell a drone in Dubai?
+   expected: ['dlp-1718']  (Article (14): no person may import, bring in or sell Unmanned Aircraft without a Permit fr...)
+   lexical   rank 1  top5 docs: ['dlp-1718', 'dlp-1834', 'dlp-1718', 'dlp-13', 'dlp-1685']
+   semantic  rank 1  top5 docs: ['dlp-1718', 'dlp-1718', 'dlp-1718', 'dlp-1718', 'dlp-1718']
+   hybrid    rank 1  top5 docs: ['dlp-1718', 'dlp-1718', 'dlp-1718', 'dlp-1718', 'dlp-1718']
+Q04: Can a driver carry passengers in a vehicle that the licensing authority has not licensed to transport passengers?
+   expected: ['dlp-190']  (Article (2): unlicensed vehicles must not transport passengers within or from the Emirate....)
+   lexical   rank 2  top5 docs: ['dlp-777', 'dlp-190', 'dlp-190', 'dlp-1918', 'dlp-1464']
+   semantic  rank 1  top5 docs: ['dlp-190', 'dlp-190', 'dlp-1464', 'dlp-646', 'dlp-777']
+   hybrid    rank 1  top5 docs: ['dlp-190', 'dlp-190', 'dlp-1464', 'dlp-1464', 'dlp-1464']
+Q05: Which railway violations require a written warning before a fine can be imposed?
+   expected: ['dlp-1739']  (Article (1): violations in listed items of Schedules (5) and (6) of Executive Council Reso...)
+   lexical   rank 5  top5 docs: ['dlp-1546', 'dlp-1546', 'dlp-1918', 'dlp-1718', 'dlp-1739']
+   semantic  rank 1  top5 docs: ['dlp-1739', 'dlp-1739', 'dlp-1546', 'dlp-1546', 'dlp-1546']
+   hybrid    rank 1  top5 docs: ['dlp-1739', 'dlp-1546', 'dlp-1739', 'dlp-1918', 'dlp-1546']
+Q06: What must the Dubai Maritime Authority do once a maritime accident has been reported to it?
+   expected: ['dlp-1640']  (Article (6): notify concerned entities of the investigation, gather and analyse initial in...)
+   lexical   rank 1  top5 docs: ['dlp-1640', 'dlp-1640', 'dlp-1640', 'dlp-1889', 'dlp-1640']
+   semantic  rank 1  top5 docs: ['dlp-1640', 'dlp-1640', 'dlp-1640', 'dlp-1640', 'dlp-1640']
+   hybrid    rank 1  top5 docs: ['dlp-1640', 'dlp-1640', 'dlp-1640', 'dlp-1640', 'dlp-1640']
+Q07: At what times of day does the public parking fee apply during peak hours?
+   expected: ['dlp-1941']  (Article (2): peak hours on weekdays 8:00-10:00 a.m. and from 4:00 p.m. (full times in the ...)
+   lexical   rank 1  top5 docs: ['dlp-1941', 'dlp-1817', 'dlp-1817', 'dlp-1817', 'dlp-1941']
+   semantic  rank 1  top5 docs: ['dlp-1941', 'dlp-1941', 'dlp-1817', 'dlp-1817', 'dlp-1817']
+   hybrid    rank 1  top5 docs: ['dlp-1941', 'dlp-1941', 'dlp-1817', 'dlp-1817', 'dlp-1817']
+Q08: Can a vessel owner apply to renew a vessel permit without first having a technical inspection certificate?
+   expected: ['dlp-1655']  (Article (2)(a): no application for a new, renewed or amended Vessel Permit may be submitte...)
+   lexical   rank 1  top5 docs: ['dlp-1655', 'dlp-1655', 'dlp-1655', 'dlp-1875', 'dlp-1685']
+   semantic  rank 1  top5 docs: ['dlp-1655', 'dlp-1655', 'dlp-1655', 'dlp-1655', 'dlp-1655']
+   hybrid    rank 1  top5 docs: ['dlp-1655', 'dlp-1655', 'dlp-1655', 'dlp-1655', 'dlp-1655']
+Q09: What powers does the RTA have in relation to autonomous vehicles?
+   expected: ['dlp-1525']  (Article (5): develop policies and strategic plans, define categories and types of Autonomo...)
+   lexical   rank 1  top5 docs: ['dlp-1525', 'dlp-1525', 'dlp-1872', 'dlp-1939', 'dlp-1939']
+   semantic  rank 1  top5 docs: ['dlp-1525', 'dlp-1525', 'dlp-1872', 'dlp-1872', 'dlp-1872']
+   hybrid    rank 1  top5 docs: ['dlp-1525', 'dlp-1525', 'dlp-1525', 'dlp-1525', 'dlp-1525']
+Q10: What powers does the licensing agency have over permits for vehicle technical inspection centres?
+   expected: ['dlp-1918']  (Article (5): issue and renew Permits, amend their data, impose the penalties prescribed on...)
+   lexical   rank 2  top5 docs: ['dlp-1960', 'dlp-1918', 'dlp-1918', 'dlp-1918', 'dlp-1960']
+   semantic  rank 1  top5 docs: ['dlp-1918', 'dlp-1918', 'dlp-1960', 'dlp-1918', 'dlp-1918']
+   hybrid    rank 1  top5 docs: ['dlp-1918', 'dlp-1918', 'dlp-1918', 'dlp-1918', 'dlp-1918']
+
+SUMMARY: expected document in final top 5 -> lexical: 10/10 | semantic: 10/10 | hybrid: 10/10

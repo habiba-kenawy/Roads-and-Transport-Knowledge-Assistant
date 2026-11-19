@@ -5,13 +5,10 @@ import sqlite3
 import numpy as np
 from rank_bm25 import BM25Okapi
 
+from app.errors import IndexNotReadyError  # noqa: F401  (re-exported for callers)
 from app.retrieval.filters import SearchFilters, matches
 from app.schemas.document import ChunkRecord
 from app.schemas.search import RankedChunk
-
-
-class IndexNotReadyError(Exception):
-    """The chunk store is empty or the embeddings are missing; the API will turn this into a controlled error."""
 
 
 def tokenize(text: str) -> list[str]:
@@ -46,17 +43,17 @@ def load_index(conn: sqlite3.Connection, model: str) -> SearchIndex:
     return SearchIndex(records, vectors)
 
 
-def top_ranked(index: SearchIndex, scores: np.ndarray, mask: np.ndarray, top_k: int, score_type: str, min_score: float | None) -> list[RankedChunk]:
+def top_ranked(index: SearchIndex, scores: np.ndarray, mask: np.ndarray, top_k: int, score_type: str, stage: str, min_score: float | None) -> list[RankedChunk]:
     """Pick the best allowed chunks; disallowed chunks are excluded BEFORE the top-k cut, so filters never shrink results."""
     candidates = [i for i in np.argsort(-scores) if mask[i] and (min_score is None or scores[i] > min_score)][:top_k]
-    return [RankedChunk(record=index.records[i], rank=n, score=float(scores[i]), score_type=score_type)
+    return [RankedChunk(record=index.records[i], rank=n, score=float(scores[i]), score_type=score_type, stage=stage)
             for n, i in enumerate(candidates, start=1)]
 
 
 def lexical_search(index: SearchIndex, query: str, filters: SearchFilters, top_k: int) -> list[RankedChunk]:
     """BM25 ranking; chunks sharing no word with the query (score 0) are not returned."""
     scores = np.asarray(index.bm25.get_scores(tokenize(query)))
-    return top_ranked(index, scores, index.allowed(filters), top_k, "bm25", min_score=0.0)
+    return top_ranked(index, scores, index.allowed(filters), top_k, "bm25", "lexical", min_score=0.0)
 
 
 def semantic_search(index: SearchIndex, embedder, query: str, filters: SearchFilters, top_k: int) -> list[RankedChunk]:
@@ -65,4 +62,4 @@ def semantic_search(index: SearchIndex, embedder, query: str, filters: SearchFil
         raise IndexNotReadyError("embeddings are missing; run POST /ingest with the model configured")
     q = np.asarray(embedder.embed_query(query), dtype=np.float32)
     scores = index.matrix @ (q / np.linalg.norm(q))
-    return top_ranked(index, scores, index.allowed(filters), top_k, "cosine", min_score=None)
+    return top_ranked(index, scores, index.allowed(filters), top_k, "cosine", "semantic", min_score=None)

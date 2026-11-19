@@ -1,0 +1,14 @@
+AT-04 filters: each filter, the combination and a no-match filter, in every mode (query: 'permit requirements and penalties', top_k=5)
+
+year=2023                                      lexical   returned=5 all_satisfy_filters=True docs=[('dlp-1525', 2023, 'Law'), ('dlp-1571', 2023, 'Resolution'), ('dlp-1640', 2023, 'Resolution')]
+year=2023                                      semantic  returned=5 all_satisfy_filters=True docs=[('dlp-1525', 2023, 'Law'), ('dlp-1546', 2023, 'Resolution'), ('dlp-1571', 2023, 'Resolution')]
+year=2023                                      hybrid    returned=5 all_satisfy_filters=True docs=[('dlp-1546', 2023, 'Resolution'), ('dlp-1571', 2023, 'Resolution')]
+doc_type=Law                                   lexical   returned=5 all_satisfy_filters=True docs=[('dlp-1525', 2023, 'Law'), ('dlp-1718', 2020, 'Law')]
+doc_type=Law                                   semantic  returned=5 all_satisfy_filters=True docs=[('dlp-13', 2006, 'Law'), ('dlp-1525', 2023, 'Law'), ('dlp-1718', 2020, 'Law')]
+doc_type=Law                                   hybrid    returned=5 all_satisfy_filters=True docs=[('dlp-1525', 2023, 'Law'), ('dlp-1718', 2020, 'Law')]
+year=2023 AND doc_type=Law                     lexical   returned=5 all_satisfy_filters=True docs=[('dlp-1525', 2023, 'Law')]
+year=2023 AND doc_type=Law                     semantic  returned=5 all_satisfy_filters=True docs=[('dlp-1525', 2023, 'Law')]
+year=2023 AND doc_type=Law                     hybrid    returned=5 all_satisfy_filters=True docs=[('dlp-1525', 2023, 'Law')]
+year=2026 AND doc_type=Law (no such document)  lexical   returned=0 all_satisfy_filters=True docs=[]
+year=2026 AND doc_type=Law (no such document)  semantic  returned=0 all_satisfy_filters=True docs=[]
+year=2026 AND doc_type=Law (no such document)  hybrid    returned=0 all_satisfy_filters=True docs=[]

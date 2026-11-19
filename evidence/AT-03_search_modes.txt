@@ -1,0 +1,53 @@
+AT-03 search modes: same question, three modes (top 5, no filters)
+
+Scores are labelled by type and are NOT comparable across modes (bm25, cosine, rrf, llm_relevance_0_10).
+
+
+QUESTION: Can a driver carry passengers in a vehicle that the licensing authority has not licensed to transport passengers?
+  mode=lexical ranking_stage=lexical
+    #1 bm25=30.110 | dlp-777   Article (1)  pp. 1-2   | In Force | Administrative Resolution No. (201) of 2012 Conc
+    #2 bm25=28.300 | dlp-190   Article (1)  p. 1      | Not in Force | Regulation No. (1) of 2007 Concerning Passenger 
+    #3 bm25=28.161 | dlp-190   Article (2)  p. 2      | Not in Force | Regulation No. (1) of 2007 Concerning Passenger 
+    #4 bm25=27.235 | dlp-1918  Article (1)  pp. 3-4   | In Force | Executive Council Resolution No. (1) of 2026 Reg
+    #5 bm25=27.013 | dlp-1464  Article (1)  p. 2      | In Force | Administrative Resolution No. (516) of 2022 Issu
+  mode=semantic ranking_stage=semantic
+    #1 cosine=0.604 | dlp-190   Article (2)  p. 2      | Not in Force | Regulation No. (1) of 2007 Concerning Passenger 
+    #2 cosine=0.542 | dlp-190   Article (3)  p. 2      | Not in Force | Regulation No. (1) of 2007 Concerning Passenger 
+    #3 cosine=0.525 | dlp-1464  Article (5)  p. 6      | In Force | Administrative Resolution No. (516) of 2022 Issu
+    #4 cosine=0.502 | dlp-646   Article (15) p. 7      | Not in Force | Administrative Resolution No. (353) of 2008 Issu
+    #5 cosine=0.496 | dlp-777   Article (4)  pp. 4-5   | In Force | Administrative Resolution No. (201) of 2012 Conc
+  mode=hybrid ranking_stage=reranked
+    #1 llm_relevance_0_10=10.000 | dlp-190   Article (2)  p. 2      | Not in Force | Regulation No. (1) of 2007 Concerning Passenger 
+    #2 llm_relevance_0_10=7.000 | dlp-190   Article (3)  p. 2      | Not in Force | Regulation No. (1) of 2007 Concerning Passenger 
+    #3 llm_relevance_0_10=6.000 | dlp-1464  Article (5)  p. 6      | In Force | Administrative Resolution No. (516) of 2022 Issu
+    #4 llm_relevance_0_10=6.000 | dlp-1464  Article (5)  pp. 6-7   | In Force | Administrative Resolution No. (516) of 2022 Issu
+    #5 llm_relevance_0_10=5.000 | dlp-1464  Article (5)  p. 7      | In Force | Administrative Resolution No. (516) of 2022 Issu
+    fused order before rerank (first 8): ['dlp-190-002-9bde79aa', 'dlp-1464-013-dcc546e9', 'dlp-1918-005-0069434a', 'dlp-1464-014-050ccf03', 'dlp-777-001-d03a25da', 'dlp-190-001-e7918860', 'dlp-190-003-b0144605', 'dlp-646-022-f18e1e4c']
+
+QUESTION: Which railway violations require a written warning before a fine can be imposed?
+  mode=lexical ranking_stage=lexical
+    #1 bm25=24.104 | dlp-1546  Article (15) p. 8      | In Force | Executive Council Resolution No. (53) of 2023 Am
+    #2 bm25=19.263 | dlp-1546  Article (3)  pp. 12-13 | In Force | Executive Council Resolution No. (53) of 2023 Am
+    #3 bm25=18.316 | dlp-1918  Article (17) p. 15     | In Force | Executive Council Resolution No. (1) of 2026 Reg
+    #4 bm25=17.230 | dlp-1718  Article (39) p. 24     | In Force as Amended | Law No. (4) of 2020 Regulating Unmanned Aircraft
+    #5 bm25=16.441 | dlp-1739  None         p. 1      | In Force | Administrative Resolution No. (817) of 2024 Dete
+  mode=semantic ranking_stage=semantic
+    #1 cosine=0.670 | dlp-1739  None         p. 1      | In Force | Administrative Resolution No. (817) of 2024 Dete
+    #2 cosine=0.612 | dlp-1739  Article (1)  pp. 1-2   | In Force | Administrative Resolution No. (817) of 2024 Dete
+    #3 cosine=0.607 | dlp-1546  Article (3)  pp. 13-14 | In Force | Executive Council Resolution No. (53) of 2023 Am
+    #4 cosine=0.556 | dlp-1546  Article (3)  pp. 12-13 | In Force | Executive Council Resolution No. (53) of 2023 Am
+    #5 cosine=0.544 | dlp-1546  Article (3)  p. 13     | In Force | Executive Council Resolution No. (53) of 2023 Am
+  mode=hybrid ranking_stage=reranked
+    #1 llm_relevance_0_10=10.000 | dlp-1739  Article (1)  pp. 1-2   | In Force | Administrative Resolution No. (817) of 2024 Dete
+    #2 llm_relevance_0_10=9.000 | dlp-1546  Article (15) p. 8      | In Force | Executive Council Resolution No. (53) of 2023 Am
+    #3 llm_relevance_0_10=8.000 | dlp-1739  None         p. 1      | In Force | Administrative Resolution No. (817) of 2024 Dete
+    #4 llm_relevance_0_10=3.000 | dlp-1918  Article (17) p. 15     | In Force | Executive Council Resolution No. (1) of 2026 Reg
+    #5 llm_relevance_0_10=3.000 | dlp-1546  Article (15) p. 8      | In Force | Executive Council Resolution No. (53) of 2023 Am
+    fused order before rerank (first 8): ['dlp-1739-000-6e4b5316', 'dlp-1546-027-8e2cfb9e', 'dlp-1546-018-10c2c878', 'dlp-1739-001-2fe61066', 'dlp-1918-034-d893923d', 'dlp-1546-029-69a3b5b4', 'dlp-1743-029-2755b924', 'dlp-178-018-3149bfea']
+
+OBSERVATIONS (interpretation written after reading the runs above; "observed" = visible in the output, "hypothesis" = not verified)
+1. Q-unlicensed-passengers. Observed: lexical ranked dlp-777 first and the best-matching article (dlp-190 Article (2)) second; semantic and hybrid put dlp-190 Article (2) first. Hypothesis: BM25 rewards chunks that repeat many of the query's common words ("licensed", "passengers", "transport").
+2. Q-railway-warnings. Observed: lexical put the expected document (dlp-1739) 5th, behind chunks from other documents containing words like violations, fine and warning; semantic and hybrid put it 1st. Hypothesis: the expected chunk is short, and BM25 favours chunks where the query words are frequent.
+3. Hybrid is not always better. Observed: in the 10-question evaluation the expected document ranked 2nd in hybrid and semantic but 1st in lexical for the toll-exemption question; and in the first question above the hybrid top 5 contains three chunks from one document (dlp-1464) and no chunk from dlp-777, so reranking can reduce diversity.
+4. Observed: the top result for the unlicensed-passengers question is from a regulation whose portal status is "Not in Force". Search does not hide that; the answer stage (block 5) must disclose status.
+5. Not verified: whether the reranker's ordering is more correct than the fused order in general. Only a ten-question document-level check exists (AT-12: all three modes found the expected document in the top 5 for 10/10 questions, so that test does not separate the modes).

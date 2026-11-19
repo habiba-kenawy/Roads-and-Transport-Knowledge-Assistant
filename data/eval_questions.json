@@ -1,0 +1,22 @@
+[
+  {"id": "Q01", "question": "How much is the departure fee for passengers leaving through Dubai airports, and who is exempt from it?",
+   "expected_doc_ids": ["dlp-1432"], "source_passage": "Article (1): AED 75.00 per departing passenger; exemptions for children under 2, on-duty pilots and cabin crew, certain transit passengers", "style": "uses corpus words"},
+  {"id": "Q02", "question": "Which vehicles are not subject to the traffic toll law?",
+   "expected_doc_ids": ["dlp-13"], "source_passage": "Article (10): Armed Forces, Police and Civil Defence, student transport, RTA public buses, vehicles exempted by the Executive Director", "style": "paraphrase of 'will not apply to the following motor Vehicles'"},
+  {"id": "Q03", "question": "Do I need a permit to import or sell a drone in Dubai?",
+   "expected_doc_ids": ["dlp-1718"], "source_passage": "Article (14): no person may import, bring in or sell Unmanned Aircraft without a Permit from the DCAA; owners must register them", "style": "paraphrase: 'drone' vs 'Unmanned Aircraft'"},
+  {"id": "Q04", "question": "Can a driver carry passengers in a vehicle that the licensing authority has not licensed to transport passengers?",
+   "expected_doc_ids": ["dlp-190"], "source_passage": "Article (2): unlicensed vehicles must not transport passengers within or from the Emirate. NOTE: this regulation is 'Not in Force' on the portal", "style": "tests status disclosure"},
+  {"id": "Q05", "question": "Which railway violations require a written warning before a fine can be imposed?",
+   "expected_doc_ids": ["dlp-1739"], "source_passage": "Article (1): violations in listed items of Schedules (5) and (6) of Executive Council Resolution No. (1) of 2017 require written warnings first", "style": "uses corpus words"},
+  {"id": "Q06", "question": "What must the Dubai Maritime Authority do once a maritime accident has been reported to it?",
+   "expected_doc_ids": ["dlp-1640"], "source_passage": "Article (6): notify concerned entities of the investigation, gather and analyse initial information, categorise it, assess the need for investigation, preserve evidence", "style": "uses corpus words"},
+  {"id": "Q07", "question": "At what times of day does the public parking fee apply during peak hours?",
+   "expected_doc_ids": ["dlp-1941"], "source_passage": "Article (2): peak hours on weekdays 8:00-10:00 a.m. and from 4:00 p.m. (full times in the article)", "style": "paraphrase"},
+  {"id": "Q08", "question": "Can a vessel owner apply to renew a vessel permit without first having a technical inspection certificate?",
+   "expected_doc_ids": ["dlp-1655"], "source_passage": "Article (2)(a): no application for a new, renewed or amended Vessel Permit may be submitted without first obtaining the Technical Inspection Certificate", "style": "paraphrase"},
+  {"id": "Q09", "question": "What powers does the RTA have in relation to autonomous vehicles?",
+   "expected_doc_ids": ["dlp-1525"], "source_passage": "Article (5): develop policies and strategic plans, define categories and types of Autonomous Vehicles, approve technical/operational/safety standards", "style": "uses corpus words; other documents about autonomous vehicles may also discuss RTA powers"},
+  {"id": "Q10", "question": "What powers does the licensing agency have over permits for vehicle technical inspection centres?",
+   "expected_doc_ids": ["dlp-1918"], "source_passage": "Article (5): issue and renew Permits, amend their data, impose the penalties prescribed on violators", "style": "paraphrase; similar wording may appear in related implementing bylaws"}
+]
