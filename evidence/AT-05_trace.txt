@@ -1,0 +1,74 @@
+AT-05 graph trace (real models, real index)
+
+=== 1. normal question, hybrid (parallel branches, join, rerank)
+question: 'Do I need a permit to import or sell a drone in Dubai?'  (history messages: 0, mode: hybrid)
+plan: intent=legal_question standalone_query='Do I need a permit to import or sell a drone in Dubai?' filters={'year': None, 'doc_type': None} needs_clarification=False clarification_question=None
+status=answered ranking_stage='reranked' rerank_note=None
+trace (seconds since run start):
+  + 0.008s node=start_turn event=start mode=hybrid
+  + 0.008s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0
+  + 0.009s node=plan_query event=start mode=hybrid
+  + 2.295s node=plan_query event=end seconds=2.286 
+  + 2.299s node=lexical_node event=start mode=hybrid
+  + 2.300s node=semantic_node event=start mode=hybrid
+  + 2.588s node=lexical_node event=end seconds=0.289 lexical_candidates=20
+  + 3.368s node=semantic_node event=end seconds=1.069 semantic_candidates=20
+  + 3.369s node=fuse_node event=start mode=hybrid
+  + 3.370s node=fuse_node event=end seconds=0.000 fused=20
+  + 3.370s node=rerank_node event=start mode=hybrid
+  + 5.956s node=rerank_node event=end seconds=2.586 evidence=5
+  + 5.958s node=answer event=start mode=hybrid
+  + 5.958s node=answer event=end seconds=0.000 messages=1
+overlap: lexical 2.299-2.588s, semantic 2.300-3.368s -> started together (within 1 ms): True; semantic started before lexical ended: True
+join: fuse started at 3.369s, after both branches ended (3.368s): True; fuse start events: 1
+order BEFORE rerank (fused RRF): dlp-1718-028-083127b7, dlp-1718-035-28e318f0, dlp-1834-010-4fc5f6ad, dlp-1718-024-75325abe, dlp-1718-032-56754e63, dlp-13-003-f7de5fc8, dlp-1718-037-ab845232, dlp-1685-039-2d60eb6f
+order AFTER rerank (final top 5):  dlp-1718-028-083127b7[10], dlp-1718-059-6da8ff0c[9], dlp-1718-024-75325abe[7], dlp-1718-032-56754e63[6], dlp-1718-025-4e0a5fd5[3]
+
+=== 2. follow-up using history (planner must rewrite it)
+question: 'Who is exempt from it?'  (history messages: 2, mode: hybrid)
+plan: intent=legal_question standalone_query='Who is exempt from the departure fee at Dubai airports?' filters={'year': None, 'doc_type': None} needs_clarification=False clarification_question=None
+status=answered ranking_stage='reranked' rerank_note=None
+trace (seconds since run start):
+  + 0.001s node=start_turn event=start mode=hybrid
+  + 0.001s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0
+  + 0.002s node=plan_query event=start mode=hybrid
+  + 1.135s node=plan_query event=end seconds=1.133 
+  + 1.138s node=lexical_node event=start mode=hybrid
+  + 1.139s node=semantic_node event=start mode=hybrid
+  + 1.147s node=lexical_node event=end seconds=0.009 lexical_candidates=20
+  + 1.374s node=semantic_node event=end seconds=0.235 semantic_candidates=20
+  + 1.375s node=fuse_node event=start mode=hybrid
+  + 1.375s node=fuse_node event=end seconds=0.000 fused=20
+  + 1.376s node=rerank_node event=start mode=hybrid
+  + 5.966s node=rerank_node event=end seconds=4.590 evidence=5
+  + 5.968s node=answer event=start mode=hybrid
+  + 5.968s node=answer event=end seconds=0.000 messages=1
+overlap: lexical 1.138-1.147s, semantic 1.139-1.374s -> started together (within 1 ms): True; semantic started before lexical ended: True
+join: fuse started at 1.375s, after both branches ended (1.374s): True; fuse start events: 1
+order BEFORE rerank (fused RRF): dlp-1432-000-82e5035a, dlp-1432-001-44caaf5f, dlp-1432-002-f16113aa, dlp-178-019-5aa69deb, dlp-1432-003-f262e976, dlp-1718-035-28e318f0, dlp-1941-002-f280ec85, dlp-1685-009-226905dc
+order AFTER rerank (final top 5):  dlp-1432-001-44caaf5f[10], dlp-1432-000-82e5035a[2], dlp-1432-002-f16113aa[1], dlp-178-019-5aa69deb[0], dlp-1432-003-f262e976[0]
+
+=== 3. out-of-scope question
+question: 'What is a good recipe for pasta carbonara?'  (history messages: 0, mode: hybrid)
+plan: intent=out_of_scope standalone_query='What is a good recipe for pasta carbonara?' filters={'year': None, 'doc_type': None} needs_clarification=False clarification_question=None
+status=out_of_scope ranking_stage='' rerank_note=None
+trace (seconds since run start):
+  + 0.001s node=start_turn event=start mode=hybrid
+  + 0.001s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0
+  + 0.002s node=plan_query event=start mode=hybrid
+  + 1.114s node=plan_query event=end seconds=1.112 
+  + 1.115s node=scope_response event=start mode=hybrid
+  + 1.115s node=scope_response event=end seconds=0.000 messages=1
+
+=== 4. ambiguous question
+question: 'What is the fine?'  (history messages: 0, mode: hybrid)
+plan: intent=legal_question standalone_query='What is the fine for violations in Dubai Roads and Transport legislation?' filters={'year': None, 'doc_type': None} needs_clarification=True clarification_question='What specific violation or law are you asking about regarding the fine?'
+status=needs_clarification ranking_stage='' rerank_note=None
+trace (seconds since run start):
+  + 0.001s node=start_turn event=start mode=hybrid
+  + 0.001s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0
+  + 0.002s node=plan_query event=start mode=hybrid
+  + 1.238s node=plan_query event=end seconds=1.235 
+  + 1.238s node=clarify event=start mode=hybrid
+  + 1.239s node=clarify event=end seconds=0.000 
+

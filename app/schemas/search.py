@@ -33,7 +33,7 @@ class RerankResult(BaseModel):
 class SearchRequest(BaseModel):
     """POST /search input; the corpus restriction is not an option, it is always applied in code."""
 
-    model_config = ConfigDict(str_strip_whitespace=True)
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
     query: str = Field(min_length=1, max_length=500)
     mode: Literal["lexical", "semantic", "hybrid"] = "hybrid"

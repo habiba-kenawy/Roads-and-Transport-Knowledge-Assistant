@@ -54,6 +54,16 @@ def to_hit(ranked: RankedChunk) -> SearchHit:
                      year=r.year, doc_type=r.doc_type, status=r.status, text=r.text)
 
 
+def checked_semantic_search(index: SearchIndex, embedder, query: str, filters, top_k: int) -> list[RankedChunk]:
+    """Semantic search where a failed model call becomes a ModelCallError (shared by /search and the graph)."""
+    try:
+        return semantic_search(index, embedder, query, filters, top_k)
+    except IndexNotReadyError:
+        raise  # a missing embeddings table is a different problem from a failed model call
+    except Exception as exc:  # network, quota or timeout while embedding the question
+        raise ModelCallError(f"embedding call failed: {type(exc).__name__}") from exc
+
+
 def perform_search(settings: Settings, request: SearchRequest, index: SearchIndex | None = None,
                    embedder=None, llm=None) -> SearchResponse:
     """Run the requested mode. Filters and the corpus boundary are applied inside each retriever, before ranking."""
@@ -65,12 +75,7 @@ def perform_search(settings: Settings, request: SearchRequest, index: SearchInde
         return SearchResponse(**base, ranking_stage="lexical", results=[to_hit(r) for r in results])
     embedder = embedder or make_embedder(settings)  # raises ModelNotConfiguredError, which passes through untouched
     wanted = settings.retrieval_candidates if request.mode == "hybrid" else top_k
-    try:
-        semantic = semantic_search(index, embedder, query, filters, wanted)
-    except IndexNotReadyError:
-        raise  # a missing embeddings table is a different problem from a failed model call
-    except Exception as exc:  # network, quota or timeout while embedding the question
-        raise ModelCallError(f"embedding call failed: {type(exc).__name__}") from exc
+    semantic = checked_semantic_search(index, embedder, query, filters, wanted)
     if request.mode == "semantic":
         return SearchResponse(**base, ranking_stage="semantic", results=[to_hit(r) for r in semantic])
     lexical = lexical_search(index, query, filters, settings.retrieval_candidates)

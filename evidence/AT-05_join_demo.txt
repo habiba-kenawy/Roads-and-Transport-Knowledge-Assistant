@@ -1,0 +1,4 @@
+equal_plain    -> ['A', 'B', 'JOIN(has a=A b=B)']   join ran 1x
+equal_list     -> ['A', 'B', 'JOIN(has a=A b=B)']   join ran 1x
+unequal_plain  -> ['A', 'B', 'JOIN(has a=A b=B)', 'B2', 'JOIN(has a=A b=B)']   join ran 2x
+unequal_list   -> ['A', 'B', 'B2', 'JOIN(has a=A b=B)']   join ran 1x

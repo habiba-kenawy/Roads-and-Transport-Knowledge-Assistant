@@ -125,7 +125,7 @@ client = TestClient(main.app)
 @pytest.mark.parametrize("body", [
     {"query": ""}, {"query": "   "}, {"query": "x" * 501}, {"query": "toll", "top_k": 0}, {"query": "toll", "top_k": 21},
     {"query": "toll", "mode": "fuzzy"}, {"query": "toll", "filters": {"year": 3000}}, {"query": "toll", "filters": {"year": "abc"}},
-    {},
+    {}, {"query": "toll", "filters": {"category": "Traffic"}}, {"query": "toll", "filters": {"yeer": 2023}}, {"query": "toll", "unknown": 1},
 ])
 def test_search_route_rejects_invalid_requests_with_422(body) -> None:
     """AT-11: empty query, bad top_k, unsupported mode and invalid filters give controlled validation errors."""

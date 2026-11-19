@@ -1,0 +1,45 @@
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	start_turn(start_turn)
+	plan_query(plan_query)
+	scope_response(scope_response)
+	clarify(clarify)
+	answer(answer)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> start_turn;
+	plan_query -.-> clarify;
+	plan_query -.-> retrieval\3a__start__;
+	plan_query -.-> scope_response;
+	retrieval\3a__end__ --> answer;
+	start_turn --> plan_query;
+	answer --> __end__;
+	clarify --> __end__;
+	scope_response --> __end__;
+	subgraph retrieval
+	retrieval\3a__start__(<p>__start__</p>)
+	retrieval\3alexical_only(lexical_only)
+	retrieval\3asemantic_only(semantic_only)
+	retrieval\3alexical_node(lexical_node)
+	retrieval\3asemantic_node(semantic_node)
+	retrieval\3afuse_node(fuse_node)
+	retrieval\3arerank_node(rerank_node)
+	retrieval\3a__end__(<p>__end__</p>)
+	retrieval\3a__start__ -.-> retrieval\3alexical_node;
+	retrieval\3a__start__ -.-> retrieval\3alexical_only;
+	retrieval\3a__start__ -.-> retrieval\3asemantic_node;
+	retrieval\3a__start__ -.-> retrieval\3asemantic_only;
+	retrieval\3afuse_node --> retrieval\3arerank_node;
+	retrieval\3alexical_node --> retrieval\3afuse_node;
+	retrieval\3asemantic_node --> retrieval\3afuse_node;
+	retrieval\3alexical_only --> retrieval\3a__end__;
+	retrieval\3arerank_node --> retrieval\3a__end__;
+	retrieval\3asemantic_only --> retrieval\3a__end__;
+	end
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc
