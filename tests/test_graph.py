@@ -31,9 +31,22 @@ def plan(intent="legal_question", query="toll fine parking", clarify=False, ques
 class GraphFakeLLM:
     """FAKE chat model: returns a preset QueryPlan for planning, and prefers LAST excerpt when reranking."""
 
-    def __init__(self, plan_result: QueryPlan | None = None, plan_error: Exception | None = None, insufficient: bool = False) -> None:
+    def __init__(self, plan_result: QueryPlan | None = None, plan_error: Exception | None = None, insufficient: bool = False,
+                 tool_call: dict | None = None) -> None:
         self.plan_result, self.plan_error, self.rerank_calls = plan_result or plan(), plan_error, 0
         self.insufficient, self.answer_calls = insufficient, 0
+        self.tool_call, self.agent_calls = tool_call, 0  # tool_call: arguments the FAKE agent turn passes to get_document_excerpt
+
+    def bind_tools(self, tools, **kwargs):
+        """create_agent asks the model to know its tools; the fake ignores them."""
+        return self
+
+    def invoke(self, messages, **kwargs):
+        """FAKE agent turn: call the scripted tool once (if any), then say done."""
+        self.agent_calls += 1
+        if self.tool_call and not any(getattr(m, "type", "") == "tool" for m in messages):
+            return AIMessage(content="", tool_calls=[{"name": "get_document_excerpt", "args": self.tool_call, "id": "call-1"}])
+        return AIMessage("done")
 
     def answer_draft(self, prompt: str) -> AnswerDraft:
         """FAKE answer: cites the first excerpt it was shown, quoting its first words (a valid, verifiable citation)."""

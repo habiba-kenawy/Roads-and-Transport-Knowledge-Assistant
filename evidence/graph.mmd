@@ -9,14 +9,16 @@ graph TD;
 	plan_query(plan_query)
 	scope_response(scope_response)
 	clarify(clarify)
+	excerpt(excerpt)
 	answer(answer)
 	__end__([<p>__end__</p>]):::last
 	__start__ --> start_turn;
 	clarify --> plan_query;
+	excerpt --> answer;
 	plan_query -.-> clarify;
 	plan_query -.-> retrieval\3a__start__;
 	plan_query -.-> scope_response;
-	retrieval\3a__end__ --> answer;
+	retrieval\3a__end__ --> excerpt;
 	start_turn --> plan_query;
 	answer --> __end__;
 	scope_response --> __end__;

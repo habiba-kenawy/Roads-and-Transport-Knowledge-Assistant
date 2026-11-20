@@ -16,6 +16,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from app.chat import make_checkpointer, pending_interrupts, resume_chat, run_chat
 from app.config import Settings
 from app.graph.build import build_graph
+from app.graph.excerpt import make_excerpt_agent
 from app.llm import make_chat_model
 from app.retrieval.embeddings import make_embedder
 from app.retrieval.search import INDEX_CACHE
@@ -224,6 +225,54 @@ def interrupt_cases(settings: Settings) -> list[str]:
     return lines
 
 
+def tool_cases(settings: Settings) -> list[str]:
+    """AT-10: a model-issued tool call with validated arguments, its result, the middleware log lines, a controlled failure and the bounds."""
+    llm, index = make_chat_model(settings), INDEX_CACHE.get(settings)
+    graph = build_graph(settings, lambda: INDEX_CACHE.get(settings), make_embedder(settings), llm, checkpointer=InMemorySaver())
+    collector = Collector()
+    for name in LOGGERS:
+        logging.getLogger(name).setLevel(logging.INFO)
+        logging.getLogger(name).addHandler(collector)
+
+    def log_lines() -> list[str]:
+        return [f"  +{t:6.3f}s {m.split(' request_id')[0]}" for t, m in collector.rows
+                if "middleware=" in m or m.startswith("excerpt agent") or "node=excerpt" in m]
+
+    def graph_case(title: str, question: str) -> list[str]:
+        collector.rows.clear()
+        out = graph.invoke({"messages": [HumanMessage(question)], "search_mode": "hybrid", "top_k": 5}, {"configurable": {"thread_id": uuid.uuid4().hex}})
+        tool_ids = {c.record.chunk_id for c in out["evidence"] if c.stage == "tool_excerpt"}
+        cited = {c.chunk_id for c in out["citations"]}
+        return [f"=== {title}", f"question: {question!r}", f"status={out['status']} evidence stages: {[c.stage for c in out['evidence']]}",
+                f"chunks added by the tool: {sorted(tool_ids)}", f"citations: {len(out['citations'])}; citations that point to a tool-fetched chunk: {sorted(cited & tool_ids)}",
+                "log lines (seconds since start):"] + log_lines() + [""]
+
+    def agent_case(title: str, text: str) -> list[str]:
+        collector.rows.clear()
+        out = make_excerpt_agent(llm, lambda: index).invoke({"messages": [HumanMessage(text)]})
+        lines = [f"=== {title}", f"instruction to the agent: {text!r}", "messages:"]
+        for m in out["messages"][1:]:
+            calls = [(c["name"], c["args"]) for c in getattr(m, "tool_calls", None) or []]
+            lines.append(f"  {m.type:5s} status={getattr(m, 'status', '-')} tool_calls={calls} content={str(m.content)[:130]!r}".replace("\n", " "))
+        return lines + ["log lines (seconds since start):"] + log_lines() + [""]
+
+    doc = index.records[0].doc_id
+    lines = ["AT-10 tool call and middleware (real models, real index)\n",
+             "Middleware placement: inside the agent created by create_agent (node 'excerpt'): monitor_tool_call wraps every tool call; "
+             "ModelCallLimitMiddleware(run_limit=3) and ToolCallLimitMiddleware(run_limit=2) bound the loop. FastAPI HTTP middleware is not used for this.\n"]
+    lines += graph_case("1. ordinary question: the user did not ask about pages, so the agent step is skipped (no extra model call)",
+                        "Do I need a permit to import or sell a drone in Dubai?")
+    lines += graph_case("2. the user asks for another page: the MODEL chooses to call get_document_excerpt",
+                        "How much is the departure fee for passengers leaving through Dubai airports? Please also read the next page of the most relevant document.")
+    lines += agent_case("3. controlled tool failure: the model asks for a document that is not in the corpus",
+                        "Use get_document_excerpt to read page 1 of document dlp-99999 and tell me what it says.")
+    lines += agent_case("4. bounded calls: the model is asked for five pages but at most 2 tool calls per run are allowed",
+                        f"Use get_document_excerpt to read pages 1, 2, 3, 4 and 5 of document {doc}, one call per page.")
+    for name in LOGGERS:
+        logging.getLogger(name).removeHandler(collector)
+    return lines
+
+
 def main() -> None:
     """Write the AT-06/07 answer, AT-08 memory and AT-09 interrupt evidence, the AT-05 trace, and export the graph picture."""
     settings = Settings()
@@ -233,6 +282,9 @@ def main() -> None:
     interrupts = "\n".join(interrupt_cases(settings))
     print(interrupts)
     Path("evidence/AT-09_interrupt.txt").write_text(interrupts + "\n", encoding="utf-8")
+    tools = "\n".join(tool_cases(settings))
+    print(tools)
+    Path("evidence/AT-10_tool_middleware.txt").write_text(tools + "\n", encoding="utf-8")
     graph = build_graph(settings, lambda: INDEX_CACHE.get(settings), make_embedder(settings), make_chat_model(settings),
                         checkpointer=InMemorySaver())
     answers = "\n".join(answer_cases(graph))

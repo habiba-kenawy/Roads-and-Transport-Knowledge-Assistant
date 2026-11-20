@@ -1,0 +1,22 @@
+Does the get_document_excerpt tool improve answers? A/B on the 10 evaluation questions (real models, hybrid mode, top_k 5)
+Captured by hand from a throwaway experiment script (not kept in the repository).
+
+A = normal behaviour: the agent step is skipped because the questions do not mention pages.
+B = agent step forced ON for every question, so the model may call the tool.
+
+              seconds   sentences   citations   expected document cited   answered
+A (no tool)     8.6        5.9         3.0              10/10               10/10
+B (tool on)    10.2        5.7         3.1              10/10               10/10
+
+In B the tool added chunks to the evidence for 7 of 10 questions, and the final answer cited a tool-fetched chunk for 4 of 10
+(Q03, Q05, Q06, Q10). Where it was cited, the answer gained one extra sentence from the same document (for example Q03: a sentence
+about permits for piloting and operating, Q05: how the written warning must be served). The expected facts were already in A.
+
+Conclusion (honest):
+- No measurable improvement on this evaluation: the expected document was cited 10/10 and every question was answered in both runs.
+- The tool costs about 1.6 s more per question on average (one extra model call, sometimes two).
+- This evaluation cannot show a benefit even if there is one: its questions are answered by a single article that retrieval already
+  finds (document-level, "too easy"). A fair test needs questions whose answer sits on the page next to the retrieved chunk.
+- Model output varies between runs; this is one run per question and per variant.
+- Decision: keep the tool because the assignment (7.3) requires a genuine model-selected tool call, but keep it gated (only when the
+  user's message is about pages) so ordinary questions do not pay the cost.
