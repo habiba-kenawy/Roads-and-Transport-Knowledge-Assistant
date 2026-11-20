@@ -6,6 +6,7 @@ from langgraph.graph.message import add_messages
 from typing_extensions import TypedDict
 
 from app.retrieval.filters import SearchFilters
+from app.schemas.answer import Citation
 from app.schemas.plan import QueryPlan
 from app.schemas.search import RankedChunk
 
@@ -35,3 +36,4 @@ class GraphState(TypedDict, total=False):
     clarification_question: str | None
     status: str
     answer: str | None
+    citations: list[Citation]  # verified sources of the answer; empty unless status is 'answered'

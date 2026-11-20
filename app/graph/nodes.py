@@ -53,7 +53,7 @@ def start_turn(state: GraphState) -> dict:
         "plan": None, "standalone_query": "", "effective_filters": SearchFilters(),
         "lexical_candidates": [], "semantic_candidates": [], "fused": [], "evidence": [],
         "ranking_stage": "", "rerank_note": None, "clarification_attempts": 0, "clarification_question": None,
-        "status": "", "answer": None,
+        "status": "", "answer": None, "citations": [],
     }
 
 
@@ -100,10 +100,3 @@ def clarify(state: GraphState) -> dict:
     return {"status": "needs_clarification", "answer": None,
             "clarification_attempts": state.get("clarification_attempts", 0) + 1,
             "clarification_question": state["plan"].clarification_question}
-
-
-@traced("answer")
-def answer_stub(state: GraphState) -> dict:
-    """STUB for block 5: reports how much evidence was selected. It states nothing about the law."""
-    text = f"[STUB: answer generation arrives in block 5] {len(state['evidence'])} evidence chunks selected."
-    return {"status": "answered", "answer": text, "messages": [AIMessage(text)]}

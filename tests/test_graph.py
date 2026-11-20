@@ -1,5 +1,6 @@
 """Tests for the LangGraph workflow. Models are FAKES; documents are FAKE records from tests.test_search."""
 import logging
+import re
 import time
 
 import pytest
@@ -11,9 +12,12 @@ from app.graph import retrieval as graph_retrieval
 from app.graph.build import build_graph
 from app.graph.nodes import SCOPE_MESSAGE, history_block
 from app.retrieval.filters import SearchFilters
+from app.schemas.answer import AnswerDraft, Statement
 from app.schemas.plan import PlanFilters, QueryPlan
 from app.schemas.search import RerankResult, RerankScore
 from tests.test_search import INDEX, FakeEmbedder
+
+TEXT_BY_ID = {r.chunk_id: r.text for r in INDEX.records}
 
 SETTINGS = Settings(_env_file=None, retrieval_candidates=5)
 
@@ -27,8 +31,17 @@ def plan(intent="legal_question", query="toll fine parking", clarify=False, ques
 class GraphFakeLLM:
     """FAKE chat model: returns a preset QueryPlan for planning, and prefers LAST excerpt when reranking."""
 
-    def __init__(self, plan_result: QueryPlan | None = None, plan_error: Exception | None = None) -> None:
+    def __init__(self, plan_result: QueryPlan | None = None, plan_error: Exception | None = None, insufficient: bool = False) -> None:
         self.plan_result, self.plan_error, self.rerank_calls = plan_result or plan(), plan_error, 0
+        self.insufficient, self.answer_calls = insufficient, 0
+
+    def answer_draft(self, prompt: str) -> AnswerDraft:
+        """FAKE answer: cites the first excerpt it was shown, quoting its first words (a valid, verifiable citation)."""
+        if self.insufficient:
+            return AnswerDraft(evidence_is_sufficient=False, statements=[])
+        chunk_id = re.search(r'chunk_id="([^"]+)"', prompt).group(1)
+        return AnswerDraft(evidence_is_sufficient=True,
+                           statements=[Statement(text="FAKE statement", chunk_id=chunk_id, quote=TEXT_BY_ID[chunk_id][:20])])
 
     def with_structured_output(self, schema):
         outer = self
@@ -39,6 +52,9 @@ class GraphFakeLLM:
                     if outer.plan_error:
                         raise outer.plan_error
                     return outer.plan_result
+                if schema is AnswerDraft:
+                    outer.answer_calls += 1
+                    return outer.answer_draft(messages[1][1])
                 outer.rerank_calls += 1
                 n = messages[1][1].count("<excerpt id=")
                 return RerankResult(scores=[RerankScore(candidate=i, relevance=i) for i in range(1, n + 1)])
@@ -107,9 +123,10 @@ def test_lexical_and_semantic_modes_take_a_single_branch() -> None:
 def test_stale_values_from_a_previous_question_are_reset_but_messages_persist() -> None:
     """7.2: start_turn wipes per-question fields; the conversation (messages) is kept and extended."""
     old = [HumanMessage("earlier question"), AIMessage("earlier answer"), HumanMessage("what is the fine?")]
-    out = run(GraphFakeLLM(plan("out_of_scope", "x")), messages=old, evidence=["STALE"], answer="STALE", fused=["STALE"],
+    out = run(GraphFakeLLM(plan("out_of_scope", "x")), messages=old, evidence=["STALE"], answer="STALE", citations=["STALE"], fused=["STALE"],
               lexical_candidates=["STALE"], clarification_attempts=2)
     assert out["evidence"] == [] and out["fused"] == [] and out["lexical_candidates"] == [] and out["clarification_attempts"] == 0
+    assert out["citations"] == []
     assert out["answer"] == SCOPE_MESSAGE
     assert [m.content for m in out["messages"]][:3] == ["earlier question", "earlier answer", "what is the fine?"]
     assert out["messages"][-1].content == SCOPE_MESSAGE

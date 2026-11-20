@@ -1,0 +1,170 @@
+AT-06 / AT-07 answers (real models, real index)
+
+=== AT-06a supported question, expect a cited answer
+question: 'How much is the departure fee for passengers leaving through Dubai airports, and who is exempt from it?'  (history messages: 0, mode: hybrid)
+plan: intent=legal_question standalone_query='What is the departure fee for passengers leaving through Dubai airports and who is exempt from it?' filters={'year': None, 'doc_type': None} needs_clarification=False clarification_question=None
+status=answered ranking_stage='reranked' rerank_note=None
+ANSWER:
+  | A departure fee of seventy-five dirhams (AED 75.00) will be collected from every passenger departing the United Arab Emirates through Dubai airports [1]. Passengers below the age of two (2) years are exempted from payment of the departure fee [1]. On-duty pilots and cabin crew are exempted from payment of the departure fee [1]. Transit passengers whose arrival and departure flight number is the same are exempted from payment of the departure fee [1]. Transfer passengers whose final destination is not the United Arab Emirates and whose departure is within twenty-four (24) hours from the time of arrival are exempted from payment of the departure fee [1]. Airlines operating in Dubai airports will be responsible for collecting the departure fee upon issuing air tickets to customers within or outside of the United Arab Emirates [2]. The fee collected pursuant to this Law will be paid to the Public Treasury of the Government of Dubai [3].
+  | 
+  | This is not legal advice. The indexed documents are a limited set and may not be complete or current.
+  citation [1]: document_id=dlp-1432 chunk_id=dlp-1432-001-44caaf5f locator_type=page locator='pp. 1-2'
+               title='Law No. (13) of 2022 Concerning the Dubai Airports Departure Fee'
+               source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoMTM...
+  citation [2]: document_id=dlp-1432 chunk_id=dlp-1432-002-f16113aa locator_type=page locator='p. 2'
+               title='Law No. (13) of 2022 Concerning the Dubai Airports Departure Fee'
+               source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoMTM...
+  citation [3]: document_id=dlp-1432 chunk_id=dlp-1432-003-f262e976 locator_type=page locator='p. 2'
+               title='Law No. (13) of 2022 Concerning the Dubai Airports Departure Fee'
+               source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoMTM...
+verification: statements=7 kept=7 unknown_id=0 quote_mismatch=0
+trace (seconds since run start):
+  + 0.008s node=start_turn event=start mode=hybrid
+  + 0.009s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0
+  + 0.010s node=plan_query event=start mode=hybrid
+  + 1.645s node=plan_query event=end seconds=1.635 
+  + 1.649s node=lexical_node event=start mode=hybrid
+  + 1.650s node=semantic_node event=start mode=hybrid
+  + 1.933s node=lexical_node event=end seconds=0.284 lexical_candidates=20
+  + 2.577s node=semantic_node event=end seconds=0.927 semantic_candidates=20
+  + 2.578s node=fuse_node event=start mode=hybrid
+  + 2.578s node=fuse_node event=end seconds=0.000 fused=20
+  + 2.579s node=rerank_node event=start mode=hybrid
+  + 5.202s node=rerank_node event=end seconds=2.623 evidence=5
+  + 5.204s node=answer event=start mode=hybrid
+  + 9.843s node=answer event=end seconds=4.639 citations=3 messages=1
+overlap: lexical 1.649-1.933s, semantic 1.650-2.577s -> started together (within 1 ms): True; semantic started before lexical ended: True
+join: fuse started at 2.578s, after both branches ended (2.577s): True; fuse start events: 1
+order BEFORE rerank (fused RRF): dlp-1432-001-44caaf5f, dlp-1432-000-82e5035a, dlp-1432-002-f16113aa, dlp-178-019-5aa69deb, dlp-1941-002-f280ec85, dlp-237-004-405cd625, dlp-1464-012-34f43fba, dlp-1432-003-f262e976
+order AFTER rerank (final top 5):  dlp-1432-001-44caaf5f[10], dlp-1432-002-f16113aa[3], dlp-1432-000-82e5035a[2], dlp-1432-003-f262e976[1], dlp-178-019-5aa69deb[0]
+
+=== AT-06b supported question about a permit
+question: 'Do I need a permit to import or sell a drone in Dubai?'  (history messages: 0, mode: hybrid)
+plan: intent=legal_question standalone_query='Do I need a permit to import or sell a drone in Dubai?' filters={'year': None, 'doc_type': None} needs_clarification=False clarification_question=None
+status=answered ranking_stage='reranked' rerank_note=None
+ANSWER:
+  | No Person may import, bring in, or sell Unmanned Aircraft or any parts or systems thereof in the Emirate without first obtaining the relevant Permit from the DCAA [1]. A Person who commits importing, bringing in, or selling Unmanned Aircraft or any parts or systems thereof in the Emirate without obtaining a Permit from the DCAA will be punished by imprisonment, by a fine, or by both penalties [2]. No Person may pilot or use Unmanned Aircraft; conduct Operations or Related Activities; or construct any Infrastructure or Unmanned Aircraft Airport in the Emirate, without first obtaining the relevant Permit from the DCAA [3]. No Person may operate, assist in operating, or monitor the operation of Unmanned Aircraft or perform any work related to their operating systems unless that Person is qualified to do so and holds a relevant Permit from the DCAA [4]. Any Person owning an Unmanned Aircraft must register it with the DCAA in accordance with the provisions of this Law and the resolutions issued in pursuance hereof [1]. The concerned entities in the Emirate must coordinate with the DCAA to establish the procedures required for implementation of the provisions of paragraph (a) of Article 14 [1]. The Director General may, based on valid reasons and in coordination with concerned entities, exempt certain types of Unmanned Aircraft from compliance with the provisions of paragraphs (a) and (b) of Article 14 [1].
+  | 
+  | Note: "Law No. (4) of 2020 Regulating Unmanned Aircraft in the Emirate of Dubai" has the status "In Force as Amended" on the Dubai Legislation Portal.
+  | This is not legal advice. The indexed documents are a limited set and may not be complete or current.
+  citation [1]: document_id=dlp-1718 chunk_id=dlp-1718-028-083127b7 locator_type=page locator='p. 13'
+               title='Law No. (4) of 2020 Regulating Unmanned Aircraft in the Emirate of Dubai'
+               source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoNCk...
+  citation [2]: document_id=dlp-1718 chunk_id=dlp-1718-059-6da8ff0c locator_type=page locator='pp. 23-24'
+               title='Law No. (4) of 2020 Regulating Unmanned Aircraft in the Emirate of Dubai'
+               source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoNCk...
+  citation [3]: document_id=dlp-1718 chunk_id=dlp-1718-024-75325abe locator_type=page locator='pp. 11-12'
+               title='Law No. (4) of 2020 Regulating Unmanned Aircraft in the Emirate of Dubai'
+               source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoNCk...
+  citation [4]: document_id=dlp-1718 chunk_id=dlp-1718-032-56754e63 locator_type=page locator='pp. 14-15'
+               title='Law No. (4) of 2020 Regulating Unmanned Aircraft in the Emirate of Dubai'
+               source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoNCk...
+verification: statements=7 kept=7 unknown_id=0 quote_mismatch=0
+trace (seconds since run start):
+  + 0.001s node=start_turn event=start mode=hybrid
+  + 0.001s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0
+  + 0.002s node=plan_query event=start mode=hybrid
+  + 1.132s node=plan_query event=end seconds=1.130 
+  + 1.135s node=lexical_node event=start mode=hybrid
+  + 1.138s node=semantic_node event=start mode=hybrid
+  + 1.144s node=lexical_node event=end seconds=0.009 lexical_candidates=20
+  + 1.777s node=semantic_node event=end seconds=0.640 semantic_candidates=20
+  + 1.779s node=fuse_node event=start mode=hybrid
+  + 1.779s node=fuse_node event=end seconds=0.000 fused=20
+  + 1.779s node=rerank_node event=start mode=hybrid
+  + 4.381s node=rerank_node event=end seconds=2.602 evidence=5
+  + 4.383s node=answer event=start mode=hybrid
+  +10.798s node=answer event=end seconds=6.416 citations=4 messages=1
+overlap: lexical 1.135-1.144s, semantic 1.138-1.777s -> started together (within 2 ms): True; semantic started before lexical ended: True
+join: fuse started at 1.779s, after both branches ended (1.777s): True; fuse start events: 1
+order BEFORE rerank (fused RRF): dlp-1718-028-083127b7, dlp-1718-035-28e318f0, dlp-1834-010-4fc5f6ad, dlp-1718-024-75325abe, dlp-1718-032-56754e63, dlp-13-003-f7de5fc8, dlp-1718-037-ab845232, dlp-1685-039-2d60eb6f
+order AFTER rerank (final top 5):  dlp-1718-028-083127b7[10], dlp-1718-059-6da8ff0c[9], dlp-1718-024-75325abe[7], dlp-1718-032-56754e63[5], dlp-1718-025-4e0a5fd5[3]
+
+=== AT-06c question whose best source is Not in Force (status must be disclosed)
+question: 'Can a driver carry passengers in a vehicle that the licensing authority has not licensed to transport passengers?'  (history messages: 0, mode: hybrid)
+plan: intent=legal_question standalone_query='Can a driver carry passengers in a vehicle that is not licensed by the authority to transport passengers?' filters={'year': None, 'doc_type': None} needs_clarification=False clarification_question=None
+status=answered ranking_stage='reranked' rerank_note=None
+ANSWER:
+  | Drivers of vehicles which are not licensed by the Licensing Authority to transport passengers must not transport them within the Emirate or from the Emirate to outside destinations [1]. A temporary authorisation to transport passengers from the Emirate to other emirates by taxicabs that are not licensed in the Emirate will be issued subject to the following conditions [2]. The temporary authorisation applicant must be an establishment licensed by the competent entity in the other emirate to conduct the activity of transporting passengers by taxicabs [2]. The cars of the temporary authorisation applicant must be licensed as taxicabs and must meet the requirements and specifications adopted in the emirate in which they are licensed [2]. The taxicabs must be owned by the temporary authorisation applicant [2]. The drivers of taxicabs must be employed by the temporary authorisation applicant and must be authorised to drive these taxicabs in the emirate in which the taxicabs are licensed [2]. An undertaking to keep taximeters running throughout trips must be submitted [2]. Drivers of Taxicabs or On-demand Taxicabs may not transport passengers without obtaining relevant permit from the RTA [3].
+  | 
+  | Note: "Regulation No. (1) of 2007 Concerning Passenger Transport by Taxicabs in the Emirate of Dubai" has the status "Not in Force" on the Dubai Legislation Portal.
+  | This is not legal advice. The indexed documents are a limited set and may not be complete or current.
+  citation [1]: document_id=dlp-190 chunk_id=dlp-190-002-9bde79aa locator_type=page locator='p. 2'
+               title='Regulation No. (1) of 2007 Concerning Passenger Transport by Taxicabs in the Emirate of Dubai'
+               source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=UmVndWxhdGlvbiB...
+  citation [2]: document_id=dlp-1464 chunk_id=dlp-1464-013-dcc546e9 locator_type=page locator='p. 6'
+               title='Administrative Resolution No. (516) of 2022 Issuing the Implementing Bylaw of Executive Council Resolution No. (6) of 2016 Regulating Passenger Transport by Cars in the Emirate of Dubai'
+               source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=QWRtaW5pc3RyYXR...
+  citation [3]: document_id=dlp-190 chunk_id=dlp-190-003-b0144605 locator_type=page locator='p. 2'
+               title='Regulation No. (1) of 2007 Concerning Passenger Transport by Taxicabs in the Emirate of Dubai'
+               source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=UmVndWxhdGlvbiB...
+verification: statements=8 kept=8 unknown_id=0 quote_mismatch=0
+trace (seconds since run start):
+  + 0.001s node=start_turn event=start mode=hybrid
+  + 0.001s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0
+  + 0.002s node=plan_query event=start mode=hybrid
+  + 1.267s node=plan_query event=end seconds=1.265 
+  + 1.271s node=lexical_node event=start mode=hybrid
+  + 1.271s node=semantic_node event=start mode=hybrid
+  + 1.280s node=lexical_node event=end seconds=0.010 lexical_candidates=20
+  + 1.941s node=semantic_node event=end seconds=0.670 semantic_candidates=20
+  + 1.942s node=fuse_node event=start mode=hybrid
+  + 1.942s node=fuse_node event=end seconds=0.000 fused=20
+  + 1.943s node=rerank_node event=start mode=hybrid
+  + 3.852s node=rerank_node event=end seconds=1.909 evidence=5
+  + 3.853s node=answer event=start mode=hybrid
+  + 9.355s node=answer event=end seconds=5.501 citations=3 messages=1
+overlap: lexical 1.271-1.280s, semantic 1.271-1.941s -> started together (within 1 ms): True; semantic started before lexical ended: True
+join: fuse started at 1.942s, after both branches ended (1.941s): True; fuse start events: 1
+order BEFORE rerank (fused RRF): dlp-1464-013-dcc546e9, dlp-190-002-9bde79aa, dlp-1464-014-050ccf03, dlp-1918-005-0069434a, dlp-1464-003-af810bd9, dlp-190-003-b0144605, dlp-777-001-d03a25da, dlp-777-007-5b475db4
+order AFTER rerank (final top 5):  dlp-190-002-9bde79aa[10], dlp-1464-013-dcc546e9[6], dlp-1464-014-050ccf03[5], dlp-1464-015-ca3dc0e0[5], dlp-190-003-b0144605[4]
+
+=== AT-07a in-scope question the documents do not cover, expect insufficient_evidence
+question: 'What is the fine for parking a camel outside a mosque in Dubai?'  (history messages: 0, mode: hybrid)
+plan: intent=legal_question standalone_query='What is the fine for parking a camel outside a mosque in Dubai?' filters={'year': None, 'doc_type': None} needs_clarification=False clarification_question=None
+status=insufficient_evidence ranking_stage='reranked' rerank_note=None
+ANSWER:
+  | The indexed documents do not contain enough evidence to answer this question. This is not legal advice.
+trace (seconds since run start):
+  + 0.001s node=start_turn event=start mode=hybrid
+  + 0.002s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0
+  + 0.002s node=plan_query event=start mode=hybrid
+  + 1.062s node=plan_query event=end seconds=1.060 
+  + 1.065s node=lexical_node event=start mode=hybrid
+  + 1.068s node=semantic_node event=start mode=hybrid
+  + 1.074s node=lexical_node event=end seconds=0.009 lexical_candidates=20
+  + 1.633s node=semantic_node event=end seconds=0.565 semantic_candidates=20
+  + 1.634s node=fuse_node event=start mode=hybrid
+  + 1.634s node=fuse_node event=end seconds=0.000 fused=20
+  + 1.635s node=rerank_node event=start mode=hybrid
+  + 3.991s node=rerank_node event=end seconds=2.357 evidence=5
+  + 3.993s node=answer event=start mode=hybrid
+  + 5.038s node=answer event=end seconds=1.045 citations=0 messages=1
+overlap: lexical 1.065-1.074s, semantic 1.068-1.633s -> started together (within 2 ms): True; semantic started before lexical ended: True
+join: fuse started at 1.634s, after both branches ended (1.633s): True; fuse start events: 1
+order BEFORE rerank (fused RRF): dlp-1817-009-0908c200, dlp-1941-002-f280ec85, dlp-1546-019-67848386, dlp-190-006-ed96e053, dlp-1685-059-dc24be92, dlp-1525-028-13c67ffd, dlp-168-012-139797ea, dlp-1817-007-7b23d03f
+order AFTER rerank (final top 5):  dlp-190-006-ed96e053[2], dlp-1546-029-69a3b5b4[2], dlp-1817-009-0908c200[1], dlp-1546-019-67848386[1], dlp-1525-028-13c67ffd[1]
+
+=== AT-07b unrelated question, expect out_of_scope
+question: 'What is a good recipe for pasta carbonara?'  (history messages: 0, mode: hybrid)
+plan: intent=out_of_scope standalone_query='What is a good recipe for pasta carbonara?' filters={'year': None, 'doc_type': None} needs_clarification=False clarification_question=None
+status=out_of_scope ranking_stage='' rerank_note=None
+ANSWER:
+  | I can only help with questions about Dubai Roads and Transport legislation in the indexed documents. This is not legal advice.
+trace (seconds since run start):
+  + 0.001s node=start_turn event=start mode=hybrid
+  + 0.001s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0
+  + 0.002s node=plan_query event=start mode=hybrid
+  + 1.272s node=plan_query event=end seconds=1.270 
+  + 1.273s node=scope_response event=start mode=hybrid
+  + 1.273s node=scope_response event=end seconds=0.000 messages=1
+
+=== citation verification across the 10 evaluation questions
+statuses over 10 evaluation questions: {'answered': 10}
+model statements: 64 | kept after verification: 64 | dropped, chunk id not among the evidence: 0 | dropped, quote not found in that chunk: 0
+
+MANUAL REVIEW (done by the assistant after the run; not an automated check)
+- AT-06a: all 7 statements were checked against the text of the chunk each one cites (amount AED 75.00, the four exemption categories, airlines collect on ticketing, proceeds to the Public Treasury): every one is supported by its cited chunk.
+- AT-06b and AT-06c: citations were verified automatically (every quote is inside its cited chunk); the sentences were NOT individually reviewed by hand.
+- Verification proves each quote is really inside the cited chunk. It does not prove the sentence is a correct reading of the quote (documented limit).
+- The status note ("Not in Force" / "In Force as Amended") is added once at the end of the answer, not next to the sentence it concerns.

@@ -1,8 +1,11 @@
-"""AT-05 evidence: run the real graph (real models) and record a timed node trace, the plan, and the order before/after reranking.
+"""AT-05, AT-06, AT-07 evidence: run the real graph (real models).
 
-Usage: python -m scripts.trace_graph   (makes real model calls)
+Records a timed node trace, the plan, the order before/after reranking, answers with citations, abstentions, and how
+often the model's citations fail verification.  Usage: python -m scripts.trace_graph   (makes real model calls)
 """
+import json
 import logging
+import re
 import time
 from pathlib import Path
 
@@ -14,6 +17,8 @@ from app.llm import make_chat_model
 from app.retrieval.embeddings import make_embedder
 from app.retrieval.search import INDEX_CACHE
 
+LOGGERS = ("graph", "app.graph.nodes", "app.graph.answer")
+
 
 class Collector(logging.Handler):
     """Keep (seconds since start, message) for every graph log line."""
@@ -23,24 +28,42 @@ class Collector(logging.Handler):
         self.t0, self.rows = time.perf_counter(), []
 
     def emit(self, record: logging.LogRecord) -> None:
-        if record.name in ("graph", "app.graph.nodes"):
+        if record.name in LOGGERS:
             self.rows.append((time.perf_counter() - self.t0, record.getMessage()))
+
+
+def invoke_with_logs(graph, messages: list, mode: str = "hybrid") -> tuple[dict, Collector]:
+    """Run one question while collecting the graph's log lines."""
+    collector = Collector()
+    for name in LOGGERS:
+        logging.getLogger(name).setLevel(logging.INFO)
+        logging.getLogger(name).addHandler(collector)
+    try:
+        out = graph.invoke({"messages": messages, "search_mode": mode, "top_k": 5})
+    finally:
+        for name in LOGGERS:
+            logging.getLogger(name).removeHandler(collector)
+    return out, collector
 
 
 def run_case(graph, title: str, messages: list, mode: str = "hybrid") -> list[str]:
     """Run one question and return readable evidence lines."""
-    collector = Collector()
-    for name in ("graph", "app.graph.nodes"):
-        logging.getLogger(name).setLevel(logging.INFO)
-        logging.getLogger(name).addHandler(collector)
-    out = graph.invoke({"messages": messages, "search_mode": mode, "top_k": 5})
-    for name in ("graph", "app.graph.nodes"):
-        logging.getLogger(name).removeHandler(collector)
+    out, collector = invoke_with_logs(graph, messages, mode)
     lines = [f"=== {title}", f"question: {messages[-1].content!r}  (history messages: {len(messages) - 1}, mode: {mode})"]
     plan = out["plan"]
     lines.append(f"plan: intent={plan.intent} standalone_query={plan.standalone_query!r} filters={plan.filters.model_dump()} "
                  f"needs_clarification={plan.needs_clarification} clarification_question={plan.clarification_question!r}")
     lines.append(f"status={out['status']} ranking_stage={out['ranking_stage']!r} rerank_note={out['rerank_note']}")
+    if out["answer"]:
+        lines.append("ANSWER:")
+        lines += ["  | " + line for line in out["answer"].splitlines()]
+    for i, c in enumerate(out["citations"], 1):
+        lines.append(f"  citation [{i}]: document_id={c.document_id} chunk_id={c.chunk_id} locator_type={c.locator_type} locator={c.locator!r}")
+        lines.append(f"               title={c.title!r}")
+        lines.append(f"               source_url={c.source_url[:70]}...")
+    verified = [m for _, m in collector.rows if m.startswith("answer verified")]
+    if verified:
+        lines.append("verification: " + verified[0].replace("answer verified ", ""))
     lines.append("trace (seconds since run start):")
     lines += [f"  +{t:6.3f}s {m}" for t, m in collector.rows if "event=" in m or "planning failed" in m]
     ev = {m.split()[0] + " " + m.split()[1]: t for t, m in collector.rows if "event=" in m}
@@ -57,21 +80,58 @@ def run_case(graph, title: str, messages: list, mode: str = "hybrid") -> list[st
     return lines + [""]
 
 
-def main() -> None:
-    """Run four cases and export the graph picture."""
-    settings = Settings()
-    graph = build_graph(settings, lambda: INDEX_CACHE.get(settings), make_embedder(settings), make_chat_model(settings))
+def verification_totals(graph, questions: list[dict]) -> list[str]:
+    """Run the evaluation questions end to end and count how many model statements verification kept or dropped."""
+    totals = {"statements": 0, "kept": 0, "unknown_id": 0, "quote_mismatch": 0}
+    statuses: dict[str, int] = {}
+    for q in questions:
+        out, collector = invoke_with_logs(graph, [HumanMessage(q["question"])])
+        statuses[out["status"]] = statuses.get(out["status"], 0) + 1
+        for _, message in collector.rows:
+            if message.startswith("answer verified"):
+                for key, value in re.findall(r"(\w+)=(\d+)", message):
+                    totals[key] += int(value)
+    return [f"statuses over {len(questions)} evaluation questions: {statuses}",
+            f"model statements: {totals['statements']} | kept after verification: {totals['kept']} | "
+            f"dropped, chunk id not among the evidence: {totals['unknown_id']} | dropped, quote not found in that chunk: {totals['quote_mismatch']}"]
+
+
+def answer_cases(graph) -> list[str]:
+    """AT-06 (supported questions) and AT-07 (abstention and scope) with real models."""
+    lines = ["AT-06 / AT-07 answers (real models, real index)\n"]
+    lines += run_case(graph, "AT-06a supported question, expect a cited answer",
+                      [HumanMessage("How much is the departure fee for passengers leaving through Dubai airports, and who is exempt from it?")])
+    lines += run_case(graph, "AT-06b supported question about a permit", [HumanMessage("Do I need a permit to import or sell a drone in Dubai?")])
+    lines += run_case(graph, "AT-06c question whose best source is Not in Force (status must be disclosed)",
+                      [HumanMessage("Can a driver carry passengers in a vehicle that the licensing authority has not licensed to transport passengers?")])
+    lines += run_case(graph, "AT-07a in-scope question the documents do not cover, expect insufficient_evidence",
+                      [HumanMessage("What is the fine for parking a camel outside a mosque in Dubai?")])
+    lines += run_case(graph, "AT-07b unrelated question, expect out_of_scope", [HumanMessage("What is a good recipe for pasta carbonara?")])
+    questions = json.loads(Path("data/eval_questions.json").read_text(encoding="utf-8"))
+    lines += ["=== citation verification across the 10 evaluation questions"] + verification_totals(graph, questions)
+    return lines
+
+
+def trace_cases(graph) -> list[str]:
+    """AT-05: routing, parallel branches, join and rerank."""
     lines = ["AT-05 graph trace (real models, real index)\n"]
-    lines += run_case(graph, "1. normal question, hybrid (parallel branches, join, rerank)",
-                      [HumanMessage("Do I need a permit to import or sell a drone in Dubai?")])
+    lines += run_case(graph, "1. normal question, hybrid (parallel branches, join, rerank)", [HumanMessage("Do I need a permit to import or sell a drone in Dubai?")])
     lines += run_case(graph, "2. follow-up using history (planner must rewrite it)",
-                      [HumanMessage("What is the departure fee at Dubai airports?"),
-                       AIMessage("The departure fee is AED 75 per passenger."), HumanMessage("Who is exempt from it?")])
+                      [HumanMessage("What is the departure fee at Dubai airports?"), AIMessage("The departure fee is AED 75 per passenger."),
+                       HumanMessage("Who is exempt from it?")])
     lines += run_case(graph, "3. out-of-scope question", [HumanMessage("What is a good recipe for pasta carbonara?")])
     lines += run_case(graph, "4. ambiguous question", [HumanMessage("What is the fine?")])
-    text = "\n".join(lines)
-    print(text)
-    Path("evidence/AT-05_trace.txt").write_text(text + "\n", encoding="utf-8")
+    return lines
+
+
+def main() -> None:
+    """Write the AT-06/07 answer evidence, the AT-05 trace, and export the graph picture."""
+    settings = Settings()
+    graph = build_graph(settings, lambda: INDEX_CACHE.get(settings), make_embedder(settings), make_chat_model(settings))
+    answers = "\n".join(answer_cases(graph))
+    print(answers)
+    Path("evidence/AT-06_07_answers.txt").write_text(answers + "\n", encoding="utf-8")
+    Path("evidence/AT-05_trace.txt").write_text("\n".join(trace_cases(graph)) + "\n", encoding="utf-8")
     Path("evidence/graph.mmd").write_text(graph.get_graph(xray=True).draw_mermaid(), encoding="utf-8")
 
 
