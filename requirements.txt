@@ -1,5 +1,5 @@
-# Direct dependencies only (pip resolves the rest). Tested with Python 3.13.7.
-# LangChain / LangGraph / vector + PDF libraries are added in their own phases, after checking their docs.
+# Direct dependencies only, pinned to exact versions (pip resolves the rest). Tested with Python 3.13.7 on Windows 11.
+# Verified: a fresh virtual environment built from this file passes `pip check` and all tests (evidence/pytest_results.txt).
 fastapi==0.163.1            # web API framework
 uvicorn==0.54.0             # server that runs the FastAPI app
 pydantic==2.14.3            # request/response/LLM-output models

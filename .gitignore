@@ -193,3 +193,4 @@ CLAUDE.md
 data/parsed/
 data/parsed_clean/
 data/*.sqlite
+data/*.sqlite-*
