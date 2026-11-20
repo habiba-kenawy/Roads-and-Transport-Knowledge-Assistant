@@ -12,5 +12,6 @@ langchain-text-splitters==1.1.3  # RecursiveCharacterTextSplitter for long artic
 rank-bm25==0.2.2           # BM25 lexical search (RAG-01)
 numpy==2.5.5                # vector math for semantic search and BM25
 langchain-openai==1.8.1     # embeddings (and later chat) via the Azure OpenAI-compatible endpoint
+langgraph-checkpoint-sqlite==3.1.3  # file-backed SQLite checkpointer: thread memory that survives a restart (7.2)
 langgraph==1.2.23           # LangGraph Graph API: StateGraph, parallel nodes, subgraphs (7.1, 7.2)
 httpx==0.28.1             # required by FastAPI's TestClient (API tests, AT-11)

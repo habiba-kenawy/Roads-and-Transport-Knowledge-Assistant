@@ -95,24 +95,42 @@ def abstain() -> dict:
     return {"status": "insufficient_evidence", "answer": ABSTAIN, "citations": [], "messages": [AIMessage(ABSTAIN)]}
 
 
+RETRY_NOTE = ("Your previous attempt was rejected because these quotes are not ONE continuous passage copied exactly from the "
+              "excerpt: {bad}. Answer again. Each quote must be ONE short continuous phrase (8 to 120 characters) copied exactly "
+              "from a single place in the excerpt; if a statement needs several pieces, quote only one of them.")
+
+
+def ask_model(llm, question: str, evidence: list[RankedChunk], note: str = "") -> AnswerDraft:
+    """One model call for cited statements; a failure is an error to report, not 'insufficient evidence'."""
+    prompt = build_prompt(question, evidence) + (f"\n\n{note}" if note else "")
+    try:
+        return llm.with_structured_output(AnswerDraft).invoke([("system", ANSWER_SYSTEM), ("human", prompt)])
+    except Exception as exc:
+        raise ModelCallError(f"answer generation failed: {type(exc).__name__}") from exc
+
+
 @traced("answer")
 def generate_answer(state: GraphState, *, llm) -> dict:
-    """Ask the model for cited statements, verify them in code, then answer or abstain."""
-    evidence = state["evidence"]
+    """Ask the model for cited statements, verify them in code, then answer or abstain (at most two model calls)."""
+    evidence, question = state["evidence"], state["standalone_query"]
     if not evidence:
         return abstain()  # nothing retrieved: no model call at all
     if llm is None:
         raise ModelNotConfiguredError("chat model is not configured (check .env)")
-    try:
-        draft = llm.with_structured_output(AnswerDraft).invoke(
-            [("system", ANSWER_SYSTEM), ("human", build_prompt(state["standalone_query"], evidence))])
-    except Exception as exc:  # a model failure is an error to report, not 'insufficient evidence'
-        raise ModelCallError(f"answer generation failed: {type(exc).__name__}") from exc
+    draft = ask_model(llm, question, evidence)
     if not draft.evidence_is_sufficient:
         return abstain()
     kept, dropped = verify(draft.statements, evidence)
-    logger.info("answer verified statements=%s kept=%s unknown_id=%s quote_mismatch=%s",
-                len(draft.statements), len(kept), dropped["unknown_id"], dropped["quote_mismatch"])
+    retried = False
+    if not kept and draft.statements:  # the model says it has evidence, yet nothing verified: ONE bounded retry with feedback
+        retried = True
+        bad = "; ".join(repr(s.quote[:80]) for s in draft.statements[:3])
+        draft = ask_model(llm, question, evidence, RETRY_NOTE.format(bad=bad))
+        if not draft.evidence_is_sufficient:
+            return abstain()
+        kept, dropped = verify(draft.statements, evidence)
+    logger.info("answer verified statements=%s kept=%s unknown_id=%s quote_mismatch=%s retried=%s",
+                len(draft.statements), len(kept), dropped["unknown_id"], dropped["quote_mismatch"], retried)
     if not kept:
         return abstain()  # nothing survived verification: never show unverified legal statements
     text, citations = compose(kept, evidence)

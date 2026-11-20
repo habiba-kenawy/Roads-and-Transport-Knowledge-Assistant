@@ -11,3 +11,7 @@ class IndexNotReadyError(Exception):
 
 class ModelCallError(Exception):
     """A model call failed (network, quota, timeout); the message names the error type only."""
+
+
+class ThreadBusyError(Exception):
+    """A run is already in progress on this thread; the caller should retry when it finishes (HTTP 409)."""

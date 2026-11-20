@@ -5,7 +5,7 @@ question: 'Do I need a permit to import or sell a drone in Dubai?'  (history mes
 plan: intent=legal_question standalone_query='Do I need a permit to import or sell a drone in Dubai?' filters={'year': None, 'doc_type': None} needs_clarification=False clarification_question=None
 status=answered ranking_stage='reranked' rerank_note=None
 ANSWER:
-  | No Person may import, bring in, or sell Unmanned Aircraft or any parts or systems thereof in the Emirate without first obtaining the relevant Permit from the DCAA [1]. A Person who commits importing, bringing in, or selling Unmanned Aircraft or any parts or systems thereof in the Emirate without obtaining a Permit from the DCAA will be punished by imprisonment, by a fine, or by both penalties [2]. No Person may pilot or use Unmanned Aircraft; conduct Operations or Related Activities; or construct any Infrastructure or Unmanned Aircraft Airport in the Emirate, without first obtaining the relevant Permit from the DCAA [3]. No Person may operate, assist in operating, or monitor the operation of Unmanned Aircraft or perform any work related to their operating systems unless that Person is qualified to do so and holds a relevant Permit from the DCAA [4]. The Director General may, based on valid reasons and in coordination with concerned entities, exempt certain types of Unmanned Aircraft from compliance with the provisions of paragraphs (a) and (b) of Article (14) [1].
+  | No Person may import, bring in, or sell Unmanned Aircraft or any parts or systems thereof in the Emirate without first obtaining the relevant Permit from the DCAA [1]. A Person who commits importing, bringing in, or selling Unmanned Aircraft or any parts or systems thereof in the Emirate without obtaining a Permit from the DCAA will be punished by imprisonment, by a fine, or by both penalties [2]. No Person may pilot or use Unmanned Aircraft; conduct Operations or Related Activities; or construct any Infrastructure or Unmanned Aircraft Airport in the Emirate, without first obtaining the relevant Permit from the DCAA [3]. No Person may operate, assist in operating, or monitor the operation of Unmanned Aircraft or perform any work related to their operating systems unless that Person is qualified to do so and holds a relevant Permit from the DCAA [4]. Any Person owning an Unmanned Aircraft must register it with the DCAA in accordance with the provisions of this Law and the resolutions issued in pursuance hereof [1]. The concerned entities in the Emirate must coordinate with the DCAA to establish the procedures required for implementation of the provisions of paragraph (a) of Article 14 [1].
   | 
   | Note: "Law No. (4) of 2020 Regulating Unmanned Aircraft in the Emirate of Dubai" has the status "In Force as Amended" on the Dubai Legislation Portal.
   | This is not legal advice. The indexed documents are a limited set and may not be complete or current.
@@ -21,24 +21,24 @@ ANSWER:
   citation [4]: document_id=dlp-1718 chunk_id=dlp-1718-032-56754e63 locator_type=page locator='pp. 14-15'
                title='Law No. (4) of 2020 Regulating Unmanned Aircraft in the Emirate of Dubai'
                source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoNCk...
-verification: statements=5 kept=5 unknown_id=0 quote_mismatch=0
+verification: statements=6 kept=6 unknown_id=0 quote_mismatch=0 retried=False
 trace (seconds since run start):
-  + 0.001s node=start_turn event=start mode=hybrid
-  + 0.002s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0
-  + 0.002s node=plan_query event=start mode=hybrid
-  + 1.052s node=plan_query event=end seconds=1.050 
-  + 1.056s node=lexical_node event=start mode=hybrid
-  + 1.058s node=semantic_node event=start mode=hybrid
-  + 1.070s node=lexical_node event=end seconds=0.013 lexical_candidates=20
-  + 1.699s node=semantic_node event=end seconds=0.641 semantic_candidates=20
-  + 1.700s node=fuse_node event=start mode=hybrid
-  + 1.700s node=fuse_node event=end seconds=0.000 fused=20
-  + 1.701s node=rerank_node event=start mode=hybrid
-  + 4.358s node=rerank_node event=end seconds=2.658 evidence=5
-  + 4.360s node=answer event=start mode=hybrid
-  + 8.992s node=answer event=end seconds=4.632 citations=4 messages=1
-overlap: lexical 1.056-1.070s, semantic 1.058-1.699s -> started together (within 1 ms): True; semantic started before lexical ended: True
-join: fuse started at 1.700s, after both branches ended (1.699s): True; fuse start events: 1
+  + 0.002s node=start_turn event=start mode=hybrid request_id=- thread_id=-
+  + 0.002s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0 request_id=- thread_id=-
+  + 0.002s node=plan_query event=start mode=hybrid request_id=- thread_id=-
+  + 1.528s node=plan_query event=end seconds=1.526  request_id=- thread_id=-
+  + 1.532s node=lexical_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.533s node=semantic_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.543s node=lexical_node event=end seconds=0.012 lexical_candidates=20 request_id=- thread_id=-
+  + 2.850s node=semantic_node event=end seconds=1.317 semantic_candidates=20 request_id=- thread_id=-
+  + 2.851s node=fuse_node event=start mode=hybrid request_id=- thread_id=-
+  + 2.851s node=fuse_node event=end seconds=0.000 fused=20 request_id=- thread_id=-
+  + 2.851s node=rerank_node event=start mode=hybrid request_id=- thread_id=-
+  + 5.848s node=rerank_node event=end seconds=2.996 evidence=5 request_id=- thread_id=-
+  + 5.849s node=answer event=start mode=hybrid request_id=- thread_id=-
+  +11.839s node=answer event=end seconds=5.989 citations=4 messages=1 request_id=- thread_id=-
+overlap: lexical 1.532-1.543s, semantic 1.533-2.850s -> started together (within 1 ms): True; semantic started before lexical ended: True
+join: fuse started at 2.851s, after both branches ended (2.850s): True; fuse start events: 1
 order BEFORE rerank (fused RRF): dlp-1718-028-083127b7, dlp-1718-035-28e318f0, dlp-1834-010-4fc5f6ad, dlp-1718-024-75325abe, dlp-1718-032-56754e63, dlp-13-003-f7de5fc8, dlp-1718-037-ab845232, dlp-1685-039-2d60eb6f
 order AFTER rerank (final top 5):  dlp-1718-028-083127b7[10], dlp-1718-059-6da8ff0c[9], dlp-1718-024-75325abe[7], dlp-1718-032-56754e63[5], dlp-1718-025-4e0a5fd5[3]
 
@@ -47,30 +47,30 @@ question: 'Who is exempt from it?'  (history messages: 2, mode: hybrid)
 plan: intent=legal_question standalone_query='Who is exempt from the departure fee at Dubai airports?' filters={'year': None, 'doc_type': None} needs_clarification=False clarification_question=None
 status=answered ranking_stage='reranked' rerank_note=None
 ANSWER:
-  | Passengers below the age of two (2) years are exempted from payment of the departure fee [1]. On-duty pilots and cabin crew are exempted from payment of the departure fee [1]. Transit passengers whose arrival and departure flight number is the same are exempted from payment of the departure fee [1]. Transfer passengers whose final destination is not the United Arab Emirates and whose departure is within twenty-four (24) hours from the time of arrival are exempted from payment of the departure fee [1].
+  | The following categories are hereby exempted from payment of the fee referred to in paragraph (a) of this Article: 1. passengers below the age of two (2) years; 2. on-duty pilots and cabin crew; 3. transit passengers whose arrival and departure flight number is the same; 4. transfer passengers whose final destination is not the United Arab Emirates and whose departure is within twenty-four (24) hours from the time of arrival [1].
   | 
   | This is not legal advice. The indexed documents are a limited set and may not be complete or current.
   citation [1]: document_id=dlp-1432 chunk_id=dlp-1432-001-44caaf5f locator_type=page locator='pp. 1-2'
                title='Law No. (13) of 2022 Concerning the Dubai Airports Departure Fee'
                source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoMTM...
-verification: statements=4 kept=4 unknown_id=0 quote_mismatch=0
+verification: statements=1 kept=1 unknown_id=0 quote_mismatch=0 retried=False
 trace (seconds since run start):
-  + 0.002s node=start_turn event=start mode=hybrid
-  + 0.002s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0
-  + 0.003s node=plan_query event=start mode=hybrid
-  + 0.975s node=plan_query event=end seconds=0.972 
-  + 0.978s node=lexical_node event=start mode=hybrid
-  + 0.980s node=semantic_node event=start mode=hybrid
-  + 0.988s node=lexical_node event=end seconds=0.009 lexical_candidates=20
-  + 1.683s node=semantic_node event=end seconds=0.703 semantic_candidates=20
-  + 1.684s node=fuse_node event=start mode=hybrid
-  + 1.684s node=fuse_node event=end seconds=0.000 fused=20
-  + 1.685s node=rerank_node event=start mode=hybrid
-  + 4.039s node=rerank_node event=end seconds=2.355 evidence=5
-  + 4.042s node=answer event=start mode=hybrid
-  + 6.742s node=answer event=end seconds=2.700 citations=1 messages=1
-overlap: lexical 0.978-0.988s, semantic 0.980-1.683s -> started together (within 2 ms): True; semantic started before lexical ended: True
-join: fuse started at 1.684s, after both branches ended (1.683s): True; fuse start events: 1
+  + 0.001s node=start_turn event=start mode=hybrid request_id=- thread_id=-
+  + 0.001s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0 request_id=- thread_id=-
+  + 0.002s node=plan_query event=start mode=hybrid request_id=- thread_id=-
+  + 1.396s node=plan_query event=end seconds=1.394  request_id=- thread_id=-
+  + 1.399s node=lexical_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.401s node=semantic_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.406s node=lexical_node event=end seconds=0.007 lexical_candidates=20 request_id=- thread_id=-
+  + 2.188s node=semantic_node event=end seconds=0.787 semantic_candidates=20 request_id=- thread_id=-
+  + 2.189s node=fuse_node event=start mode=hybrid request_id=- thread_id=-
+  + 2.189s node=fuse_node event=end seconds=0.000 fused=20 request_id=- thread_id=-
+  + 2.190s node=rerank_node event=start mode=hybrid request_id=- thread_id=-
+  + 5.093s node=rerank_node event=end seconds=2.903 evidence=5 request_id=- thread_id=-
+  + 5.095s node=answer event=start mode=hybrid request_id=- thread_id=-
+  + 6.898s node=answer event=end seconds=1.803 citations=1 messages=1 request_id=- thread_id=-
+overlap: lexical 1.399-1.406s, semantic 1.401-2.188s -> started together (within 2 ms): True; semantic started before lexical ended: True
+join: fuse started at 2.189s, after both branches ended (2.188s): True; fuse start events: 1
 order BEFORE rerank (fused RRF): dlp-1432-000-82e5035a, dlp-1432-001-44caaf5f, dlp-1432-002-f16113aa, dlp-178-019-5aa69deb, dlp-1432-003-f262e976, dlp-1718-035-28e318f0, dlp-1941-002-f280ec85, dlp-1685-009-226905dc
 order AFTER rerank (final top 5):  dlp-1432-001-44caaf5f[10], dlp-1432-000-82e5035a[2], dlp-1432-002-f16113aa[1], dlp-178-019-5aa69deb[0], dlp-1432-003-f262e976[0]
 
@@ -81,22 +81,22 @@ status=out_of_scope ranking_stage='' rerank_note=None
 ANSWER:
   | I can only help with questions about Dubai Roads and Transport legislation in the indexed documents. This is not legal advice.
 trace (seconds since run start):
-  + 0.002s node=start_turn event=start mode=hybrid
-  + 0.002s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0
-  + 0.003s node=plan_query event=start mode=hybrid
-  + 1.067s node=plan_query event=end seconds=1.064 
-  + 1.069s node=scope_response event=start mode=hybrid
-  + 1.069s node=scope_response event=end seconds=0.000 messages=1
+  + 0.001s node=start_turn event=start mode=hybrid request_id=- thread_id=-
+  + 0.001s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0 request_id=- thread_id=-
+  + 0.002s node=plan_query event=start mode=hybrid request_id=- thread_id=-
+  + 1.546s node=plan_query event=end seconds=1.544  request_id=- thread_id=-
+  + 1.547s node=scope_response event=start mode=hybrid request_id=- thread_id=-
+  + 1.547s node=scope_response event=end seconds=0.000 messages=1 request_id=- thread_id=-
 
 === 4. ambiguous question
 question: 'What is the fine?'  (history messages: 0, mode: hybrid)
-plan: intent=legal_question standalone_query='What is the fine for violations in Dubai roads and transport legislation?' filters={'year': None, 'doc_type': None} needs_clarification=True clarification_question='What specific violation or law are you asking about regarding the fine?'
+plan: intent=legal_question standalone_query='What is the fine for violations in Dubai Roads and Transport legislation?' filters={'year': None, 'doc_type': None} needs_clarification=True clarification_question='What specific violation or law are you asking about regarding the fine?'
 status=needs_clarification ranking_stage='' rerank_note=None
 trace (seconds since run start):
-  + 0.001s node=start_turn event=start mode=hybrid
-  + 0.001s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0
-  + 0.002s node=plan_query event=start mode=hybrid
-  + 1.099s node=plan_query event=end seconds=1.097 
-  + 1.100s node=clarify event=start mode=hybrid
-  + 1.100s node=clarify event=end seconds=0.000 
+  + 0.001s node=start_turn event=start mode=hybrid request_id=- thread_id=-
+  + 0.002s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0 request_id=- thread_id=-
+  + 0.002s node=plan_query event=start mode=hybrid request_id=- thread_id=-
+  + 1.560s node=plan_query event=end seconds=1.557  request_id=- thread_id=-
+  + 1.561s node=clarify event=start mode=hybrid request_id=- thread_id=-
+  + 1.561s node=clarify event=end seconds=0.000  request_id=- thread_id=-
 

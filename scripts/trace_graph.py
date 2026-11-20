@@ -11,11 +11,13 @@ from pathlib import Path
 
 from langchain_core.messages import AIMessage, HumanMessage
 
+from app.chat import make_checkpointer, run_chat
 from app.config import Settings
 from app.graph.build import build_graph
 from app.llm import make_chat_model
 from app.retrieval.embeddings import make_embedder
 from app.retrieval.search import INDEX_CACHE
+from app.schemas.chat import ChatRequest
 
 LOGGERS = ("graph", "app.graph.nodes", "app.graph.answer")
 
@@ -124,9 +126,49 @@ def trace_cases(graph) -> list[str]:
     return lines
 
 
+def memory_cases(settings: Settings) -> list[str]:
+    """AT-08: follow-up continuity, thread isolation, and memory after a simulated restart (real models, demo checkpoint file)."""
+    demo_db = Path("data/checkpoints_demo.sqlite")  # separate from the real conversation database
+    demo_db.unlink(missing_ok=True)
+
+    def new_graph():
+        return build_graph(settings, lambda: INDEX_CACHE.get(settings), make_embedder(settings), make_chat_model(settings),
+                           checkpointer=make_checkpointer(str(demo_db)))
+
+    def ask(graph, thread: str, message: str) -> list[str]:
+        reply = run_chat(settings, ChatRequest(message=message, thread_id=thread, search_mode="hybrid"), graph)
+        values = graph.get_state({"configurable": {"thread_id": thread}}).values
+        text = (reply.answer or "").replace("\n", " ")[:170]
+        return [f"[{thread}] user: {message!r}",
+                f"    planner's standalone_query: {values['standalone_query']!r}",
+                f"    status={reply.status} citations={len(reply.citations)} request_id={reply.request_id}",
+                f"    answer: {text}...", ""]
+
+    def saved(graph, thread: str) -> str:
+        messages = graph.get_state({"configurable": {"thread_id": thread}}).values.get("messages", [])
+        return f"[{thread}] saved messages: {len(messages)} -> " + " | ".join(f"{m.type}:{str(m.content)[:45]!r}" for m in messages)
+
+    graph = new_graph()
+    lines = ["AT-08 memory and isolation (real models; checkpoint file: data/checkpoints_demo.sqlite)\n", "--- thread A: a question, then a follow-up that only makes sense with the history"]
+    lines += ask(graph, "demo-thread-a", "How much is the departure fee for passengers leaving through Dubai airports?")
+    lines += ask(graph, "demo-thread-a", "Who is exempt from it?")
+    lines += ["--- thread B: the SAME follow-up words, but this thread has no history"]
+    lines += ask(graph, "demo-thread-b", "Who is exempt from it?")
+    lines += ["--- saved state per thread", saved(graph, "demo-thread-a"), saved(graph, "demo-thread-b"), ""]
+    lines += ["--- simulated restart: a brand-new graph object and a brand-new connection to the same file, then thread A continues"]
+    restarted = new_graph()
+    lines += [saved(restarted, "demo-thread-a")]
+    lines += ask(restarted, "demo-thread-a", "What are the airlines responsible for?")
+    lines += [saved(restarted, "demo-thread-a")]
+    return lines
+
+
 def main() -> None:
-    """Write the AT-06/07 answer evidence, the AT-05 trace, and export the graph picture."""
+    """Write the AT-06/07 answer evidence, the AT-08 memory evidence, the AT-05 trace, and export the graph picture."""
     settings = Settings()
+    memory = "\n".join(memory_cases(settings))
+    print(memory)
+    Path("evidence/AT-08_memory.txt").write_text(memory + "\n", encoding="utf-8")
     graph = build_graph(settings, lambda: INDEX_CACHE.get(settings), make_embedder(settings), make_chat_model(settings))
     answers = "\n".join(answer_cases(graph))
     print(answers)

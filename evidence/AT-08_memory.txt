@@ -1,0 +1,31 @@
+AT-08 memory and isolation (real models; checkpoint file: data/checkpoints_demo.sqlite)
+
+--- thread A: a question, then a follow-up that only makes sense with the history
+[demo-thread-a] user: 'How much is the departure fee for passengers leaving through Dubai airports?'
+    planner's standalone_query: 'What is the departure fee for passengers leaving through Dubai airports?'
+    status=answered citations=3 request_id=7a9279a14c86
+    answer: A departure fee of seventy-five dirhams (AED 75.00) will be collected from every passenger departing the United Arab Emirates through Dubai airports [1]. Airlines operati...
+
+[demo-thread-a] user: 'Who is exempt from it?'
+    planner's standalone_query: 'Who is exempt from the departure fee for passengers leaving through Dubai airports?'
+    status=answered citations=1 request_id=e265991590ff
+    answer: A departure fee of seventy-five dirhams (AED 75.00) will be collected from every passenger departing the United Arab Emirates through Dubai airports [1]. The following ca...
+
+--- thread B: the SAME follow-up words, but this thread has no history
+[demo-thread-b] user: 'Who is exempt from it?'
+    planner's standalone_query: 'Who is exempt from the relevant Roads and Transport legislation?'
+    status=needs_clarification citations=0 request_id=9c696f9595b8
+    answer: ...
+
+--- saved state per thread
+[demo-thread-a] saved messages: 4 -> human:'How much is the departure fee for passengers ' | ai:'A departure fee of seventy-five dirhams (AED ' | human:'Who is exempt from it?' | ai:'A departure fee of seventy-five dirhams (AED '
+[demo-thread-b] saved messages: 1 -> human:'Who is exempt from it?'
+
+--- simulated restart: a brand-new graph object and a brand-new connection to the same file, then thread A continues
+[demo-thread-a] saved messages: 4 -> human:'How much is the departure fee for passengers ' | ai:'A departure fee of seventy-five dirhams (AED ' | human:'Who is exempt from it?' | ai:'A departure fee of seventy-five dirhams (AED '
+[demo-thread-a] user: 'What are the airlines responsible for?'
+    planner's standalone_query: 'What are the responsibilities of airlines regarding the departure fee at Dubai airports?'
+    status=answered citations=3 request_id=672855ba727d
+    answer: Airlines operating in Dubai airports will be responsible for collecting the fee referred to in Article (1) of this Law upon issuing air tickets to customers within or out...
+
+[demo-thread-a] saved messages: 6 -> human:'How much is the departure fee for passengers ' | ai:'A departure fee of seventy-five dirhams (AED ' | human:'Who is exempt from it?' | ai:'A departure fee of seventy-five dirhams (AED ' | human:'What are the airlines responsible for?' | ai:'Airlines operating in Dubai airports will be '

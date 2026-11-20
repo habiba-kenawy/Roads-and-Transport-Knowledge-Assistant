@@ -1,11 +1,15 @@
 """FastAPI application: routes only, no business logic."""
+from typing import Callable, TypeVar
+
 from fastapi import FastAPI, HTTPException
 
 from app.config import Settings
-from app.errors import IndexNotReadyError, ModelCallError, ModelNotConfiguredError
+from app.chat import run_chat
+from app.errors import IndexNotReadyError, ModelCallError, ModelNotConfiguredError, ThreadBusyError
 from app.indexing import build_index
 from app.ingestion.store import index_available
 from app.retrieval.search import perform_search
+from app.schemas.chat import ChatRequest, ChatResponse
 from app.schemas.health import HealthResponse
 from app.schemas.ingest import IngestReport
 from app.schemas.search import SearchRequest, SearchResponse
@@ -30,12 +34,28 @@ def ingest() -> IngestReport:
     return build_index(settings)
 
 
-@app.post("/search", response_model=SearchResponse)
-def search(request: SearchRequest) -> SearchResponse:
-    """Return ranked chunks for a query in the chosen mode, so retrieval can be inspected without answer generation."""
+T = TypeVar("T")
+
+
+def controlled(call: Callable[[], T]) -> T:
+    """Run a service call and turn known failures into clear, controlled HTTP responses (never a stack trace)."""
     try:
-        return perform_search(settings, request)
+        return call()
+    except ThreadBusyError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))  # same thread is still running
     except (IndexNotReadyError, ModelNotConfiguredError) as exc:
         raise HTTPException(status_code=503, detail=str(exc))  # service not ready: tell the caller what to do
     except ModelCallError as exc:
         raise HTTPException(status_code=502, detail=str(exc))  # an upstream model call failed
+
+
+@app.post("/search", response_model=SearchResponse)
+def search(request: SearchRequest) -> SearchResponse:
+    """Return ranked chunks for a query in the chosen mode, so retrieval can be inspected without answer generation."""
+    return controlled(lambda: perform_search(settings, request))
+
+
+@app.post("/chat", response_model=ChatResponse)
+def chat(request: ChatRequest) -> ChatResponse:
+    """Answer a message on a conversation thread (memory is kept per thread_id), or abstain, refuse, or ask for clarification."""
+    return controlled(lambda: run_chat(settings, request))
