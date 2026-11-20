@@ -4,10 +4,11 @@
 
 export type SearchMode = 'lexical' | 'semantic' | 'hybrid'
 
-export const MODES: { value: SearchMode; label: string }[] = [
-  { value: 'hybrid', label: 'Hybrid' },
-  { value: 'lexical', label: 'Lexical (keywords)' },
-  { value: 'semantic', label: 'Semantic (meaning)' },
+// label = what the list shows; short = what the chip shows (short enough for three chips to fit on one phone-width row)
+export const MODES: { value: SearchMode; label: string; short: string }[] = [
+  { value: 'hybrid', label: 'Hybrid', short: 'Hybrid' },
+  { value: 'lexical', label: 'Lexical (keywords)', short: 'Lexical' },
+  { value: 'semantic', label: 'Semantic (meaning)', short: 'Semantic' },
 ]
 
 export const YEARS = [2026, 2025, 2024, 2023, 2022, 2020, 2016, 2012, 2011, 2010, 2008, 2007, 2006]

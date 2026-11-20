@@ -15,8 +15,9 @@ interface Props {
   submitLabel: string
 }
 
-// Open each list BELOW its chip (not on top of it), so no chip is ever hidden behind another one.
-const LIST = { position: 'popper', align: 'start', sideOffset: 6, className: 'max-h-64' } as const // max-h-64: a long list scrolls instead of flipping above the chip
+// Lists open ABOVE their chip, over the text box, so they can never cover another chip (the chips and the send button are the
+// bottom rows of the composer). If there is no room above, the browser flips them below. max-h-64: a long list scrolls.
+const LIST = { position: 'popper', side: 'top', align: 'start', sideOffset: 6, className: 'max-h-64' } as const
 
 // A small rounded "chip" look for the dropdowns inside the composer.
 const CHIP = 'h-8! gap-1 rounded-full border-transparent bg-surface px-3 text-xs hover:bg-accent [&_svg]:size-3.5'
@@ -57,8 +58,8 @@ export function Composer({ question, onQuestionChange, controls, onControlsChang
 
       <div className="mt-2 flex flex-wrap items-center gap-2">
         <Select value={controls.mode} onValueChange={(v) => set({ mode: v as SearchMode })}>
-          <SelectTrigger className={`${CHIP} w-44`} aria-label="Search mode">
-            <SelectValue />
+          <SelectTrigger className={`${CHIP} w-22 px-2 sm:w-44 sm:px-3`} aria-label="Search mode">
+            <SelectValue>{MODES.find((m) => m.value === controls.mode)?.short}</SelectValue>
           </SelectTrigger>
           <SelectContent {...LIST}>
             {MODES.map((m) => (
@@ -70,7 +71,7 @@ export function Composer({ question, onQuestionChange, controls, onControlsChang
         </Select>
 
         <Select value={controls.year === null ? ANY : String(controls.year)} onValueChange={(v) => set({ year: v === ANY ? null : Number(v) })}>
-          <SelectTrigger className={`${CHIP} w-36`} aria-label="Year">
+          <SelectTrigger className={`${CHIP} w-22 px-2 sm:w-36 sm:px-3`} aria-label="Year">
             <SelectValue />
           </SelectTrigger>
           <SelectContent {...LIST}>
@@ -84,7 +85,7 @@ export function Composer({ question, onQuestionChange, controls, onControlsChang
         </Select>
 
         <Select value={controls.docType ?? ANY} onValueChange={(v) => set({ docType: v === ANY ? null : v })}>
-          <SelectTrigger className={`${CHIP} w-36`} aria-label="Document type">
+          <SelectTrigger className={`${CHIP} w-22 px-2 sm:w-36 sm:px-3`} aria-label="Document type">
             <SelectValue />
           </SelectTrigger>
           <SelectContent {...LIST}>
