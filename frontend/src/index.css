@@ -33,7 +33,7 @@
   --border: #d5d8de;
   --input: #6b7280;             /* input outlines need about 3:1 against the page to be visible */
   --ring: var(--brand);
-  --radius: 0.25rem;            /* formal, nearly square corners */
+  --radius: 0.75rem;            /* soft rounded corners */
 }
 
 /* 3) Names Tailwind turns into classes: bg-brand, text-ink, bg-panel, border-accent-red, bg-surface, ... */
@@ -74,10 +74,63 @@
 }
 
 @layer base {
+  /* Visible keyboard focus everywhere; white on the dark bars (they carry data-surface="dark") */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  [data-surface="dark"]:focus-visible,
+  [data-surface="dark"] :focus-visible {
+    outline-color: white;
+  }
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground font-sans;
   }
+}
+
+/* The round brand mark above the greeting, built only from the brand colour. It glows on and off slowly: a halo behind it
+   fades in and out while the ball itself breathes a little brighter and dimmer. */
+.brand-orb {
+  position: relative;
+  isolation: isolate; /* keeps the halo (z-index -1) behind the ball but above the page */
+  background: radial-gradient(circle at 32% 28%, white 0, color-mix(in oklab, var(--brand) 35%, white) 22%, var(--brand) 62%, color-mix(in oklab, var(--brand) 60%, black) 100%);
+  box-shadow: 0 10px 28px color-mix(in oklab, var(--brand) 25%, transparent);
+  animation: orb-breathe 3.6s ease-in-out infinite;
+}
+.brand-orb::after {
+  content: '';
+  position: absolute;
+  inset: -45%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in oklab, var(--brand) 60%, transparent) 0%, transparent 65%);
+  animation: orb-halo 3.6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes orb-halo {
+  0%, 100% { opacity: 0.08; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+@keyframes orb-breathe {
+  0%, 100% { filter: brightness(0.9); }
+  50% { filter: brightness(1.12); }
+}
+/* Hover: a short jelly wobble (squash, stretch, slight tilt). The slow glow keeps running underneath. */
+.brand-orb:hover {
+  animation: orb-breathe 3.6s ease-in-out infinite, orb-wiggle 0.75s ease-in-out;
+}
+@keyframes orb-wiggle {
+  0%, 100% { transform: scale(1, 1) rotate(0deg); }
+  20% { transform: scale(1.12, 0.88) rotate(-6deg); }
+  40% { transform: scale(0.9, 1.1) rotate(5deg); }
+  60% { transform: scale(1.06, 0.95) rotate(-3deg); }
+  80% { transform: scale(0.98, 1.02) rotate(1.5deg); }
+}
+/* People who ask their system for less motion get a steady, softly lit ball instead */
+@media (prefers-reduced-motion: reduce) {
+  .brand-orb, .brand-orb:hover, .brand-orb::after { animation: none; }
+  .brand-orb::after { opacity: 0.5; }
 }

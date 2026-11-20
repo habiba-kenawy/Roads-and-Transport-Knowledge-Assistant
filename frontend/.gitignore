@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# The repo-wide Python rule "lib/" would hide src/lib (our options.ts and shadcn utils.ts): keep it tracked
+!src/lib/
