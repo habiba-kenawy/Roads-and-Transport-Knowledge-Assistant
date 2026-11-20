@@ -18,11 +18,17 @@ class Settings(BaseSettings):
     retrieval_candidates: int = 20  # candidates each retriever returns, and the most the reranker ever sees (bounded)
     checkpoint_db_path: str = "data/checkpoints.sqlite"  # conversation memory (LangGraph checkpoints), git-ignored
     db_path: str = "data/index.sqlite"  # file-backed SQLite store for chunks (git-ignored)
+    cors_origins: str = "http://localhost:5180"  # comma-separated web page origins allowed to call the API (our Vite dev server)
 
     @property
     def embedding_base_url(self) -> str | None:
         """Return the embeddings endpoint, or the main endpoint when no separate one is set."""
         return self.embedding_endpoint or self.azure_openai_endpoint
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        """Split the comma-separated CORS_ORIGINS value into a clean list (no blanks, no wildcard entries)."""
+        return [o.strip() for o in self.cors_origins.split(",") if o.strip() and o.strip() != "*"]
 
     @property
     def model_configured(self) -> bool:

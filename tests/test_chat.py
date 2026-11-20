@@ -62,6 +62,13 @@ def test_new_thread_id_is_generated_and_every_response_field_is_present(tmp_path
     assert again.thread_id == first.thread_id and again.request_id != first.request_id
 
 
+def test_top_k_from_the_request_limits_how_much_evidence_the_answer_gets(tmp_path) -> None:
+    """The chat request's top_k reaches the retrieval step (default 5; here 2 chunks, not 5)."""
+    graph = make_graph(tmp_path / "c.sqlite", RecordingLLM())
+    run_chat(SETTINGS, ChatRequest(message="toll fine parking?", thread_id="t-topk", search_mode="lexical", top_k=2), graph)
+    assert len(graph.get_state({"configurable": {"thread_id": "t-topk"}}).values["evidence"]) == 2
+
+
 def test_follow_up_on_the_same_thread_sees_the_earlier_conversation(tmp_path) -> None:
     """AT-08 continuity: the planner of the second question is shown the first question and answer."""
     llm = RecordingLLM()
@@ -212,6 +219,7 @@ client = TestClient(main.app)
     {"message": ""}, {"message": "   "}, {"message": "x" * 2001}, {}, {"message": "hi", "thread_id": "has spaces"},
     {"message": "hi", "thread_id": "a" * 65}, {"message": "hi", "thread_id": "bad/slash"}, {"message": "hi", "search_mode": "fuzzy"},
     {"message": "hi", "filters": {"year": 3000}}, {"message": "hi", "unknown_field": 1},
+    {"message": "hi", "top_k": 0}, {"message": "hi", "top_k": 21}, {"message": "hi", "top_k": "many"},
 ])
 def test_chat_route_rejects_invalid_requests_with_422(body) -> None:
     """AT-11: empty message, over-length message, bad thread id, unsupported mode, invalid filters, unknown fields."""

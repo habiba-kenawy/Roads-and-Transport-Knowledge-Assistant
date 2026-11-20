@@ -1,0 +1,83 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* There is no dark mode: keep Tailwind's `dark:` classes (used inside shadcn files) tied to a class we never set,
+   so a dark operating system cannot change the look. */
+@custom-variant dark (&:is(.dark *));
+
+/* 1) Raw colours: the ONLY place a hex value is written. Approximate values, adjust here. */
+:root {
+  --brand: #0536a8;      /* royal blue: utility bar, ASK button, links, focus ring */
+  --ink: #111111;        /* near black: nav bar and body text */
+  --panel: #262626;      /* charcoal: hero panel */
+  --accent-red: #c8102e; /* the small rule under card titles and error states */
+  --surface: #f4f5f7;    /* light grey page background */
+
+  /* 2) Roles the shadcn components expect, expressed with our colours */
+  --background: var(--surface);
+  --foreground: var(--ink);
+  --card: #ffffff;
+  --card-foreground: var(--ink);
+  --popover: #ffffff;
+  --popover-foreground: var(--ink);
+  --primary: var(--brand);
+  --primary-foreground: #ffffff;
+  --secondary: var(--surface);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface);
+  --muted-foreground: #4b5563;  /* secondary text; about 7:1 on white */
+  --accent: color-mix(in oklab, var(--brand) 10%, white); /* shadcn's hover background (NOT our red) */
+  --accent-foreground: var(--ink);
+  --destructive: var(--accent-red);
+  --border: #d5d8de;
+  --input: #6b7280;             /* input outlines need about 3:1 against the page to be visible */
+  --ring: var(--brand);
+  --radius: 0.25rem;            /* formal, nearly square corners */
+}
+
+/* 3) Names Tailwind turns into classes: bg-brand, text-ink, bg-panel, border-accent-red, bg-surface, ... */
+@theme inline {
+  --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-sans);
+
+  --color-brand: var(--brand);
+  --color-ink: var(--ink);
+  --color-panel: var(--panel);
+  --color-accent-red: var(--accent-red);
+  --color-surface: var(--surface);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}

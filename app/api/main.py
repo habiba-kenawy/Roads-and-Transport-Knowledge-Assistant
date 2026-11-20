@@ -2,6 +2,7 @@
 from typing import Callable, TypeVar
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import Settings
 from app.chat import resume_chat, run_chat
@@ -16,6 +17,8 @@ from app.schemas.search import SearchRequest, SearchResponse
 
 app = FastAPI(title="Roads and Transport Knowledge Assistant")
 settings = Settings()
+# HTTP middleware: lets the browser page (another origin) call the API; only listed origins, methods and headers, no wildcard
+app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origin_list, allow_methods=["GET", "POST"], allow_headers=["Content-Type"])
 
 
 @app.get("/health", response_model=HealthResponse)

@@ -18,6 +18,7 @@ class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=MAX_MESSAGE_CHARS)
     thread_id: ThreadId | None = None
     search_mode: Literal["lexical", "semantic", "hybrid"] = "hybrid"
+    top_k: int = Field(default=5, ge=1, le=20)  # how many chunks the answer may use (same bounds as /search)
     filters: SearchFilters = Field(default_factory=SearchFilters)
 
 

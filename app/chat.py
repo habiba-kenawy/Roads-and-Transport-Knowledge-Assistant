@@ -98,7 +98,7 @@ def run_chat(settings: Settings, request: ChatRequest, graph=None) -> ChatRespon
         if pending_interrupts(graph, thread_id):  # a new message would silently abandon the question we asked
             raise InvalidResumeError(f"thread {thread_id} is waiting for a clarification; answer it with POST /chat/resume")
         return execute(graph, thread_id, {"messages": [HumanMessage(request.message)], "search_mode": request.search_mode,
-                                          "filters": request.filters})
+                                          "top_k": request.top_k, "filters": request.filters})
 
 
 def resume_chat(settings: Settings, request: ResumeRequest, graph=None) -> ChatResponse:
