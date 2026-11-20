@@ -10,7 +10,7 @@ from app.config import Settings
 from app.errors import ModelNotConfiguredError
 from app.graph import retrieval as graph_retrieval
 from app.graph.build import build_graph
-from app.graph.nodes import SCOPE_MESSAGE, history_block
+from app.graph.nodes import SCOPE_MESSAGE, history_block, route_after_plan
 from app.retrieval.filters import SearchFilters
 from app.schemas.answer import AnswerDraft, Statement
 from app.schemas.plan import PlanFilters, QueryPlan
@@ -97,11 +97,12 @@ def test_out_of_scope_question_gets_the_scope_message_and_skips_retrieval(caplog
     assert not any(e.startswith(("node=lexical", "node=semantic", "node=fuse", "node=rerank")) for e in events)
 
 
-def test_ambiguous_question_routes_to_clarification_and_counts_the_attempt() -> None:
-    """Routing to clarify; the real interrupt() arrives in block 7."""
-    out = run(GraphFakeLLM(plan(clarify=True, question="Which law do you mean?")))
-    assert out["status"] == "needs_clarification" and out["clarification_question"] == "Which law do you mean?"
-    assert out["clarification_attempts"] == 1 and out["evidence"] == []
+def test_ambiguous_question_is_clarified_at_most_twice() -> None:
+    """7.2: clarify while fewer than 2 attempts are used; after that, search the question as written."""
+    ambiguous = plan(clarify=True, question="Which law do you mean?")
+    assert route_after_plan({"plan": ambiguous, "clarification_attempts": 0}) == "clarify"
+    assert route_after_plan({"plan": ambiguous, "clarification_attempts": 1}) == "clarify"
+    assert route_after_plan({"plan": ambiguous, "clarification_attempts": 2}) == "retrieval"
 
 
 def test_lexical_and_semantic_modes_take_a_single_branch() -> None:

@@ -21,9 +21,20 @@ class ChatRequest(BaseModel):
     filters: SearchFilters = Field(default_factory=SearchFilters)
 
 
-class Clarification(BaseModel):
-    """What the user must answer for the pending clarification (the interrupt id is added in block 7)."""
+class ResumeRequest(BaseModel):
+    """The user's answer to a pending clarification, tied to the interrupt it answers."""
 
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    thread_id: ThreadId
+    interrupt_id: str = Field(min_length=1, max_length=64)
+    message: str = Field(min_length=1, max_length=MAX_MESSAGE_CHARS)
+
+
+class Clarification(BaseModel):
+    """The pending interrupt: which one it is and the question to answer."""
+
+    interrupt_id: str
     question: str
 
 

@@ -2,7 +2,8 @@
 import logging
 from typing import Literal
 
-from langchain_core.messages import AIMessage
+from langchain_core.messages import AIMessage, HumanMessage
+from langgraph.types import interrupt
 
 from app.errors import ModelNotConfiguredError
 from app.graph.state import GraphState
@@ -14,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 HISTORY_TURNS = 6  # bounded: only the last few messages are shown to the planner
 HISTORY_CHARS = 600
+MAX_CLARIFICATIONS = 2  # per question (assignment 7.2)
 SCOPE_MESSAGE = ("I can only help with questions about Dubai Roads and Transport legislation in the indexed documents. "
                  "This is not legal advice.")
 
@@ -53,7 +55,7 @@ def start_turn(state: GraphState) -> dict:
         "filters": state.get("filters") or SearchFilters(),
         "plan": None, "standalone_query": "", "effective_filters": SearchFilters(),
         "lexical_candidates": [], "semantic_candidates": [], "fused": [], "evidence": [],
-        "ranking_stage": "", "rerank_note": None, "clarification_attempts": 0, "clarification_question": None,
+        "ranking_stage": "", "rerank_note": None, "clarification_attempts": 0,
         "status": "", "answer": None, "citations": [],
     }
 
@@ -84,8 +86,8 @@ def route_after_plan(state: GraphState) -> Literal["scope_response", "clarify", 
     plan = state["plan"]
     if plan.intent == "out_of_scope":
         return "scope_response"
-    if plan.needs_clarification:
-        return "clarify"
+    if plan.needs_clarification and state["clarification_attempts"] < MAX_CLARIFICATIONS:
+        return "clarify"  # after the limit we stop asking and search the question as written
     return "retrieval"
 
 
@@ -97,7 +99,8 @@ def scope_response(state: GraphState) -> dict:
 
 @traced("clarify")
 def clarify(state: GraphState) -> dict:
-    """STUB for block 7: record that a clarification is needed. The real version pauses with interrupt()."""
-    return {"status": "needs_clarification", "answer": None,
-            "clarification_attempts": state.get("clarification_attempts", 0) + 1,
-            "clarification_question": state["plan"].clarification_question}
+    """Pause the graph and ask the user. On resume this node runs again from its first line, so before interrupt() it only reads state."""
+    question = state["plan"].clarification_question
+    reply = interrupt({"question": question})  # the run stops here; the resume value becomes `reply`
+    return {"clarification_attempts": state["clarification_attempts"] + 1,
+            "messages": [AIMessage(question), HumanMessage(str(reply))]}

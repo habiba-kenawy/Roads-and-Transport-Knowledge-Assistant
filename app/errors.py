@@ -13,5 +13,9 @@ class ModelCallError(Exception):
     """A model call failed (network, quota, timeout); the message names the error type only."""
 
 
+class InvalidResumeError(Exception):
+    """A resume for a thread with no pending clarification or the wrong interrupt id, or a new message to a thread that is waiting (HTTP 409)."""
+
+
 class ThreadBusyError(Exception):
     """A run is already in progress on this thread; the caller should retry when it finishes (HTTP 409)."""

@@ -12,13 +12,13 @@ graph TD;
 	answer(answer)
 	__end__([<p>__end__</p>]):::last
 	__start__ --> start_turn;
+	clarify --> plan_query;
 	plan_query -.-> clarify;
 	plan_query -.-> retrieval\3a__start__;
 	plan_query -.-> scope_response;
 	retrieval\3a__end__ --> answer;
 	start_turn --> plan_query;
 	answer --> __end__;
-	clarify --> __end__;
 	scope_response --> __end__;
 	subgraph retrieval
 	retrieval\3a__start__(<p>__start__</p>)

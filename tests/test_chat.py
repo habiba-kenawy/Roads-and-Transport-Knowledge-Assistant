@@ -10,12 +10,12 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.api import main
-from app.chat import make_checkpointer, run_chat, thread_lock
+from app.chat import make_checkpointer, resume_chat, run_chat, thread_lock
 from app.config import Settings
-from app.errors import IndexNotReadyError, ModelCallError, ModelNotConfiguredError, ThreadBusyError
+from app.errors import IndexNotReadyError, InvalidResumeError, ModelCallError, ModelNotConfiguredError, ThreadBusyError
 from app.graph.build import build_graph
 from app.graph.nodes import SCOPE_MESSAGE
-from app.schemas.chat import ChatRequest, ChatResponse
+from app.schemas.chat import ChatRequest, ChatResponse, ResumeRequest
 from app.schemas.plan import QueryPlan
 from tests.test_graph import GraphFakeLLM, plan
 from tests.test_search import INDEX, FakeEmbedder
@@ -100,11 +100,76 @@ def test_per_question_fields_do_not_leak_into_the_next_question_on_the_same_thre
     assert second.status == "out_of_scope" and second.answer == SCOPE_MESSAGE and second.citations == []
 
 
-def test_ambiguous_question_returns_the_clarification_to_ask(tmp_path) -> None:
-    """The response carries the question the user must answer (the real pause comes in block 7)."""
-    graph = make_graph(tmp_path / "c.sqlite", RecordingLLM(plan(clarify=True, question="Which law do you mean?")))
-    reply = chat(graph, "what is the fine?")
-    assert reply.status == "needs_clarification" and reply.clarification.question == "Which law do you mean?" and reply.citations == []
+ASK = plan(clarify=True, question="Which law do you mean?")
+
+
+def resume(graph, reply, answer: str = "the toll law", interrupt_id: str | None = None) -> ChatResponse:
+    """Answer the pending clarification of `reply` through the real resume service."""
+    return resume_chat(SETTINGS, ResumeRequest(thread_id=reply.thread_id, message=answer,
+                                               interrupt_id=interrupt_id or reply.clarification.interrupt_id), graph)
+
+
+def test_ambiguous_question_really_pauses_the_graph_and_returns_the_interrupt(tmp_path) -> None:
+    """7.1/8.2: the response names the pending interrupt and its question; the saved state is waiting at 'clarify'."""
+    graph = make_graph(tmp_path / "c.sqlite", RecordingLLM(ASK))
+    reply = chat(graph, "what is the fine?", thread_id="t-ask")
+    assert reply.status == "needs_clarification" and reply.answer is None and reply.citations == []
+    assert reply.clarification.question == "Which law do you mean?" and reply.clarification.interrupt_id
+    assert graph.get_state({"configurable": {"thread_id": "t-ask"}}).next == ("clarify",)
+
+
+def test_resume_continues_the_same_thread_and_the_planner_sees_the_clarification(tmp_path) -> None:
+    """7.1: the answer resumes the pending workflow (not a new unrelated run); the planner now sees question + reply."""
+    llm = RecordingLLM(ASK)
+    graph = make_graph(tmp_path / "c.sqlite", llm)
+    paused = chat(graph, "what is the fine?", thread_id="t-res")
+    llm.plan_result = plan()  # after the clarification the planner understands the question
+    done = resume(graph, paused, "the toll law")
+    assert done.thread_id == "t-res" and done.status == "answered" and done.citations and done.clarification is None
+    assert "what is the fine?" in llm.plan_prompts[1] and "the toll law" in llm.plan_prompts[1]
+    assert graph.get_state({"configurable": {"thread_id": "t-res"}}).next == ()
+
+
+def test_pending_clarification_survives_a_restart_and_can_be_resumed(tmp_path) -> None:
+    """AT-09: a brand-new graph on the same SQLite file resumes the thread that was paused before the 'restart'."""
+    path = tmp_path / "c.sqlite"
+    paused = chat(make_graph(path, RecordingLLM(ASK)), "what is the fine?", thread_id="t-restart")
+    done = resume(make_graph(path, RecordingLLM()), paused)
+    assert done.status == "answered" and done.thread_id == "t-restart"
+
+
+def test_invalid_resumes_are_rejected_and_do_not_disturb_the_pending_clarification(tmp_path) -> None:
+    """AT-11: unknown thread, finished thread and wrong interrupt id are refused; the right id still works afterwards."""
+    llm = RecordingLLM(ASK)
+    graph = make_graph(tmp_path / "c.sqlite", llm)
+    paused = chat(graph, "what is the fine?", thread_id="t-bad")
+    with pytest.raises(InvalidResumeError, match="no pending"):
+        resume_chat(SETTINGS, ResumeRequest(thread_id="never-seen", interrupt_id="x", message="hi"), graph)
+    with pytest.raises(InvalidResumeError, match="does not match"):
+        resume(graph, paused, interrupt_id="not-the-right-id")
+    llm.plan_result = plan()
+    assert resume(graph, paused).status == "answered"
+    with pytest.raises(InvalidResumeError, match="no pending"):  # the same resume a second time: nothing is waiting any more
+        resume(graph, paused)
+
+
+def test_a_new_message_on_a_paused_thread_is_refused(tmp_path) -> None:
+    """A new /chat message must not silently abandon the question we asked."""
+    graph = make_graph(tmp_path / "c.sqlite", RecordingLLM(ASK))
+    chat(graph, "what is the fine?", thread_id="t-wait")
+    with pytest.raises(InvalidResumeError, match="POST /chat/resume"):
+        chat(graph, "something else", thread_id="t-wait")
+
+
+def test_clarification_stops_after_two_attempts(tmp_path) -> None:
+    """7.2: a planner that always wants clarification is asked twice; the third time the question is searched as written."""
+    graph = make_graph(tmp_path / "c.sqlite", RecordingLLM(ASK))
+    reply = chat(graph, "what is the fine?", thread_id="t-cap")
+    reply = resume(graph, reply, "still vague")
+    assert reply.status == "needs_clarification"  # second clarification
+    reply = resume(graph, reply, "still vague again")
+    assert reply.status == "answered"  # limit reached: no third question
+    assert graph.get_state({"configurable": {"thread_id": "t-cap"}}).values["clarification_attempts"] == 2
 
 
 def test_a_second_request_on_a_busy_thread_is_refused_but_other_threads_are_not() -> None:
@@ -151,6 +216,26 @@ client = TestClient(main.app)
 def test_chat_route_rejects_invalid_requests_with_422(body) -> None:
     """AT-11: empty message, over-length message, bad thread id, unsupported mode, invalid filters, unknown fields."""
     assert client.post("/chat", json=body).status_code == 422
+
+
+@pytest.mark.parametrize("body", [
+    {"thread_id": "t1", "interrupt_id": "abc", "message": ""}, {"thread_id": "t1", "message": "hi"}, {"interrupt_id": "abc", "message": "hi"},
+    {"thread_id": "bad id", "interrupt_id": "abc", "message": "hi"}, {"thread_id": "t1", "interrupt_id": "abc", "message": "x" * 2001},
+    {"thread_id": "t1", "interrupt_id": "abc", "message": "hi", "extra": 1},
+])
+def test_resume_route_rejects_invalid_requests_with_422(body) -> None:
+    """AT-11: empty clarification, missing thread or interrupt id, bad thread id, over-length and unknown fields."""
+    assert client.post("/chat/resume", json=body).status_code == 422
+
+
+def test_resume_route_maps_an_invalid_resume_to_409(monkeypatch) -> None:
+    """AT-11: the route turns InvalidResumeError into a controlled 409 with the reason."""
+    def refuse(settings, req):
+        raise InvalidResumeError("thread t1 has no pending clarification")
+
+    monkeypatch.setattr(main, "resume_chat", refuse)
+    response = client.post("/chat/resume", json={"thread_id": "t1", "interrupt_id": "abc", "message": "hi"})
+    assert response.status_code == 409 and response.json()["detail"] == "thread t1 has no pending clarification"
 
 
 def test_chat_route_returns_the_service_response_and_maps_errors(monkeypatch) -> None:

@@ -32,8 +32,7 @@ class GraphState(TypedDict, total=False):
     evidence: list[RankedChunk]  # the final chunks the answer may use
     ranking_stage: str
     rerank_note: str | None
-    clarification_attempts: int
-    clarification_question: str | None
+    clarification_attempts: int  # the interrupt payload carries the question itself
     status: str
     answer: str | None
     citations: list[Citation]  # verified sources of the answer; empty unless status is 'answered'

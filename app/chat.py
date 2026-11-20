@@ -10,15 +10,16 @@ from typing import Iterator
 from langchain_core.messages import HumanMessage
 from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
 from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.types import Command
 
 from app.config import Settings
-from app.errors import ThreadBusyError
+from app.errors import InvalidResumeError, ThreadBusyError
 from app.graph.build import build_graph
 from app.graph.tracing import request_context
 from app.llm import make_chat_model
 from app.retrieval.embeddings import make_embedder
 from app.retrieval.search import INDEX_CACHE
-from app.schemas.chat import ChatRequest, ChatResponse, Clarification
+from app.schemas.chat import ChatRequest, ChatResponse, Clarification, ResumeRequest
 
 logger = logging.getLogger(__name__)
 
@@ -61,24 +62,52 @@ def thread_lock(thread_id: str) -> Iterator[None]:
 
 
 def to_response(state: dict, thread_id: str, request_id: str) -> ChatResponse:
-    """Turn the graph's final state into the public response."""
-    status = state["status"]
-    clarification = Clarification(question=state["clarification_question"]) if status == "needs_clarification" else None
-    return ChatResponse(thread_id=thread_id, status=status, answer=state.get("answer"), citations=state.get("citations", []),
-                        clarification=clarification, request_id=request_id)
+    """Turn the graph's result into the public response; a paused graph has '__interrupt__' instead of a final state."""
+    if "__interrupt__" in state:
+        pending = state["__interrupt__"][0]
+        return ChatResponse(thread_id=thread_id, status="needs_clarification", answer=None, citations=[], request_id=request_id,
+                            clarification=Clarification(interrupt_id=pending.id, question=pending.value["question"]))
+    return ChatResponse(thread_id=thread_id, status=state["status"], answer=state.get("answer"), citations=state.get("citations", []),
+                        clarification=None, request_id=request_id)
+
+
+def pending_interrupts(graph, thread_id: str) -> list:
+    """Read the thread's saved state and return the interrupts it is waiting on (empty when it is not paused)."""
+    snapshot = graph.get_state({"configurable": {"thread_id": thread_id}})
+    return [i for task in snapshot.tasks for i in task.interrupts]
+
+
+def execute(graph, thread_id: str, graph_input) -> ChatResponse:
+    """Run (or resume) the graph on a thread, with request_id and thread_id in every log line. The caller holds the thread lock."""
+    request_id = uuid.uuid4().hex[:12]
+    token = request_context.set({"request_id": request_id, "thread_id": thread_id})
+    try:
+        state = graph.invoke(graph_input, {"configurable": {"thread_id": thread_id}})
+    finally:
+        request_context.reset(token)
+    response = to_response(state, thread_id, request_id)
+    logger.info("chat done request_id=%s thread_id=%s status=%s", request_id, thread_id, response.status)
+    return response
 
 
 def run_chat(settings: Settings, request: ChatRequest, graph=None) -> ChatResponse:
     """Run one user message on its thread (generating a thread id if none was sent) and return the structured reply."""
     thread_id = request.thread_id or uuid.uuid4().hex
-    request_id = uuid.uuid4().hex[:12]
     graph = graph or get_graph(settings)
     with thread_lock(thread_id):
-        token = request_context.set({"request_id": request_id, "thread_id": thread_id})
-        try:
-            state = graph.invoke({"messages": [HumanMessage(request.message)], "search_mode": request.search_mode,
-                                  "filters": request.filters}, {"configurable": {"thread_id": thread_id}})
-        finally:
-            request_context.reset(token)
-    logger.info("chat done request_id=%s thread_id=%s status=%s", request_id, thread_id, state["status"])
-    return to_response(state, thread_id, request_id)
+        if pending_interrupts(graph, thread_id):  # a new message would silently abandon the question we asked
+            raise InvalidResumeError(f"thread {thread_id} is waiting for a clarification; answer it with POST /chat/resume")
+        return execute(graph, thread_id, {"messages": [HumanMessage(request.message)], "search_mode": request.search_mode,
+                                          "filters": request.filters})
+
+
+def resume_chat(settings: Settings, request: ResumeRequest, graph=None) -> ChatResponse:
+    """Continue a paused thread with the user's clarification; LangGraph would accept a resume on ANY thread, so we check first."""
+    graph = graph or get_graph(settings)
+    with thread_lock(request.thread_id):
+        pending = pending_interrupts(graph, request.thread_id)
+        if not pending:
+            raise InvalidResumeError(f"thread {request.thread_id} has no pending clarification")
+        if pending[0].id != request.interrupt_id:
+            raise InvalidResumeError(f"interrupt_id does not match the pending clarification of thread {request.thread_id}")
+        return execute(graph, request.thread_id, Command(resume={request.interrupt_id: request.message}))

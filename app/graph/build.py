@@ -25,6 +25,7 @@ def build_graph(settings: Settings, get_index: Callable[[], SearchIndex], embedd
     b.add_edge("start_turn", "plan_query")
     b.add_conditional_edges("plan_query", route_after_plan, {"scope_response": "scope_response", "clarify": "clarify", "retrieval": "retrieval"})
     b.add_edge("retrieval", "answer")
-    for last in ("answer", "scope_response", "clarify"):
+    b.add_edge("clarify", "plan_query")  # after the user's reply, plan again; route_after_plan caps this loop at 2
+    for last in ("answer", "scope_response"):
         b.add_edge(last, END)
     return b.compile(checkpointer=checkpointer)

@@ -21,20 +21,20 @@ verification: statements=7 kept=7 unknown_id=0 quote_mismatch=0 retried=False
 trace (seconds since run start):
   + 0.003s node=start_turn event=start mode=hybrid request_id=- thread_id=-
   + 0.003s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0 request_id=- thread_id=-
-  + 0.003s node=plan_query event=start mode=hybrid request_id=- thread_id=-
-  + 1.281s node=plan_query event=end seconds=1.278  request_id=- thread_id=-
-  + 1.285s node=lexical_node event=start mode=hybrid request_id=- thread_id=-
-  + 1.285s node=semantic_node event=start mode=hybrid request_id=- thread_id=-
-  + 1.294s node=lexical_node event=end seconds=0.009 lexical_candidates=20 request_id=- thread_id=-
-  + 1.672s node=semantic_node event=end seconds=0.387 semantic_candidates=20 request_id=- thread_id=-
-  + 1.673s node=fuse_node event=start mode=hybrid request_id=- thread_id=-
-  + 1.673s node=fuse_node event=end seconds=0.000 fused=20 request_id=- thread_id=-
-  + 1.674s node=rerank_node event=start mode=hybrid request_id=- thread_id=-
-  + 4.437s node=rerank_node event=end seconds=2.763 evidence=5 request_id=- thread_id=-
-  + 4.439s node=answer event=start mode=hybrid request_id=- thread_id=-
-  + 8.782s node=answer event=end seconds=4.343 citations=3 messages=1 request_id=- thread_id=-
-overlap: lexical 1.285-1.294s, semantic 1.285-1.672s -> started together (within 1 ms): True; semantic started before lexical ended: True
-join: fuse started at 1.673s, after both branches ended (1.672s): True; fuse start events: 1
+  + 0.004s node=plan_query event=start mode=hybrid request_id=- thread_id=-
+  + 1.650s node=plan_query event=end seconds=1.646  request_id=- thread_id=-
+  + 1.655s node=lexical_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.655s node=semantic_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.664s node=lexical_node event=end seconds=0.009 lexical_candidates=20 request_id=- thread_id=-
+  + 2.204s node=semantic_node event=end seconds=0.549 semantic_candidates=20 request_id=- thread_id=-
+  + 2.206s node=fuse_node event=start mode=hybrid request_id=- thread_id=-
+  + 2.206s node=fuse_node event=end seconds=0.000 fused=20 request_id=- thread_id=-
+  + 2.208s node=rerank_node event=start mode=hybrid request_id=- thread_id=-
+  + 5.906s node=rerank_node event=end seconds=3.698 evidence=5 request_id=- thread_id=-
+  + 5.909s node=answer event=start mode=hybrid request_id=- thread_id=-
+  + 9.449s node=answer event=end seconds=3.540 citations=3 messages=1 request_id=- thread_id=-
+overlap: lexical 1.655-1.664s, semantic 1.655-2.204s -> started together (within 0 ms): True; semantic started before lexical ended: True
+join: fuse started at 2.206s, after both branches ended (2.204s): True; fuse start events: 1
 order BEFORE rerank (fused RRF): dlp-1432-001-44caaf5f, dlp-1432-000-82e5035a, dlp-1432-002-f16113aa, dlp-178-019-5aa69deb, dlp-1941-002-f280ec85, dlp-237-004-405cd625, dlp-1464-012-34f43fba, dlp-1432-003-f262e976
 order AFTER rerank (final top 5):  dlp-1432-001-44caaf5f[10], dlp-1432-002-f16113aa[3], dlp-1432-000-82e5035a[2], dlp-1432-003-f262e976[1], dlp-178-019-5aa69deb[0]
 
@@ -43,7 +43,7 @@ question: 'Do I need a permit to import or sell a drone in Dubai?'  (history mes
 plan: intent=legal_question standalone_query='Do I need a permit to import or sell a drone in Dubai?' filters={'year': None, 'doc_type': None} needs_clarification=False clarification_question=None
 status=answered ranking_stage='reranked' rerank_note=None
 ANSWER:
-  | No Person may import, bring in, or sell Unmanned Aircraft or any parts or systems thereof in the Emirate without first obtaining the relevant Permit from the DCAA [1]. A Person who commits importing, bringing in, or selling Unmanned Aircraft or any parts or systems thereof in the Emirate without obtaining a Permit from the DCAA will be punished by imprisonment, by a fine, or by both penalties [2]. No Person may pilot or use Unmanned Aircraft; conduct Operations or Related Activities; or construct any Infrastructure or Unmanned Aircraft Airport in the Emirate, without first obtaining the relevant Permit from the DCAA [3]. No Person may operate, assist in operating, or monitor the operation of Unmanned Aircraft or perform any work related to their operating systems unless that Person is qualified to do so and holds a relevant Permit from the DCAA [4]. The Director General may, based on valid reasons and in coordination with concerned entities, exempt certain types of Unmanned Aircraft from compliance with the provisions of paragraphs (a) and (b) of this Article [1]. Any Person owning an Unmanned Aircraft must register it with the DCAA in accordance with the provisions of this Law and the resolutions issued in pursuance hereof [1]. The resolutions issued in implementation of this Law will determine the conditions and requirements for issuing such a Permit to pilot or use Unmanned Aircraft [3]. The Director General will issue a list of the activities that may be conducted using Unmanned Aircraft, the conditions for such use, and the obligations of Operators [5].
+  | No Person may import, bring in, or sell Unmanned Aircraft or any parts or systems thereof in the Emirate without first obtaining the relevant Permit from the DCAA [1]. A Person who commits importing, bringing in, or selling Unmanned Aircraft or any parts or systems thereof in the Emirate without obtaining a Permit from the DCAA will be punished by imprisonment, by a fine, or by both penalties [2]. No Person may pilot or use Unmanned Aircraft; conduct Operations or Related Activities; or construct any Infrastructure or Unmanned Aircraft Airport in the Emirate, without first obtaining the relevant Permit from the DCAA [3]. No Person may operate, assist in operating, or monitor the operation of Unmanned Aircraft or perform any work related to their operating systems unless that Person is qualified to do so and holds a relevant Permit from the DCAA [4].
   | 
   | Note: "Law No. (4) of 2020 Regulating Unmanned Aircraft in the Emirate of Dubai" has the status "In Force as Amended" on the Dubai Legislation Portal.
   | This is not legal advice. The indexed documents are a limited set and may not be complete or current.
@@ -59,27 +59,24 @@ ANSWER:
   citation [4]: document_id=dlp-1718 chunk_id=dlp-1718-032-56754e63 locator_type=page locator='pp. 14-15'
                title='Law No. (4) of 2020 Regulating Unmanned Aircraft in the Emirate of Dubai'
                source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoNCk...
-  citation [5]: document_id=dlp-1718 chunk_id=dlp-1718-025-4e0a5fd5 locator_type=page locator='p. 12'
-               title='Law No. (4) of 2020 Regulating Unmanned Aircraft in the Emirate of Dubai'
-               source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoNCk...
-verification: statements=8 kept=8 unknown_id=0 quote_mismatch=0 retried=False
+verification: statements=4 kept=4 unknown_id=0 quote_mismatch=0 retried=False
 trace (seconds since run start):
-  + 0.001s node=start_turn event=start mode=hybrid request_id=- thread_id=-
-  + 0.001s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0 request_id=- thread_id=-
-  + 0.002s node=plan_query event=start mode=hybrid request_id=- thread_id=-
-  + 1.287s node=plan_query event=end seconds=1.284  request_id=- thread_id=-
-  + 1.290s node=lexical_node event=start mode=hybrid request_id=- thread_id=-
-  + 1.292s node=semantic_node event=start mode=hybrid request_id=- thread_id=-
-  + 1.299s node=lexical_node event=end seconds=0.009 lexical_candidates=20 request_id=- thread_id=-
-  + 1.732s node=semantic_node event=end seconds=0.440 semantic_candidates=20 request_id=- thread_id=-
-  + 1.733s node=fuse_node event=start mode=hybrid request_id=- thread_id=-
-  + 1.733s node=fuse_node event=end seconds=0.000 fused=20 request_id=- thread_id=-
-  + 1.733s node=rerank_node event=start mode=hybrid request_id=- thread_id=-
-  + 3.592s node=rerank_node event=end seconds=1.858 evidence=5 request_id=- thread_id=-
-  + 3.593s node=answer event=start mode=hybrid request_id=- thread_id=-
-  +10.797s node=answer event=end seconds=7.203 citations=5 messages=1 request_id=- thread_id=-
-overlap: lexical 1.290-1.299s, semantic 1.292-1.732s -> started together (within 2 ms): True; semantic started before lexical ended: True
-join: fuse started at 1.733s, after both branches ended (1.732s): True; fuse start events: 1
+  + 0.003s node=start_turn event=start mode=hybrid request_id=- thread_id=-
+  + 0.003s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0 request_id=- thread_id=-
+  + 0.004s node=plan_query event=start mode=hybrid request_id=- thread_id=-
+  + 1.140s node=plan_query event=end seconds=1.136  request_id=- thread_id=-
+  + 1.144s node=semantic_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.144s node=lexical_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.152s node=lexical_node event=end seconds=0.008 lexical_candidates=20 request_id=- thread_id=-
+  + 1.789s node=semantic_node event=end seconds=0.645 semantic_candidates=20 request_id=- thread_id=-
+  + 1.790s node=fuse_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.791s node=fuse_node event=end seconds=0.001 fused=20 request_id=- thread_id=-
+  + 1.793s node=rerank_node event=start mode=hybrid request_id=- thread_id=-
+  + 4.210s node=rerank_node event=end seconds=2.416 evidence=5 request_id=- thread_id=-
+  + 4.212s node=answer event=start mode=hybrid request_id=- thread_id=-
+  + 7.968s node=answer event=end seconds=3.756 citations=4 messages=1 request_id=- thread_id=-
+overlap: lexical 1.144-1.152s, semantic 1.144-1.789s -> started together (within 0 ms): True; semantic started before lexical ended: True
+join: fuse started at 1.790s, after both branches ended (1.789s): True; fuse start events: 1
 order BEFORE rerank (fused RRF): dlp-1718-028-083127b7, dlp-1718-035-28e318f0, dlp-1834-010-4fc5f6ad, dlp-1718-024-75325abe, dlp-1718-032-56754e63, dlp-13-003-f7de5fc8, dlp-1718-037-ab845232, dlp-1685-039-2d60eb6f
 order AFTER rerank (final top 5):  dlp-1718-028-083127b7[10], dlp-1718-059-6da8ff0c[9], dlp-1718-024-75325abe[7], dlp-1718-032-56754e63[5], dlp-1718-025-4e0a5fd5[3]
 
@@ -88,7 +85,7 @@ question: 'Can a driver carry passengers in a vehicle that the licensing authori
 plan: intent=legal_question standalone_query='Can a driver carry passengers in a vehicle not licensed by the authority to transport passengers?' filters={'year': None, 'doc_type': None} needs_clarification=False clarification_question=None
 status=answered ranking_stage='reranked' rerank_note=None
 ANSWER:
-  | Drivers of vehicles which are not licensed by the Licensing Authority to transport passengers must not transport them within the Emirate or from the Emirate to outside destinations [1]. A temporary authorisation to transport passengers from the Emirate to other emirates by taxicabs that are not licensed in the Emirate will be issued subject to the following conditions [2]. The temporary authorisation applicant must be an establishment licensed by the competent entity in the other emirate to conduct the activity of transporting passengers by taxicabs [2]. The cars of the temporary authorisation applicant must be licensed as taxicabs and must meet the requirements and specifications adopted in the emirate in which they are licensed [2]. The drivers of taxicabs must be employed by the temporary authorisation applicant and must be authorised to drive these taxicabs in the emirate in which the taxicabs are licensed [2]. An undertaking to pick up passengers only from the locations designated by the RTA for re-transporting passengers from the Emirate must be submitted [3]. The fee prescribed for issuing the temporary authorisation must be paid [3]. Drivers of Taxicabs or On-demand Taxicabs may not transport passengers without obtaining relevant permit from the RTA [4].
+  | Drivers of vehicles which are not licensed by the Licensing Authority to transport passengers must not transport them within the Emirate or from the Emirate to outside destinations [1]. A temporary authorisation to transport passengers from the Emirate to other emirates by taxicabs that are not licensed in the Emirate will be issued subject to the following conditions [2]. The temporary authorisation applicant must be an establishment licensed by the competent entity in the other emirate to conduct the activity of transporting passengers by taxicabs [2]. The cars of the temporary authorisation applicant must be licensed as taxicabs and must meet the requirements and specifications adopted in the emirate in which they are licensed [2]. The taxicabs must be owned by the temporary authorisation applicant [2]. The drivers of taxicabs must be employed by the temporary authorisation applicant and must be authorised to drive these taxicabs in the emirate in which the taxicabs are licensed [2]. An undertaking to pick up passengers only from the locations designated by the RTA for re-transporting passengers from the Emirate must be submitted [3]. Drivers of Taxicabs or On-demand Taxicabs may not transport passengers without obtaining relevant permit from the RTA [4].
   | 
   | Note: "Regulation No. (1) of 2007 Concerning Passenger Transport by Taxicabs in the Emirate of Dubai" has the status "Not in Force" on the Dubai Legislation Portal.
   | This is not legal advice. The indexed documents are a limited set and may not be complete or current.
@@ -106,22 +103,22 @@ ANSWER:
                source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=UmVndWxhdGlvbiB...
 verification: statements=8 kept=8 unknown_id=0 quote_mismatch=0 retried=False
 trace (seconds since run start):
-  + 0.001s node=start_turn event=start mode=hybrid request_id=- thread_id=-
-  + 0.001s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0 request_id=- thread_id=-
-  + 0.002s node=plan_query event=start mode=hybrid request_id=- thread_id=-
-  + 1.336s node=plan_query event=end seconds=1.334  request_id=- thread_id=-
-  + 1.339s node=lexical_node event=start mode=hybrid request_id=- thread_id=-
-  + 1.339s node=semantic_node event=start mode=hybrid request_id=- thread_id=-
-  + 1.348s node=lexical_node event=end seconds=0.009 lexical_candidates=20 request_id=- thread_id=-
-  + 1.773s node=semantic_node event=end seconds=0.434 semantic_candidates=20 request_id=- thread_id=-
-  + 1.774s node=fuse_node event=start mode=hybrid request_id=- thread_id=-
-  + 1.774s node=fuse_node event=end seconds=0.000 fused=20 request_id=- thread_id=-
-  + 1.775s node=rerank_node event=start mode=hybrid request_id=- thread_id=-
-  + 4.610s node=rerank_node event=end seconds=2.835 evidence=5 request_id=- thread_id=-
-  + 4.612s node=answer event=start mode=hybrid request_id=- thread_id=-
-  + 9.404s node=answer event=end seconds=4.791 citations=4 messages=1 request_id=- thread_id=-
-overlap: lexical 1.339-1.348s, semantic 1.339-1.773s -> started together (within 1 ms): True; semantic started before lexical ended: True
-join: fuse started at 1.774s, after both branches ended (1.773s): True; fuse start events: 1
+  + 0.003s node=start_turn event=start mode=hybrid request_id=- thread_id=-
+  + 0.003s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0 request_id=- thread_id=-
+  + 0.004s node=plan_query event=start mode=hybrid request_id=- thread_id=-
+  + 1.405s node=plan_query event=end seconds=1.401  request_id=- thread_id=-
+  + 1.409s node=lexical_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.409s node=semantic_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.419s node=lexical_node event=end seconds=0.009 lexical_candidates=20 request_id=- thread_id=-
+  + 1.962s node=semantic_node event=end seconds=0.552 semantic_candidates=20 request_id=- thread_id=-
+  + 1.963s node=fuse_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.963s node=fuse_node event=end seconds=0.000 fused=20 request_id=- thread_id=-
+  + 1.965s node=rerank_node event=start mode=hybrid request_id=- thread_id=-
+  + 4.224s node=rerank_node event=end seconds=2.258 evidence=5 request_id=- thread_id=-
+  + 4.227s node=answer event=start mode=hybrid request_id=- thread_id=-
+  + 9.774s node=answer event=end seconds=5.547 citations=4 messages=1 request_id=- thread_id=-
+overlap: lexical 1.409-1.419s, semantic 1.409-1.962s -> started together (within 0 ms): True; semantic started before lexical ended: True
+join: fuse started at 1.963s, after both branches ended (1.962s): True; fuse start events: 1
 order BEFORE rerank (fused RRF): dlp-190-002-9bde79aa, dlp-1464-013-dcc546e9, dlp-1464-014-050ccf03, dlp-1918-005-0069434a, dlp-1464-015-ca3dc0e0, dlp-777-001-d03a25da, dlp-1464-003-af810bd9, dlp-190-003-b0144605
 order AFTER rerank (final top 5):  dlp-190-002-9bde79aa[10], dlp-1464-013-dcc546e9[6], dlp-1464-014-050ccf03[6], dlp-1464-015-ca3dc0e0[6], dlp-190-003-b0144605[3]
 
@@ -132,24 +129,24 @@ status=insufficient_evidence ranking_stage='reranked' rerank_note=None
 ANSWER:
   | The indexed documents do not contain enough evidence to answer this question. This is not legal advice.
 trace (seconds since run start):
-  + 0.001s node=start_turn event=start mode=hybrid request_id=- thread_id=-
-  + 0.001s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0 request_id=- thread_id=-
-  + 0.002s node=plan_query event=start mode=hybrid request_id=- thread_id=-
-  + 1.307s node=plan_query event=end seconds=1.305  request_id=- thread_id=-
-  + 1.311s node=lexical_node event=start mode=hybrid request_id=- thread_id=-
-  + 1.312s node=semantic_node event=start mode=hybrid request_id=- thread_id=-
-  + 1.319s node=lexical_node event=end seconds=0.009 lexical_candidates=20 request_id=- thread_id=-
-  + 1.640s node=semantic_node event=end seconds=0.328 semantic_candidates=20 request_id=- thread_id=-
-  + 1.641s node=fuse_node event=start mode=hybrid request_id=- thread_id=-
-  + 1.641s node=fuse_node event=end seconds=0.000 fused=20 request_id=- thread_id=-
-  + 1.641s node=rerank_node event=start mode=hybrid request_id=- thread_id=-
-  + 3.757s node=rerank_node event=end seconds=2.116 evidence=5 request_id=- thread_id=-
-  + 3.759s node=answer event=start mode=hybrid request_id=- thread_id=-
-  + 4.527s node=answer event=end seconds=0.768 citations=0 messages=1 request_id=- thread_id=-
-overlap: lexical 1.311-1.319s, semantic 1.312-1.640s -> started together (within 1 ms): True; semantic started before lexical ended: True
-join: fuse started at 1.641s, after both branches ended (1.640s): True; fuse start events: 1
+  + 0.003s node=start_turn event=start mode=hybrid request_id=- thread_id=-
+  + 0.003s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0 request_id=- thread_id=-
+  + 0.004s node=plan_query event=start mode=hybrid request_id=- thread_id=-
+  + 1.285s node=plan_query event=end seconds=1.281  request_id=- thread_id=-
+  + 1.289s node=lexical_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.290s node=semantic_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.298s node=lexical_node event=end seconds=0.008 lexical_candidates=20 request_id=- thread_id=-
+  + 1.959s node=semantic_node event=end seconds=0.669 semantic_candidates=20 request_id=- thread_id=-
+  + 1.960s node=fuse_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.960s node=fuse_node event=end seconds=0.000 fused=20 request_id=- thread_id=-
+  + 1.963s node=rerank_node event=start mode=hybrid request_id=- thread_id=-
+  + 4.093s node=rerank_node event=end seconds=2.130 evidence=5 request_id=- thread_id=-
+  + 4.095s node=answer event=start mode=hybrid request_id=- thread_id=-
+  + 4.845s node=answer event=end seconds=0.750 citations=0 messages=1 request_id=- thread_id=-
+overlap: lexical 1.289-1.298s, semantic 1.290-1.959s -> started together (within 0 ms): True; semantic started before lexical ended: True
+join: fuse started at 1.960s, after both branches ended (1.959s): True; fuse start events: 1
 order BEFORE rerank (fused RRF): dlp-1817-009-0908c200, dlp-1941-002-f280ec85, dlp-1546-019-67848386, dlp-190-006-ed96e053, dlp-1685-059-dc24be92, dlp-1525-028-13c67ffd, dlp-168-012-139797ea, dlp-1817-007-7b23d03f
-order AFTER rerank (final top 5):  dlp-1546-029-69a3b5b4[3], dlp-190-006-ed96e053[2], dlp-1817-009-0908c200[1], dlp-1546-019-67848386[1], dlp-1525-028-13c67ffd[1]
+order AFTER rerank (final top 5):  dlp-1546-029-69a3b5b4[2], dlp-1817-009-0908c200[1], dlp-1546-019-67848386[1], dlp-190-006-ed96e053[1], dlp-1525-028-13c67ffd[1]
 
 === AT-07b unrelated question, expect out_of_scope
 question: 'What is a good recipe for pasta carbonara?'  (history messages: 0, mode: hybrid)
@@ -158,13 +155,13 @@ status=out_of_scope ranking_stage='' rerank_note=None
 ANSWER:
   | I can only help with questions about Dubai Roads and Transport legislation in the indexed documents. This is not legal advice.
 trace (seconds since run start):
-  + 0.001s node=start_turn event=start mode=hybrid request_id=- thread_id=-
-  + 0.001s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0 request_id=- thread_id=-
-  + 0.002s node=plan_query event=start mode=hybrid request_id=- thread_id=-
-  + 1.222s node=plan_query event=end seconds=1.220  request_id=- thread_id=-
-  + 1.223s node=scope_response event=start mode=hybrid request_id=- thread_id=-
-  + 1.223s node=scope_response event=end seconds=0.000 messages=1 request_id=- thread_id=-
+  + 0.003s node=start_turn event=start mode=hybrid request_id=- thread_id=-
+  + 0.003s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0 request_id=- thread_id=-
+  + 0.004s node=plan_query event=start mode=hybrid request_id=- thread_id=-
+  + 1.186s node=plan_query event=end seconds=1.182  request_id=- thread_id=-
+  + 1.187s node=scope_response event=start mode=hybrid request_id=- thread_id=-
+  + 1.187s node=scope_response event=end seconds=0.000 messages=1 request_id=- thread_id=-
 
 === citation verification across the 10 evaluation questions
 statuses over 10 evaluation questions: {'answered': 10}
-model statements: 65 | kept after verification: 62 | dropped, chunk id not among the evidence: 0 | dropped, quote not found in that chunk: 3
+model statements: 65 | kept after verification: 64 | dropped, chunk id not among the evidence: 0 | dropped, quote not found in that chunk: 1

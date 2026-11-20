@@ -7,17 +7,20 @@ import json
 import logging
 import re
 import time
+import uuid
 from pathlib import Path
 
 from langchain_core.messages import AIMessage, HumanMessage
+from langgraph.checkpoint.memory import InMemorySaver
 
-from app.chat import make_checkpointer, run_chat
+from app.chat import make_checkpointer, pending_interrupts, resume_chat, run_chat
 from app.config import Settings
 from app.graph.build import build_graph
 from app.llm import make_chat_model
 from app.retrieval.embeddings import make_embedder
 from app.retrieval.search import INDEX_CACHE
-from app.schemas.chat import ChatRequest
+from app.errors import InvalidResumeError
+from app.schemas.chat import ChatRequest, ResumeRequest
 
 LOGGERS = ("graph", "app.graph.nodes", "app.graph.answer")
 
@@ -41,7 +44,7 @@ def invoke_with_logs(graph, messages: list, mode: str = "hybrid") -> tuple[dict,
         logging.getLogger(name).setLevel(logging.INFO)
         logging.getLogger(name).addHandler(collector)
     try:
-        out = graph.invoke({"messages": messages, "search_mode": mode, "top_k": 5})
+        out = graph.invoke({"messages": messages, "search_mode": mode, "top_k": 5}, {"configurable": {"thread_id": uuid.uuid4().hex}})
     finally:
         for name in LOGGERS:
             logging.getLogger(name).removeHandler(collector)
@@ -88,7 +91,8 @@ def verification_totals(graph, questions: list[dict]) -> list[str]:
     statuses: dict[str, int] = {}
     for q in questions:
         out, collector = invoke_with_logs(graph, [HumanMessage(q["question"])])
-        statuses[out["status"]] = statuses.get(out["status"], 0) + 1
+        status = out.get("status", "needs_clarification")  # a paused run has no final status
+        statuses[status] = statuses.get(status, 0) + 1
         for _, message in collector.rows:
             if message.startswith("answer verified"):
                 for key, value in re.findall(r"(\w+)=(\d+)", message):
@@ -122,7 +126,6 @@ def trace_cases(graph) -> list[str]:
                       [HumanMessage("What is the departure fee at Dubai airports?"), AIMessage("The departure fee is AED 75 per passenger."),
                        HumanMessage("Who is exempt from it?")])
     lines += run_case(graph, "3. out-of-scope question", [HumanMessage("What is a good recipe for pasta carbonara?")])
-    lines += run_case(graph, "4. ambiguous question", [HumanMessage("What is the fine?")])
     return lines
 
 
@@ -163,13 +166,75 @@ def memory_cases(settings: Settings) -> list[str]:
     return lines
 
 
+def interrupt_cases(settings: Settings) -> list[str]:
+    """AT-09/AT-11: a real pause, a simulated restart, invalid resumes refused, then the resume (real models, demo checkpoint file)."""
+    demo_db, thread = Path("data/checkpoints_demo.sqlite"), "demo-interrupt"
+
+    def new_graph():
+        return build_graph(settings, lambda: INDEX_CACHE.get(settings), make_embedder(settings), make_chat_model(settings),
+                           checkpointer=make_checkpointer(str(demo_db)))
+
+    def waiting(graph) -> str:
+        state = graph.get_state({"configurable": {"thread_id": thread}})
+        pending = [(i.id, i.value) for i in pending_interrupts(graph, thread)]
+        return f"saved state: next={state.next} pending_interrupts={pending} saved_messages={len(state.values.get('messages', []))}"
+
+    collector = Collector()
+    for name in LOGGERS:
+        logging.getLogger(name).setLevel(logging.INFO)
+        logging.getLogger(name).addHandler(collector)
+    lines = ["AT-09 interrupt and restart, AT-11 invalid resumes (real models; checkpoint file: data/checkpoints_demo.sqlite)\n"]
+    graph = new_graph()
+    paused = run_chat(settings, ChatRequest(message="What is the fine?", thread_id=thread), graph)
+    lines += ["--- 1. ambiguous question 'What is the fine?' on a new thread",
+              f"status={paused.status} thread_id={paused.thread_id} request_id={paused.request_id}",
+              f"clarification: interrupt_id={paused.clarification.interrupt_id} question={paused.clarification.question!r}", waiting(graph), ""]
+    lines += ["--- 2. simulated restart: a brand-new graph and a brand-new connection to the same file", waiting(new_graph()), ""]
+    restarted = new_graph()
+    lines.append("--- 3. invalid resumes are refused (AT-11)")
+    for label, request in (("unknown thread", ResumeRequest(thread_id="never-seen", interrupt_id="x", message="hi")),
+                           ("wrong interrupt id", ResumeRequest(thread_id=thread, interrupt_id="not-the-right-id", message="hi"))):
+        try:
+            resume_chat(settings, request, restarted)
+            lines.append(f"{label}: UNEXPECTEDLY ACCEPTED")
+        except InvalidResumeError as exc:
+            lines.append(f"{label}: refused (HTTP 409): {exc}")
+    try:
+        run_chat(settings, ChatRequest(message="a new message", thread_id=thread), restarted)
+        lines.append("new message on the paused thread: UNEXPECTEDLY ACCEPTED")
+    except InvalidResumeError as exc:
+        lines.append(f"new message on the paused thread: refused (HTTP 409): {exc}")
+    lines += [waiting(restarted) + "   <- still waiting, untouched by the refused requests", ""]
+    answer = "I mean the fees for passengers leaving through Dubai airports"
+    done = resume_chat(settings, ResumeRequest(thread_id=thread, interrupt_id=paused.clarification.interrupt_id, message=answer), restarted)
+    values = restarted.get_state({"configurable": {"thread_id": thread}}).values
+    lines += [f"--- 4. resume on the restarted service with the SAME thread_id and the interrupt id from step 1: {answer!r}",
+              f"status={done.status} thread_id={done.thread_id} citations={len(done.citations)} request_id={done.request_id}",
+              f"planner's standalone_query after the clarification: {values['standalone_query']!r}",
+              f"clarification_attempts={values['clarification_attempts']}", f"answer: {(done.answer or '').splitlines()[0][:200]}", waiting(restarted), ""]
+    try:
+        resume_chat(settings, ResumeRequest(thread_id=thread, interrupt_id=paused.clarification.interrupt_id, message="again"), restarted)
+        lines.append("--- 5. resuming the finished thread again: UNEXPECTEDLY ACCEPTED")
+    except InvalidResumeError as exc:
+        lines.append(f"--- 5. resuming the finished thread again is refused (HTTP 409): {exc}")
+    starts = [f"+{t:6.3f}s {m.split(' request_id')[0]}" for t, m in collector.rows if m.startswith("node=clarify event=")]
+    lines += ["", "--- clarify node log lines (it STARTS twice but ENDS once: on resume the node runs again from its first line)"] + starts
+    for name in LOGGERS:
+        logging.getLogger(name).removeHandler(collector)
+    return lines
+
+
 def main() -> None:
-    """Write the AT-06/07 answer evidence, the AT-08 memory evidence, the AT-05 trace, and export the graph picture."""
+    """Write the AT-06/07 answer, AT-08 memory and AT-09 interrupt evidence, the AT-05 trace, and export the graph picture."""
     settings = Settings()
     memory = "\n".join(memory_cases(settings))
     print(memory)
     Path("evidence/AT-08_memory.txt").write_text(memory + "\n", encoding="utf-8")
-    graph = build_graph(settings, lambda: INDEX_CACHE.get(settings), make_embedder(settings), make_chat_model(settings))
+    interrupts = "\n".join(interrupt_cases(settings))
+    print(interrupts)
+    Path("evidence/AT-09_interrupt.txt").write_text(interrupts + "\n", encoding="utf-8")
+    graph = build_graph(settings, lambda: INDEX_CACHE.get(settings), make_embedder(settings), make_chat_model(settings),
+                        checkpointer=InMemorySaver())
     answers = "\n".join(answer_cases(graph))
     print(answers)
     Path("evidence/AT-06_07_answers.txt").write_text(answers + "\n", encoding="utf-8")
