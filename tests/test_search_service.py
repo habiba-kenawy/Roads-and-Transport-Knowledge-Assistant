@@ -51,6 +51,13 @@ def test_hybrid_fuses_then_reranks_and_exposes_the_order_before_reranking() -> N
     assert out.rerank_note is None
 
 
+def test_a_top_k_above_the_candidate_setting_still_returns_that_many_results() -> None:
+    """The reranker must always see at least top_k candidates, or a bigger top_k would silently return fewer results."""
+    few = Settings(_env_file=None, retrieval_candidates=2)
+    out = perform_search(few, request(query="toll fine parking vehicle", mode="hybrid", top_k=4), INDEX, FakeEmbedder(), reverse_llm(4))
+    assert len(out.candidates_before_rerank) == 4 and len(out.results) == 4
+
+
 def test_hybrid_falls_back_to_fused_order_when_the_model_fails() -> None:
     """A reranker failure is reported in rerank_note and the fused order is returned."""
     out = perform_search(SETTINGS, request(mode="hybrid", top_k=3), INDEX, FakeEmbedder(), FakeLLM(error=TimeoutError("FAKE")))

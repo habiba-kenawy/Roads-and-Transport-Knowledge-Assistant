@@ -60,7 +60,7 @@ Chat model `gpt-4.1-mini` (planner, reranker, answer, tool agent; temperature 0,
 | `EMBEDDING_ENDPOINT` | only if embeddings use another endpoint | the endpoint above |
 | `CHAT_DEPLOYMENT`, `EMBEDDING_DEPLOYMENT` | model names | `gpt-4.1-mini`, `text-embedding-3-small` |
 | `CHUNK_SIZE`, `CHUNK_OVERLAP` | chunking, in characters | 1000, 150 |
-| `RETRIEVAL_CANDIDATES` | candidates per retriever, and the most the reranker sees | 20 |
+| `RETRIEVAL_CANDIDATES` | candidates per retriever, and what the reranker sees (never fewer than `top_k`) | 10 |
 | `DB_PATH`, `CHECKPOINT_DB_PATH` | SQLite files for chunks and for conversation memory | `data/index.sqlite`, `data/checkpoints.sqlite` |
 | `CORS_ORIGINS` | web page origins allowed to call the API (comma-separated, no wildcard) | `http://localhost:5180` |
 
@@ -178,7 +178,7 @@ top-k is chosen, in every mode; unknown fields are rejected (422).
 
 **Fusion is not reranking.** *Fusion* is reciprocal rank fusion, `sum of 1 / (60 + rank)` over the lists: it uses **ranks only**, never raw
 scores (BM25 and cosine are on different scales), and merges duplicates by `chunk_id`. *Reranking* is one bounded LLM relevance-ranking call
-on the fused candidates (at most 20): each excerpt gets an integer 0-10, excerpt text is wrapped in delimiters as untrusted data, and the final
+on the fused candidates (10 by default, never fewer than `top_k`): each excerpt gets an integer 0-10, excerpt text is wrapped in delimiters as untrusted data, and the final
 `top_k` (1-20) is returned; if the call fails the fused order is returned and `rerank_note` says why. Example from
 [evidence/AT-05_trace.txt](evidence/AT-05_trace.txt): the fused order had a document's preamble chunk first and the article with the fee
 second; after reranking the article is first (score 10) and the preamble second (score 2).
@@ -215,7 +215,7 @@ and costs about 1.6 s ([evidence/AT-10_tool_effect.txt](evidence/AT-10_tool_effe
 **Persistence.** A LangGraph `SqliteSaver` checkpointer saves state after every step under the `thread_id`: short-term, per-conversation memory,
 not a long-term store. One run per thread at a time (a second concurrent request gets 409; in-process lock).
 
-**Limits (all bounded).** Message 2000 characters; `top_k` 1-20 (default 5); 20 candidates per retriever; 2 clarifications; 2 answer model
+**Limits (all bounded).** Message 2000 characters; `top_k` 1-20 (default 5); 10 candidates per retriever (never fewer than `top_k`); 2 clarifications; 2 answer model
 calls (one retry); 5 statements per answer with quotes of at least 8 characters; tool agent 3 model calls, 2 tool calls, 2 chunks per read; model
 call 30 s timeout with 2 retries; thread id `[A-Za-z0-9_-]`, 1-64 characters.
 
@@ -324,7 +324,8 @@ easy to separate the modes or to show that reranking helps.
 - A footnote at the bottom of a PDF page can fall inside an article that crosses the page break (the cause of the quote problem above); it is
   mitigated by a prompt rule and one retry, not fixed at the source. Tables are flattened to text. No OCR and no Arabic.
 - The evaluation is document-level and too easy; reranking is not shown to beat fusion alone; the tool did not measurably improve answers.
-- The planner's rewrite of a follow-up varies between runs. A full answer takes several seconds (about 8-10 s measured; planning, reranking and
+- If some statements fail the quote check, the answer step retries once, naming the rejected quotes, and keeps whichever attempt verified more statements. If the retry still drops some, a shorter answer is shown with no note that part of the question was left out (the fee-and-exemptions question has shown this: [AT-06a](evidence/AT-06_07_answers.txt) answered both parts in the latest run, an earlier run only the fee).
+- The planner's rewrite of a follow-up varies between runs. A full answer takes several seconds (about 8-15 s measured, varying with the model service; planning, reranking and
   answering are separate model calls).
 - The per-thread lock is in-process (one server process); SqliteSaver suits small single-process use. A paused thread stays paused until
   answered. Memory is per thread only; there is no long-term cross-thread memory.

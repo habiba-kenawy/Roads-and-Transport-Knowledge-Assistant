@@ -21,23 +21,29 @@ def need_embedder(embedder):
     return embedder
 
 
+def pool_size(candidates: int, state: GraphState) -> int:
+    """Candidates to fetch: the configured number, but never fewer than the top_k asked for (top_k is at most 20, so it stays bounded)."""
+    return max(candidates, state["top_k"])
+
+
 @traced("lexical_node")
 def lexical_node(state: GraphState, *, get_index: Callable[[], SearchIndex], candidates: int) -> dict:
     """Hybrid branch 1: BM25 candidates, written to its OWN key."""
-    return {"lexical_candidates": lexical_search(get_index(), state["standalone_query"], state["effective_filters"], candidates)}
+    return {"lexical_candidates": lexical_search(get_index(), state["standalone_query"], state["effective_filters"], pool_size(candidates, state))}
 
 
 @traced("semantic_node")
 def semantic_node(state: GraphState, *, get_index: Callable[[], SearchIndex], embedder, candidates: int) -> dict:
     """Hybrid branch 2: embedding candidates, written to its OWN key."""
-    hits = checked_semantic_search(get_index(), need_embedder(embedder), state["standalone_query"], state["effective_filters"], candidates)
+    hits = checked_semantic_search(get_index(), need_embedder(embedder), state["standalone_query"], state["effective_filters"],
+                                   pool_size(candidates, state))
     return {"semantic_candidates": hits}
 
 
 @traced("fuse_node")
 def fuse_node(state: GraphState, *, candidates: int) -> dict:
     """The join: runs once, only after BOTH branches finished; merges and deduplicates with RRF."""
-    return {"fused": rrf_fuse([state["lexical_candidates"], state["semantic_candidates"]], top_n=candidates)}
+    return {"fused": rrf_fuse([state["lexical_candidates"], state["semantic_candidates"]], top_n=pool_size(candidates, state))}
 
 
 @traced("rerank_node")

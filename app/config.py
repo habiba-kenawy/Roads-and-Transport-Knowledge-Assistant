@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     embedding_deployment: str = "text-embedding-3-small"
     chunk_size: int = 1000  # max characters per chunk (DATA-03); articles longer than this are split
     chunk_overlap: int = 150  # characters repeated between neighbouring pieces of a long article
-    retrieval_candidates: int = 20  # candidates each retriever returns, and the most the reranker ever sees (bounded)
+    retrieval_candidates: int = 10  # candidates each retriever returns, and what the reranker sees (never below top_k; measured: 10 is as good as 20 and ~1 s faster)
     checkpoint_db_path: str = "data/checkpoints.sqlite"  # conversation memory (LangGraph checkpoints), git-ignored
     db_path: str = "data/index.sqlite"  # file-backed SQLite store for chunks (git-ignored)
     cors_origins: str = "http://localhost:5180"  # comma-separated web page origins allowed to call the API (our Vite dev server)

@@ -122,13 +122,22 @@ def generate_answer(state: GraphState, *, llm) -> dict:
         return abstain()
     kept, dropped = verify(draft.statements, evidence)
     retried = False
-    if not kept and draft.statements:  # the model says it has evidence, yet nothing verified: ONE bounded retry with feedback
+    rejected = [s for s in draft.statements[:MAX_STATEMENTS] if s not in kept]
+    if rejected:  # nothing, or only SOME statements, verified: ONE bounded retry with feedback naming the rejected quotes
         retried = True
-        bad = "; ".join(repr(s.quote[:80]) for s in draft.statements[:3])
-        draft = ask_model(llm, question, evidence, RETRY_NOTE.format(bad=bad))
-        if not draft.evidence_is_sufficient:
-            return abstain()
-        kept, dropped = verify(draft.statements, evidence)
+        bad = "; ".join(repr(s.quote[:80]) for s in rejected[:3])
+        try:
+            second = ask_model(llm, question, evidence, RETRY_NOTE.format(bad=bad))
+        except ModelCallError:
+            if not kept:
+                raise  # nothing to show without the retry: report the failure
+            second = None  # a partial answer is already verified: keep it rather than fail the request
+        if second is not None:
+            if not second.evidence_is_sufficient and not kept:
+                return abstain()
+            kept_again, dropped_again = verify(second.statements, evidence)
+            if len(kept_again) > len(kept):  # use the retry only if it verified MORE: it can never make the answer worse
+                draft, kept, dropped = second, kept_again, dropped_again
     logger.info("answer verified statements=%s kept=%s unknown_id=%s quote_mismatch=%s retried=%s",
                 len(draft.statements), len(kept), dropped["unknown_id"], dropped["quote_mismatch"], retried)
     if not kept:

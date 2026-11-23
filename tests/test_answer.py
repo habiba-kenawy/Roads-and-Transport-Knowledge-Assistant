@@ -165,6 +165,43 @@ def test_if_the_retry_also_fails_the_node_abstains_after_exactly_two_calls() -> 
     assert out["status"] == "insufficient_evidence" and llm.calls == 2
 
 
+PARTIAL = AnswerDraft(evidence_is_sufficient=True, statements=[
+    stmt("c1", "seventy-five dirhams (AED 75.00)", "The fee is AED 75."), stmt("c1", "this quote is not in the chunk at all", "Exemptions.")])
+BOTH = AnswerDraft(evidence_is_sufficient=True, statements=[
+    stmt("c1", "seventy-five dirhams (AED 75.00)", "The fee is AED 75."), stmt("c1", "Children below the age of two are exempt", "Young children are exempt.")])
+
+
+def test_a_partly_verified_answer_gets_one_retry_and_the_better_attempt_is_used() -> None:
+    """Observed failure: one of two statements failed the quote check and the answer silently lost the exemptions."""
+    llm = AnswerLLM(PARTIAL, None, BOTH)
+    out = generate_answer(state(), llm=llm)
+    assert llm.calls == 2 and "exempt" in out["answer"] and "this quote is not" not in llm.prompts[0]
+    assert "this quote is not in the chunk at all" in llm.prompts[1]  # the retry names what was rejected
+
+
+def test_a_worse_retry_never_replaces_a_partial_answer_and_a_failed_retry_keeps_it() -> None:
+    """The retry can only help: if it verifies fewer statements, or the call fails, the first verified statements are kept."""
+    worse = AnswerLLM(PARTIAL, None, AnswerDraft(evidence_is_sufficient=True, statements=[stmt("c1", "not in the chunk either")]))
+    out = generate_answer(state(), llm=worse)
+    assert worse.calls == 2 and out["status"] == "answered" and "AED 75" in out["answer"]
+
+    class FailsOnRetry(AnswerLLM):
+        def with_structured_output(self, schema):
+            inner = super().with_structured_output(schema)
+            outer = self
+
+            class R:
+                def invoke(self, messages):
+                    if outer.calls >= 1:
+                        raise TimeoutError("FAKE")
+                    return inner.invoke(messages)
+
+            return R()
+
+    out = generate_answer(state(), llm=FailsOnRetry(PARTIAL))
+    assert out["status"] == "answered" and "AED 75" in out["answer"]
+
+
 def test_no_retry_when_the_first_attempt_verifies_or_the_model_says_insufficient() -> None:
     """The retry costs nothing in the normal case, and the model's own 'not enough evidence' is not argued with."""
     first_ok = AnswerLLM(GOOD)

@@ -74,12 +74,13 @@ def perform_search(settings: Settings, request: SearchRequest, index: SearchInde
         results = lexical_search(index, query, filters, top_k)
         return SearchResponse(**base, ranking_stage="lexical", results=[to_hit(r) for r in results])
     embedder = embedder or make_embedder(settings)  # raises ModelNotConfiguredError, which passes through untouched
-    wanted = settings.retrieval_candidates if request.mode == "hybrid" else top_k
+    pool = max(settings.retrieval_candidates, top_k)  # never fewer candidates than the top_k asked for
+    wanted = pool if request.mode == "hybrid" else top_k
     semantic = checked_semantic_search(index, embedder, query, filters, wanted)
     if request.mode == "semantic":
         return SearchResponse(**base, ranking_stage="semantic", results=[to_hit(r) for r in semantic])
-    lexical = lexical_search(index, query, filters, settings.retrieval_candidates)
-    fused = rrf_fuse([lexical, semantic], top_n=settings.retrieval_candidates)
+    lexical = lexical_search(index, query, filters, pool)
+    fused = rrf_fuse([lexical, semantic], top_n=pool)
     try:
         llm = llm or make_chat_model(settings)
     except Exception as exc:  # no chat model: still return the fused order and say so

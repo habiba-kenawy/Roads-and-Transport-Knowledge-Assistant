@@ -5,78 +5,72 @@ question: 'Do I need a permit to import or sell a drone in Dubai?'  (history mes
 plan: intent=legal_question standalone_query='Do I need a permit to import or sell a drone in Dubai?' filters={'year': None, 'doc_type': None} needs_clarification=False clarification_question=None
 status=answered ranking_stage='reranked' rerank_note=None
 ANSWER:
-  | No Person may import, bring in, or sell Unmanned Aircraft or any parts or systems thereof in the Emirate without first obtaining the relevant Permit from the DCAA [1]. A Person who commits importing, bringing in, or selling Unmanned Aircraft or any parts or systems thereof in the Emirate without obtaining a Permit from the DCAA will be punished by imprisonment, by a fine, or by both penalties [2]. No Person may pilot or use Unmanned Aircraft; conduct Operations or Related Activities; or construct any Infrastructure or Unmanned Aircraft Airport in the Emirate, without first obtaining the relevant Permit from the DCAA [3]. No Person may operate, assist in operating, or monitor the operation of Unmanned Aircraft or perform any work related to their operating systems unless that Person is qualified to do so and holds a relevant Permit from the DCAA [4]. Any Person owning an Unmanned Aircraft must register it with the DCAA in accordance with the provisions of this Law and the resolutions issued in pursuance hereof [1]. The concerned entities in the Emirate must coordinate with the DCAA to establish the procedures required for implementation of the provisions of paragraph (a) of Article 14 [1]. The Director General may, based on valid reasons and in coordination with concerned entities, exempt certain types of Unmanned Aircraft from compliance with the provisions of paragraphs (a) and (b) of Article 14 [1].
+  | No Person may import, bring in, or sell Unmanned Aircraft or any parts or systems thereof in the Emirate without first obtaining the relevant Permit from the DCAA [1]. No Person may pilot or use Unmanned Aircraft; conduct Operations or Related Activities; or construct any Infrastructure or Unmanned Aircraft Airport in the Emirate, without first obtaining the relevant Permit from the DCAA [2].
   | 
   | Note: "Law No. (4) of 2020 Regulating Unmanned Aircraft in the Emirate of Dubai" has the status "In Force as Amended" on the Dubai Legislation Portal.
   | This is not legal advice. The indexed documents are a limited set and may not be complete or current.
   citation [1]: document_id=dlp-1718 chunk_id=dlp-1718-028-083127b7 locator_type=page locator='p. 13'
                title='Law No. (4) of 2020 Regulating Unmanned Aircraft in the Emirate of Dubai'
                source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoNCk...
-  citation [2]: document_id=dlp-1718 chunk_id=dlp-1718-059-6da8ff0c locator_type=page locator='pp. 23-24'
+  citation [2]: document_id=dlp-1718 chunk_id=dlp-1718-024-75325abe locator_type=page locator='pp. 11-12'
                title='Law No. (4) of 2020 Regulating Unmanned Aircraft in the Emirate of Dubai'
                source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoNCk...
-  citation [3]: document_id=dlp-1718 chunk_id=dlp-1718-024-75325abe locator_type=page locator='pp. 11-12'
-               title='Law No. (4) of 2020 Regulating Unmanned Aircraft in the Emirate of Dubai'
-               source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoNCk...
-  citation [4]: document_id=dlp-1718 chunk_id=dlp-1718-032-56754e63 locator_type=page locator='pp. 14-15'
-               title='Law No. (4) of 2020 Regulating Unmanned Aircraft in the Emirate of Dubai'
-               source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoNCk...
-verification: statements=7 kept=7 unknown_id=0 quote_mismatch=0 retried=False
+verification: statements=2 kept=2 unknown_id=0 quote_mismatch=0 retried=False
 trace (seconds since run start):
   + 0.003s node=start_turn event=start mode=hybrid request_id=- thread_id=-
   + 0.003s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0 request_id=- thread_id=-
   + 0.004s node=plan_query event=start mode=hybrid request_id=- thread_id=-
-  + 1.313s node=plan_query event=end seconds=1.310  request_id=- thread_id=-
-  + 1.318s node=lexical_node event=start mode=hybrid request_id=- thread_id=-
-  + 1.318s node=semantic_node event=start mode=hybrid request_id=- thread_id=-
-  + 1.326s node=lexical_node event=end seconds=0.008 lexical_candidates=20 request_id=- thread_id=-
-  + 1.868s node=semantic_node event=end seconds=0.550 semantic_candidates=20 request_id=- thread_id=-
-  + 1.869s node=fuse_node event=start mode=hybrid request_id=- thread_id=-
-  + 1.870s node=fuse_node event=end seconds=0.000 fused=20 request_id=- thread_id=-
-  + 1.872s node=rerank_node event=start mode=hybrid request_id=- thread_id=-
-  + 4.074s node=rerank_node event=end seconds=2.202 evidence=5 request_id=- thread_id=-
-  + 4.077s node=excerpt event=start mode=hybrid request_id=- thread_id=-
-  + 4.077s node=excerpt event=end seconds=0.000  request_id=- thread_id=-
-  + 4.079s node=answer event=start mode=hybrid request_id=- thread_id=-
-  +10.629s node=answer event=end seconds=6.550 citations=4 messages=1 request_id=- thread_id=-
-overlap: lexical 1.318-1.326s, semantic 1.318-1.868s -> started together (within 0 ms): True; semantic started before lexical ended: True
-join: fuse started at 1.869s, after both branches ended (1.868s): True; fuse start events: 1
+  + 1.023s node=plan_query event=end seconds=1.019  request_id=- thread_id=-
+  + 1.028s node=semantic_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.028s node=lexical_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.036s node=lexical_node event=end seconds=0.008 lexical_candidates=10 request_id=- thread_id=-
+  + 1.755s node=semantic_node event=end seconds=0.727 semantic_candidates=10 request_id=- thread_id=-
+  + 1.756s node=fuse_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.756s node=fuse_node event=end seconds=0.000 fused=10 request_id=- thread_id=-
+  + 1.758s node=rerank_node event=start mode=hybrid request_id=- thread_id=-
+  + 3.137s node=rerank_node event=end seconds=1.378 evidence=5 request_id=- thread_id=-
+  + 3.140s node=excerpt event=start mode=hybrid request_id=- thread_id=-
+  + 3.140s node=excerpt event=end seconds=0.000  request_id=- thread_id=-
+  + 3.142s node=answer event=start mode=hybrid request_id=- thread_id=-
+  + 5.444s node=answer event=end seconds=2.302 citations=2 messages=1 request_id=- thread_id=-
+overlap: lexical 1.028-1.036s, semantic 1.028-1.755s -> started together (within 0 ms): True; semantic started before lexical ended: True
+join: fuse started at 1.756s, after both branches ended (1.755s): True; fuse start events: 1
 order BEFORE rerank (fused RRF): dlp-1718-028-083127b7, dlp-1718-035-28e318f0, dlp-1834-010-4fc5f6ad, dlp-1718-024-75325abe, dlp-1718-032-56754e63, dlp-13-003-f7de5fc8, dlp-1718-037-ab845232, dlp-1685-039-2d60eb6f
-order AFTER rerank (final top 5):  dlp-1718-028-083127b7[10], dlp-1718-059-6da8ff0c[9], dlp-1718-024-75325abe[7], dlp-1718-032-56754e63[5], dlp-1718-025-4e0a5fd5[3]
+order AFTER rerank (final top 5):  dlp-1718-028-083127b7[10], dlp-1718-024-75325abe[8], dlp-1718-032-56754e63[6], dlp-1718-037-ab845232[3], dlp-1718-035-28e318f0[2]
 
 === 2. follow-up using history (planner must rewrite it)
 question: 'Who is exempt from it?'  (history messages: 2, mode: hybrid)
 plan: intent=legal_question standalone_query='Who is exempt from the departure fee at Dubai airports?' filters={'year': None, 'doc_type': None} needs_clarification=False clarification_question=None
 status=answered ranking_stage='reranked' rerank_note=None
 ANSWER:
-  | passengers below the age of two (2) years [1]. on-duty pilots and cabin crew [1]. transit passengers whose arrival and departure flight number is the same [1]. transfer passengers whose final destination is not the United Arab Emirates and whose departure is within twenty-four (24) hours from the time of arrival [1].
+  | The following categories are hereby exempted from payment of the fee referred to in paragraph (a) of this Article: 1. passengers below the age of two (2) years; 2. on-duty pilots and cabin crew; 3. transit passengers whose arrival and departure flight number is the same; 4. transfer passengers whose final destination is not the United Arab Emirates and whose departure is within twenty-four (24) hours from the time of arrival [1].
   | 
   | This is not legal advice. The indexed documents are a limited set and may not be complete or current.
   citation [1]: document_id=dlp-1432 chunk_id=dlp-1432-001-44caaf5f locator_type=page locator='pp. 1-2'
                title='Law No. (13) of 2022 Concerning the Dubai Airports Departure Fee'
                source_url=https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoMTM...
-verification: statements=4 kept=4 unknown_id=0 quote_mismatch=0 retried=False
+verification: statements=1 kept=1 unknown_id=0 quote_mismatch=0 retried=False
 trace (seconds since run start):
   + 0.003s node=start_turn event=start mode=hybrid request_id=- thread_id=-
   + 0.003s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0 request_id=- thread_id=-
   + 0.004s node=plan_query event=start mode=hybrid request_id=- thread_id=-
-  + 1.244s node=plan_query event=end seconds=1.240  request_id=- thread_id=-
-  + 1.248s node=lexical_node event=start mode=hybrid request_id=- thread_id=-
-  + 1.248s node=semantic_node event=start mode=hybrid request_id=- thread_id=-
-  + 1.255s node=lexical_node event=end seconds=0.007 lexical_candidates=20 request_id=- thread_id=-
-  + 1.866s node=semantic_node event=end seconds=0.618 semantic_candidates=20 request_id=- thread_id=-
-  + 1.867s node=fuse_node event=start mode=hybrid request_id=- thread_id=-
-  + 1.867s node=fuse_node event=end seconds=0.000 fused=20 request_id=- thread_id=-
-  + 1.870s node=rerank_node event=start mode=hybrid request_id=- thread_id=-
-  + 4.445s node=rerank_node event=end seconds=2.575 evidence=5 request_id=- thread_id=-
-  + 4.447s node=excerpt event=start mode=hybrid request_id=- thread_id=-
-  + 4.448s node=excerpt event=end seconds=0.000  request_id=- thread_id=-
-  + 4.451s node=answer event=start mode=hybrid request_id=- thread_id=-
-  + 6.834s node=answer event=end seconds=2.382 citations=1 messages=1 request_id=- thread_id=-
-overlap: lexical 1.248-1.255s, semantic 1.248-1.866s -> started together (within 0 ms): True; semantic started before lexical ended: True
-join: fuse started at 1.867s, after both branches ended (1.866s): True; fuse start events: 1
-order BEFORE rerank (fused RRF): dlp-1432-000-82e5035a, dlp-1432-001-44caaf5f, dlp-1432-002-f16113aa, dlp-178-019-5aa69deb, dlp-1432-003-f262e976, dlp-1718-035-28e318f0, dlp-1941-002-f280ec85, dlp-1685-009-226905dc
-order AFTER rerank (final top 5):  dlp-1432-001-44caaf5f[10], dlp-1432-000-82e5035a[2], dlp-1432-002-f16113aa[1], dlp-178-019-5aa69deb[0], dlp-1432-003-f262e976[0]
+  + 0.972s node=plan_query event=end seconds=0.968  request_id=- thread_id=-
+  + 0.977s node=lexical_node event=start mode=hybrid request_id=- thread_id=-
+  + 0.977s node=semantic_node event=start mode=hybrid request_id=- thread_id=-
+  + 0.984s node=lexical_node event=end seconds=0.007 lexical_candidates=10 request_id=- thread_id=-
+  + 1.181s node=semantic_node event=end seconds=0.204 semantic_candidates=10 request_id=- thread_id=-
+  + 1.182s node=fuse_node event=start mode=hybrid request_id=- thread_id=-
+  + 1.182s node=fuse_node event=end seconds=0.000 fused=10 request_id=- thread_id=-
+  + 1.184s node=rerank_node event=start mode=hybrid request_id=- thread_id=-
+  + 2.745s node=rerank_node event=end seconds=1.560 evidence=5 request_id=- thread_id=-
+  + 2.748s node=excerpt event=start mode=hybrid request_id=- thread_id=-
+  + 2.748s node=excerpt event=end seconds=0.000  request_id=- thread_id=-
+  + 2.750s node=answer event=start mode=hybrid request_id=- thread_id=-
+  + 4.795s node=answer event=end seconds=2.045 citations=1 messages=1 request_id=- thread_id=-
+overlap: lexical 0.977-0.984s, semantic 0.977-1.181s -> started together (within 0 ms): True; semantic started before lexical ended: True
+join: fuse started at 1.182s, after both branches ended (1.181s): True; fuse start events: 1
+order BEFORE rerank (fused RRF): dlp-1432-000-82e5035a, dlp-1432-001-44caaf5f, dlp-1432-002-f16113aa, dlp-178-019-5aa69deb, dlp-1718-035-28e318f0, dlp-1008-016-8a10bc18, dlp-1918-038-a9c0d260, dlp-1432-003-f262e976
+order AFTER rerank (final top 5):  dlp-1432-001-44caaf5f[10], dlp-1432-000-82e5035a[2], dlp-1432-002-f16113aa[1], dlp-178-019-5aa69deb[0], dlp-1718-035-28e318f0[0]
 
 === 3. out-of-scope question
 question: 'What is a good recipe for pasta carbonara?'  (history messages: 0, mode: hybrid)
@@ -87,8 +81,8 @@ ANSWER:
 trace (seconds since run start):
   + 0.003s node=start_turn event=start mode=hybrid request_id=- thread_id=-
   + 0.003s node=start_turn event=end seconds=0.000 lexical_candidates=0 semantic_candidates=0 fused=0 evidence=0 citations=0 request_id=- thread_id=-
-  + 0.003s node=plan_query event=start mode=hybrid request_id=- thread_id=-
-  + 1.082s node=plan_query event=end seconds=1.079  request_id=- thread_id=-
-  + 1.083s node=scope_response event=start mode=hybrid request_id=- thread_id=-
-  + 1.083s node=scope_response event=end seconds=0.000 messages=1 request_id=- thread_id=-
+  + 0.004s node=plan_query event=start mode=hybrid request_id=- thread_id=-
+  + 1.123s node=plan_query event=end seconds=1.120  request_id=- thread_id=-
+  + 1.125s node=scope_response event=start mode=hybrid request_id=- thread_id=-
+  + 1.125s node=scope_response event=end seconds=0.000 messages=1 request_id=- thread_id=-
 

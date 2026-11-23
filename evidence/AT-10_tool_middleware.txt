@@ -6,22 +6,22 @@ Middleware placement: inside the agent created by create_agent (node 'excerpt'):
 question: 'Do I need a permit to import or sell a drone in Dubai?'
 status=answered evidence stages: ['reranked', 'reranked', 'reranked', 'reranked', 'reranked']
 chunks added by the tool: []
-citations: 4; citations that point to a tool-fetched chunk: []
+citations: 1; citations that point to a tool-fetched chunk: []
 log lines (seconds since start):
-  + 3.891s node=excerpt event=start mode=hybrid
-  + 3.891s node=excerpt event=end seconds=0.000 
+  + 3.243s node=excerpt event=start mode=hybrid
+  + 3.243s node=excerpt event=end seconds=0.000 
 
 === 2. the user asks for another page: the MODEL chooses to call get_document_excerpt
 question: 'How much is the departure fee for passengers leaving through Dubai airports? Please also read the next page of the most relevant document.'
 status=answered evidence stages: ['reranked', 'reranked', 'reranked', 'reranked', 'reranked']
 chunks added by the tool: []
-citations: 3; citations that point to a tool-fetched chunk: []
+citations: 1; citations that point to a tool-fetched chunk: []
 log lines (seconds since start):
-  +11.742s node=excerpt event=start mode=hybrid
-  +12.376s middleware=monitor_tool_call event=start tool=get_document_excerpt args={'document_id': 'dlp-1432', 'locator': 'p. 1'}
-  +12.378s middleware=monitor_tool_call event=end tool=get_document_excerpt status=success seconds=0.002
-  +13.451s excerpt agent done tool_chunks_added=0
-  +13.452s node=excerpt event=end seconds=1.710 
+  + 7.937s node=excerpt event=start mode=hybrid
+  + 8.588s middleware=monitor_tool_call event=start tool=get_document_excerpt args={'document_id': 'dlp-1432', 'locator': 'p. 1'}
+  + 8.590s middleware=monitor_tool_call event=end tool=get_document_excerpt status=success seconds=0.002
+  +10.018s excerpt agent done tool_chunks_added=0
+  +10.018s node=excerpt event=end seconds=2.080 
 
 === 3. controlled tool failure: the model asks for a document that is not in the corpus
 instruction to the agent: 'Use get_document_excerpt to read page 1 of document dlp-99999 and tell me what it says.'
@@ -30,8 +30,8 @@ messages:
   tool  status=error tool_calls=[] content='Tool error: dlp-99999 is not a document in the indexed corpus'
   ai    status=- tool_calls=[] content='done'
 log lines (seconds since start):
-  +19.372s middleware=monitor_tool_call event=start tool=get_document_excerpt args={'document_id': 'dlp-99999', 'locator': 'p. 1'}
-  +19.373s middleware=monitor_tool_call event=failed tool=get_document_excerpt error=ValueError seconds=0.001
+  +17.512s middleware=monitor_tool_call event=start tool=get_document_excerpt args={'document_id': 'dlp-99999', 'locator': 'p. 1'}
+  +17.513s middleware=monitor_tool_call event=failed tool=get_document_excerpt error=ValueError seconds=0.002
 
 === 4. bounded calls: the model is asked for five pages but at most 2 tool calls per run are allowed
 instruction to the agent: 'Use get_document_excerpt to read pages 1, 2, 3, 4 and 5 of document dlp-1008, one call per page.'
@@ -42,10 +42,10 @@ messages:
   tool  status=error tool_calls=[] content='Tool call limit exceeded. Do not make additional tool calls.'
   tool  status=success tool_calls=[] content='<excerpt chunk_id="dlp-1008-000-3f9833a5" document="dlp-1008" pages="1-1">\nAdministrative Resolution No. (67) of 2010\nIssuing the '
   tool  status=success tool_calls=[] content='<excerpt chunk_id="dlp-1008-002-4a68e5bd" document="dlp-1008" pages="1-2">\n1Every effort has been made to produce an accurate and '
-  ai    status=- tool_calls=[] content='done'
+  ai    status=- tool_calls=[] content='I have retrieved pages 1 and 2 of document dlp-1008. However, I have reached the tool call limit and cannot retrieve pages 3, 4, a'
 log lines (seconds since start):
-  +21.726s middleware=monitor_tool_call event=start tool=get_document_excerpt args={'document_id': 'dlp-1008', 'locator': 'p. 1'}
-  +21.728s middleware=monitor_tool_call event=end tool=get_document_excerpt status=success seconds=0.001
-  +21.729s middleware=monitor_tool_call event=start tool=get_document_excerpt args={'document_id': 'dlp-1008', 'locator': 'p. 2'}
-  +21.731s middleware=monitor_tool_call event=end tool=get_document_excerpt status=success seconds=0.002
+  +19.675s middleware=monitor_tool_call event=start tool=get_document_excerpt args={'document_id': 'dlp-1008', 'locator': 'p. 1'}
+  +19.676s middleware=monitor_tool_call event=end tool=get_document_excerpt status=success seconds=0.001
+  +19.677s middleware=monitor_tool_call event=start tool=get_document_excerpt args={'document_id': 'dlp-1008', 'locator': 'p. 2'}
+  +19.678s middleware=monitor_tool_call event=end tool=get_document_excerpt status=success seconds=0.001
 

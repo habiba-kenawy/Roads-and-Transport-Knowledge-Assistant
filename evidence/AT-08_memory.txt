@@ -3,29 +3,29 @@ AT-08 memory and isolation (real models; checkpoint file: data/checkpoints_demo.
 --- thread A: a question, then a follow-up that only makes sense with the history
 [demo-thread-a] user: 'How much is the departure fee for passengers leaving through Dubai airports?'
     planner's standalone_query: 'What is the departure fee for passengers leaving through Dubai airports?'
-    status=answered citations=4 request_id=7131f00d17da
-    answer: A departure fee of seventy-five dirhams (AED 75.00) will be collected from every passenger departing the United Arab Emirates through Dubai airports [1]. Passengers below...
+    status=answered citations=4 request_id=e2998287569a
+    answer: A departure fee of seventy-five dirhams (AED 75.00) will be collected from every passenger departing the United Arab Emirates through Dubai airports [1]. The following ca...
 
 [demo-thread-a] user: 'Who is exempt from it?'
     planner's standalone_query: 'Who is exempt from the departure fee for passengers leaving through Dubai airports?'
-    status=answered citations=1 request_id=1e84e97c3e4d
-    answer: A departure fee of seventy-five dirhams (AED 75.00) will be collected from every passenger departing the United Arab Emirates through Dubai airports [1]. Passengers below...
+    status=answered citations=1 request_id=a03d6ac46425
+    answer: The following categories are hereby exempted from payment of the fee referred to in paragraph (a) of this Article: 1. passengers below the age of two (2) years; 2. on-dut...
 
 --- thread B: the SAME follow-up words, but this thread has no history
 [demo-thread-b] user: 'Who is exempt from it?'
     planner's standalone_query: 'Who is exempt from the relevant Roads and Transport legislation?'
-    status=needs_clarification citations=0 request_id=45d15b4fecdb
+    status=needs_clarification citations=0 request_id=b3ab6efd1f07
     answer: ...
 
 --- saved state per thread
-[demo-thread-a] saved messages: 4 -> human:'How much is the departure fee for passengers ' | ai:'A departure fee of seventy-five dirhams (AED ' | human:'Who is exempt from it?' | ai:'A departure fee of seventy-five dirhams (AED '
+[demo-thread-a] saved messages: 4 -> human:'How much is the departure fee for passengers ' | ai:'A departure fee of seventy-five dirhams (AED ' | human:'Who is exempt from it?' | ai:'The following categories are hereby exempted '
 [demo-thread-b] saved messages: 1 -> human:'Who is exempt from it?'
 
 --- simulated restart: a brand-new graph object and a brand-new connection to the same file, then thread A continues
-[demo-thread-a] saved messages: 4 -> human:'How much is the departure fee for passengers ' | ai:'A departure fee of seventy-five dirhams (AED ' | human:'Who is exempt from it?' | ai:'A departure fee of seventy-five dirhams (AED '
+[demo-thread-a] saved messages: 4 -> human:'How much is the departure fee for passengers ' | ai:'A departure fee of seventy-five dirhams (AED ' | human:'Who is exempt from it?' | ai:'The following categories are hereby exempted '
 [demo-thread-a] user: 'What are the airlines responsible for?'
     planner's standalone_query: 'What are the responsibilities of airlines under Dubai roads and transport legislation?'
-    status=answered citations=2 request_id=b4a2c15ad34e
+    status=answered citations=2 request_id=1888fe90571d
     answer: An Operator must comply with the legislation in force in the Emirate, the international treaties and conventions to which the UAE is a party, and the applicable manuals a...
 
-[demo-thread-a] saved messages: 6 -> human:'How much is the departure fee for passengers ' | ai:'A departure fee of seventy-five dirhams (AED ' | human:'Who is exempt from it?' | ai:'A departure fee of seventy-five dirhams (AED ' | human:'What are the airlines responsible for?' | ai:'An Operator must comply with the legislation '
+[demo-thread-a] saved messages: 6 -> human:'How much is the departure fee for passengers ' | ai:'A departure fee of seventy-five dirhams (AED ' | human:'Who is exempt from it?' | ai:'The following categories are hereby exempted ' | human:'What are the airlines responsible for?' | ai:'An Operator must comply with the legislation '
