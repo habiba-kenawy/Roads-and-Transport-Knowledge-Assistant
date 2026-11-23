@@ -1,4 +1,4 @@
-import { ArrowUp } from 'lucide-react'
+import { ArrowUp, Loader2Icon } from 'lucide-react'
 import type { FormEvent, KeyboardEvent } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -13,6 +13,8 @@ interface Props {
   onControlsChange: (next: Controls) => void
   onSubmit: () => void
   submitLabel: string
+  busy: boolean // a request is in flight: sending is blocked until the answer arrives
+  placeholder: string
 }
 
 // Lists open ABOVE their chip, over the text box, so they can never cover another chip (the chips and the send button are the
@@ -24,9 +26,9 @@ const CHIP = 'h-8! gap-1 rounded-full border-transparent bg-surface px-3 text-xs
 
 // The big rounded question box: text area on top, the search options as chips underneath, the send button on the right.
 // Enter sends, Shift+Enter starts a new line. It only holds what the user typed and chose; sending comes later.
-export function Composer({ question, onQuestionChange, controls, onControlsChange, onSubmit, submitLabel }: Props) {
+export function Composer({ question, onQuestionChange, controls, onControlsChange, onSubmit, submitLabel, busy, placeholder }: Props) {
   const set = (patch: Partial<Controls>) => onControlsChange({ ...controls, ...patch })
-  const canSend = question.trim().length > 0
+  const canSend = question.trim().length > 0 && !busy
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -52,7 +54,7 @@ export function Composer({ question, onQuestionChange, controls, onControlsChang
         maxLength={MAX_MESSAGE_CHARS}
         rows={2}
         aria-label="Your question"
-        placeholder="Ask about Roads and Transport legislation..."
+        placeholder={placeholder}
         className="w-full resize-none bg-transparent px-2 py-1.5 text-base text-ink outline-none placeholder:text-muted-foreground"
       />
 
@@ -115,11 +117,11 @@ export function Composer({ question, onQuestionChange, controls, onControlsChang
           type="submit"
           size="icon"
           disabled={!canSend}
-          aria-label={submitLabel}
-          title={submitLabel}
+          aria-label={busy ? 'Working' : submitLabel}
+          title={busy ? 'Working' : submitLabel}
           className="ml-auto size-10 rounded-full bg-brand text-white hover:bg-brand/90 disabled:border disabled:border-border disabled:bg-card disabled:text-muted-foreground disabled:opacity-100"
         >
-          <ArrowUp aria-hidden />
+          {busy ? <Loader2Icon className="animate-spin" aria-hidden /> : <ArrowUp aria-hidden />}
         </Button>
       </div>
     </form>

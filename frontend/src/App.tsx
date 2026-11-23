@@ -3,6 +3,7 @@ import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { AboutPage } from '@/components/AboutPage'
+import { ChatView } from '@/components/ChatView'
 import { Composer } from '@/components/Composer'
 import { EmptyState } from '@/components/EmptyState'
 import { Panel } from '@/components/Panel'
@@ -11,26 +12,39 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
 import { Tabs } from '@/components/ui/tabs'
 import { Toaster } from '@/components/ui/sonner'
+import { useChat } from '@/hooks/useChat'
 import { DEFAULT_CONTROLS, type Controls } from '@/lib/options'
 
 type View = 'assistant' | 'inspector' | 'about'
 
-// Chunk 2: the page frame only. The question box, filters and pages work locally; nothing is sent to the API yet.
+// Chunk 3: the Assistant talks to the API. The Search Inspector is wired up in the next chunk.
 export default function App() {
   const [view, setView] = useState<View>('assistant')
   const [question, setQuestion] = useState('')
   const [controls, setControls] = useState<Controls>(DEFAULT_CONTROLS)
   const [menuOpen, setMenuOpen] = useState(false)
   const composerBox = useRef<HTMLDivElement>(null)
+  const chat = useChat(controls)
 
   function go(next: View) {
     setView(next)
     setMenuOpen(false)
   }
 
+  function submit() {
+    const text = question.trim()
+    if (view === 'assistant') {
+      chat.send(text)
+      setQuestion('')
+    } else {
+      toast.info('The Search Inspector is built in the next chunk.')
+    }
+  }
+
   const sidebar = (
     <Sidebar
       onNewConversation={() => {
+        chat.reset()
         setQuestion('')
         go('assistant')
       }}
@@ -45,7 +59,11 @@ export default function App() {
         controls={controls}
         onControlsChange={setControls}
         submitLabel={view === 'assistant' ? 'Ask' : 'Search'}
-        onSubmit={() => toast.info('Not connected yet: the API calls arrive in the next chunk.')}
+        busy={view === 'assistant' && chat.busy}
+        placeholder={
+          view === 'assistant' && chat.waitingForClarification ? 'Type your answer to the question above...' : 'Ask about Roads and Transport legislation...'
+        }
+        onSubmit={submit}
       />
     </div>
   )
@@ -54,6 +72,8 @@ export default function App() {
     setQuestion(text)
     composerBox.current?.querySelector('textarea')?.focus()
   }
+
+  const conversationStarted = chat.items.length > 0 || chat.busy
 
   return (
     <Tabs value={view} onValueChange={(v) => go(v as View)} orientation="vertical" className="h-dvh gap-4 p-3 lg:p-4">
@@ -80,19 +100,37 @@ export default function App() {
           <Menu aria-hidden />
         </Button>
 
-        <main id="main" className="flex-1 overflow-y-auto pt-12 lg:pt-0">
-          {view === 'assistant' && <EmptyState composer={composer} onPick={pickExample} />}
+        <main id="main" className="flex min-h-0 flex-1 flex-col pt-12 lg:pt-0">
+          {view === 'assistant' && !conversationStarted && (
+            <div className="flex-1 overflow-y-auto">
+              <EmptyState composer={composer} onPick={pickExample} />
+            </div>
+          )}
+          {view === 'assistant' && conversationStarted && (
+            <>
+              <div className="flex-1 overflow-y-auto">
+                <ChatView items={chat.items} busy={chat.busy} onRetry={chat.retry} />
+              </div>
+              <div className="shrink-0 border-t border-border bg-card px-4 py-3">
+                <div className="mx-auto w-full max-w-3xl">{composer}</div>
+              </div>
+            </>
+          )}
           {view === 'inspector' && (
-            <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6">
-              {composer}
-              <Panel title="Search results">
-                <p className="text-sm text-muted-foreground">Search above to see the ranked passages, the ranking stage and the score each one carries.</p>
-              </Panel>
+            <div className="flex-1 overflow-y-auto">
+              <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6">
+                {composer}
+                <Panel title="Search results">
+                  <p className="text-sm text-muted-foreground">Search above to see the ranked passages, the ranking stage and the score each one carries.</p>
+                </Panel>
+              </div>
             </div>
           )}
           {view === 'about' && (
-            <div className="mx-auto w-full max-w-5xl px-4 py-6 lg:px-6">
-              <AboutPage />
+            <div className="flex-1 overflow-y-auto">
+              <div className="mx-auto w-full max-w-5xl px-4 py-6 lg:px-6">
+                <AboutPage />
+              </div>
             </div>
           )}
         </main>

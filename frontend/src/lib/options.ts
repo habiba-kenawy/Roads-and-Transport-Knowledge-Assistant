@@ -2,7 +2,9 @@
 // message length 2000). The year and type lists are a copy of the corpus facts: the API has no endpoint that lists
 // them, so they must be updated by hand if the corpus changes (a known limitation).
 
-export type SearchMode = 'lexical' | 'semantic' | 'hybrid'
+import type { SearchMode } from '@/types'
+
+export type { SearchMode } // defined once, in types.ts (it mirrors the API)
 
 // label = what the list shows; short = what the chip shows (short enough for three chips to fit on one phone-width row)
 export const MODES: { value: SearchMode; label: string; short: string }[] = [

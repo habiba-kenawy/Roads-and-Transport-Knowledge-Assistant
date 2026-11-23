@@ -333,5 +333,5 @@ easy to separate the modes or to show that reranking helps.
 
 ## Frontend
 
-`frontend/` is a React + Vite + TypeScript page (Tailwind CSS 4, shadcn/ui) that only calls the API above. Setup is in [Setup and run](#setup-and-run).
-The scaffold, theme and CORS are done; the chat screens are being built. The backend is complete without it.
+`frontend/` is a React + Vite + TypeScript page (Tailwind CSS 4, shadcn/ui, axios) that only calls the API above. Setup is in [Setup and run](#setup-and-run).
+The Assistant chat works against the real API (answers with sources, clarification and resume, plain-language errors); the Search Inspector is next. The backend is complete without it.
