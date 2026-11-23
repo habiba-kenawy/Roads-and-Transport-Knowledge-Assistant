@@ -2,7 +2,7 @@
 import pytest
 
 from app.errors import ModelCallError, ModelNotConfiguredError
-from app.graph.answer import ABSTAIN, ANSWER_SYSTEM, DISCLAIMER, build_prompt, compose, generate_answer, normalize, verify
+from app.graph.answer import ABSTAIN, ANSWER_SYSTEM, DISCLAIMER, MAX_STATEMENTS, build_prompt, compose, generate_answer, normalize, verify
 from app.schemas.answer import AnswerDraft, Statement
 from app.schemas.search import RankedChunk
 from tests.test_search import rec
@@ -55,6 +55,14 @@ def test_verify_keeps_valid_drops_unknown_id_and_wrong_source() -> None:
     wrong_source = stmt("c1", "upon issuing air tickets to customers")  # real quote, but it lives in c2
     kept, dropped = verify([good, fake_id, wrong_source], EVIDENCE)
     assert kept == [good] and dropped == {"unknown_id": 1, "quote_mismatch": 1}
+
+
+def test_an_answer_never_has_more_statements_than_the_cap() -> None:
+    """7.2 bounds: the prompt states the cap, and verify() cuts any extra statements the model returns anyway."""
+    assert f"at most {MAX_STATEMENTS} statements" in ANSWER_SYSTEM
+    too_many = [stmt("c1", "seventy-five dirhams (AED 75.00)") for _ in range(MAX_STATEMENTS + 3)]
+    kept, _ = verify(too_many, EVIDENCE)
+    assert len(kept) == MAX_STATEMENTS
 
 
 def test_verify_rejects_too_short_quotes_and_ignores_spacing_case_and_curly_quotes() -> None:

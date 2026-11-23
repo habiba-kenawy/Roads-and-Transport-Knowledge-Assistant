@@ -1,7 +1,17 @@
 import { Info, MessageSquare, Plus, Search } from 'lucide-react'
 
+import { HistoryList } from '@/components/HistoryList'
 import { Button } from '@/components/ui/button'
 import { TabsList, TabsTrigger } from '@/components/ui/tabs'
+import type { Conversation } from '@/lib/history'
+
+interface Props {
+  onNewConversation: () => void
+  conversations: Conversation[]
+  activeId: string
+  onOpenConversation: (id: string) => void
+  onDeleteConversation: (id: string) => void
+}
 
 const MAIN_PAGES = [
   { value: 'assistant', label: 'Assistant', Icon: MessageSquare },
@@ -14,8 +24,8 @@ const PAGE_LINK =
   'hover:bg-accent hover:text-foreground data-[state=active]:bg-accent data-[state=active]:font-semibold data-[state=active]:text-brand'
 const LIST = 'h-auto w-full flex-col items-stretch gap-1 rounded-none bg-transparent p-0'
 
-// Left column: wordmark, New conversation, the two working pages, and About at the bottom.
-export function Sidebar({ onNewConversation }: { onNewConversation: () => void }) {
+// Left column: wordmark, New conversation, the two working pages, past conversations (scrolls), and About at the bottom.
+export function Sidebar({ onNewConversation, conversations, activeId, onOpenConversation, onDeleteConversation }: Props) {
   return (
     <div className="flex h-full flex-col gap-5 p-4">
       <div className="px-1 pt-1">
@@ -38,7 +48,13 @@ export function Sidebar({ onNewConversation }: { onNewConversation: () => void }
         ))}
       </TabsList>
 
-      <TabsList aria-label="Information" className={`${LIST} mt-auto border-t border-border pt-4`}>
+      <div className="flex min-h-0 flex-1 flex-col border-t border-border pt-4">
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <HistoryList conversations={conversations} activeId={activeId} onOpen={onOpenConversation} onDelete={onDeleteConversation} />
+        </div>
+      </div>
+
+      <TabsList aria-label="Information" className={`${LIST} border-t border-border pt-4`}>
         <TabsTrigger value="about" className={PAGE_LINK}>
           <Info aria-hidden /> About
         </TabsTrigger>

@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 DISCLAIMER = "This is not legal advice. The indexed documents are a limited set and may not be complete or current."
 ABSTAIN = "The indexed documents do not contain enough evidence to answer this question. This is not legal advice."
 QUOTE_MIN_CHARS = 8  # a one-word quote proves nothing
-MAX_STATEMENTS = 8  # bounded output
+MAX_STATEMENTS = 5  # bounded output (also keeps the answer step short: output length is most of its time)
 
 ANSWER_SYSTEM = (
     "You answer questions about Dubai legislation using ONLY the excerpts provided. Rules: "

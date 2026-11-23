@@ -4,7 +4,7 @@ import { AnswerCard } from '@/components/AnswerCard'
 import { ErrorCard } from '@/components/ErrorCard'
 import { ThinkingCard } from '@/components/ThinkingCard'
 import { UserBubble } from '@/components/UserBubble'
-import type { Item } from '@/hooks/useChat'
+import type { Item } from '@/lib/history'
 
 // The conversation so far: messages and replies in order, the loading card while a reply is on its way, and it scrolls to the newest.
 export function ChatView({ items, busy, onRetry }: { items: Item[]; busy: boolean; onRetry: () => void }) {

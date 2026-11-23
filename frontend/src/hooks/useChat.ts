@@ -1,61 +1,80 @@
 import axios from 'axios'
-import { useReducer, useRef } from 'react'
+import { useEffect, useReducer, useRef } from 'react'
 
 import { resumeChat, sendChat } from '@/api/client'
 import { toFriendlyError, type FriendlyError } from '@/api/errors'
+import { loadConversations, saveConversations, storable, titleOf, type Conversation, type Item } from '@/lib/history'
 import type { Controls } from '@/lib/options'
 import type { ChatResponse, Clarification } from '@/types'
 
-// What the conversation view shows, in order.
-export type Item =
-  | { id: string; type: 'user'; text: string }
-  | { id: string; type: 'answer'; response: ChatResponse }
-  | { id: string; type: 'error'; error: FriendlyError; text: string }
-
 interface State {
+  conversations: Conversation[] // saved conversations, newest first; the open one is in here once it has an answered turn
+  // the open conversation:
+  id: string // our own id (the key it is saved under); the SERVER's id is threadId
   items: Item[]
-  threadId: string | null // kept only in memory: a page refresh starts a new conversation (see the note in useChat)
+  threadId: string | null // null until the server answers the first message and creates the thread
   pending: Clarification | null // set while the server waits for the user's answer to a clarifying question
   busy: boolean // true from sending until the answer arrives: the UI blocks a second send, like the server's one-run-per-thread rule
 }
 
 type Action =
   | { type: 'sent'; text: string }
-  | { type: 'received'; response: ChatResponse }
+  | { type: 'received'; response: ChatResponse; at: number }
   | { type: 'failed'; error: FriendlyError; text: string }
   | { type: 'retrying' }
   | { type: 'reset' }
+  | { type: 'load'; conversation: Conversation }
+  | { type: 'remove'; id: string }
+  | { type: 'restore'; conversation: Conversation }
 
 const newId = () => crypto.randomUUID()
-const initial: State = { items: [], threadId: null, pending: null, busy: false }
+const fresh = (conversations: Conversation[]): State => ({ id: newId(), items: [], threadId: null, pending: null, busy: false, conversations })
+const newestFirst = (list: Conversation[]) => [...list].sort((a, b) => b.updatedAt - a.updatedAt)
+const withEntry = (list: Conversation[], entry: Conversation) => newestFirst([entry, ...list.filter((c) => c.id !== entry.id)])
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'sent':
       return { ...state, busy: true, items: [...state.items, { id: newId(), type: 'user', text: action.text }] }
-    case 'received':
-      return {
-        ...state,
-        busy: false,
+    case 'received': {
+      const items = [...state.items, { id: newId(), type: 'answer' as const, response: action.response }]
+      const pending = action.response.status === 'needs_clarification' ? action.response.clarification : null
+      const saved: Conversation = {
+        id: state.id,
         threadId: action.response.thread_id,
-        pending: action.response.status === 'needs_clarification' ? action.response.clarification : null,
-        items: [...state.items, { id: newId(), type: 'answer', response: action.response }],
+        title: titleOf(items),
+        updatedAt: action.at,
+        items: storable(items),
+        pending,
       }
+      return { ...state, busy: false, threadId: action.response.thread_id, pending, items, conversations: withEntry(state.conversations, saved) }
+    }
     case 'failed':
       return { ...state, busy: false, items: [...state.items, { id: newId(), type: 'error', error: action.error, text: action.text }] }
     case 'retrying':
       return { ...state, busy: true, items: state.items.filter((item) => item.type !== 'error') }
     case 'reset':
-      return initial
+      return fresh(state.conversations)
+    case 'load': {
+      const { id, items, threadId, pending } = action.conversation
+      return { ...state, id, items, threadId, pending, busy: false }
+    }
+    case 'remove':
+      return { ...state, conversations: state.conversations.filter((c) => c.id !== action.id) }
+    case 'restore':
+      return { ...state, conversations: withEntry(state.conversations, action.conversation) }
   }
 }
 
-// The conversation: sends messages, shows the server's replies, and answers clarifying questions.
-// thread_id is kept in component state, not in browser storage. Trade-off: a refresh or "New conversation" starts a fresh thread
-// (the old one stays on the server, unreachable from here), but there is nothing stale to restore and nothing to clean up.
+// The chat: sends messages, shows the server's replies, answers clarifying questions, and keeps past conversations.
+// thread_id is the server's key for a conversation's memory. It is saved WITH the conversation, so reopening a past conversation
+// continues on the same server thread and the assistant still remembers the earlier questions.
 export function useChat(controls: Controls) {
-  const [state, dispatch] = useReducer(reducer, initial)
+  const [state, dispatch] = useReducer(reducer, undefined, () => fresh(loadConversations()))
   const inFlight = useRef<AbortController | null>(null)
+
+  // The browser's storage is the one outside system this hook has to keep in step with.
+  useEffect(() => saveConversations(state.conversations), [state.conversations])
 
   // One request. If the server is waiting for a clarification the text is the answer to it (resume), otherwise a normal message.
   async function run(text: string) {
@@ -76,17 +95,26 @@ export function useChat(controls: Controls) {
               },
               controller.signal,
             )
-      dispatch({ type: 'received', response })
+      dispatch({ type: 'received', response, at: Date.now() })
     } catch (error) {
-      if (axios.isCancel(error)) return // "New conversation" cancelled it: nothing to show
+      if (axios.isCancel(error)) return // the user switched conversation: nothing to show
       dispatch({ type: 'failed', error: toFriendlyError(error, action), text })
     }
   }
 
+  // Leaving a conversation cancels a request that is still running (the server finishes it, but nobody is waiting for it).
+  function leave() {
+    inFlight.current?.abort()
+  }
+
   return {
+    // the open conversation
+    id: state.id,
     items: state.items,
     busy: state.busy,
     waitingForClarification: state.pending !== null,
+    // saved conversations
+    conversations: state.conversations,
     send(text: string) {
       if (state.busy) return
       dispatch({ type: 'sent', text })
@@ -99,8 +127,26 @@ export function useChat(controls: Controls) {
       void run(failed.text)
     },
     reset() {
-      inFlight.current?.abort()
+      leave()
       dispatch({ type: 'reset' })
+    },
+    open(id: string) {
+      const conversation = state.conversations.find((c) => c.id === id)
+      if (!conversation) return
+      leave()
+      dispatch({ type: 'load', conversation })
+    },
+    // Returns the removed conversation so the caller can offer "Undo".
+    remove(id: string): Conversation | undefined {
+      const removed = state.conversations.find((c) => c.id === id)
+      if (!removed) return undefined
+      if (id === state.id) leave()
+      dispatch({ type: 'remove', id })
+      if (id === state.id) dispatch({ type: 'reset' }) // deleting the open conversation leaves a blank one
+      return removed
+    },
+    restore(conversation: Conversation) {
+      dispatch({ type: 'restore', conversation })
     },
   }
 }

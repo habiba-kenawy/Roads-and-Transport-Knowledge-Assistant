@@ -17,7 +17,7 @@ import { DEFAULT_CONTROLS, type Controls } from '@/lib/options'
 
 type View = 'assistant' | 'inspector' | 'about'
 
-// Chunk 3: the Assistant talks to the API. The Search Inspector is wired up in the next chunk.
+// The Assistant talks to the API and remembers past conversations in this browser. The Search Inspector is wired up in the next chunk.
 export default function App() {
   const [view, setView] = useState<View>('assistant')
   const [question, setQuestion] = useState('')
@@ -41,13 +41,26 @@ export default function App() {
     }
   }
 
+  function deleteConversation(id: string) {
+    const removed = chat.remove(id)
+    if (removed) toast('Conversation deleted', { action: { label: 'Undo', onClick: () => chat.restore(removed) } })
+  }
+
   const sidebar = (
     <Sidebar
       onNewConversation={() => {
-        chat.reset()
+        chat.reset() // the finished conversation is already saved
         setQuestion('')
         go('assistant')
       }}
+      conversations={chat.conversations}
+      activeId={chat.id}
+      onOpenConversation={(id) => {
+        chat.open(id)
+        setQuestion('')
+        go('assistant')
+      }}
+      onDeleteConversation={deleteConversation}
     />
   )
 
@@ -84,12 +97,12 @@ export default function App() {
         Skip to content
       </a>
 
-      <aside className="hidden w-64 shrink-0 overflow-y-auto rounded-2xl bg-card shadow-md lg:block">{sidebar}</aside>
+      <aside className="hidden w-64 shrink-0 overflow-hidden rounded-2xl bg-card shadow-md lg:block">{sidebar}</aside>
 
       <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
         <SheetContent side="left" className="w-72 p-0">
           <SheetTitle className="sr-only">Menu</SheetTitle>
-          <SheetDescription className="sr-only">Pages</SheetDescription>
+          <SheetDescription className="sr-only">Pages and past conversations</SheetDescription>
           {sidebar}
         </SheetContent>
       </Sheet>

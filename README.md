@@ -216,7 +216,7 @@ and costs about 1.6 s ([evidence/AT-10_tool_effect.txt](evidence/AT-10_tool_effe
 not a long-term store. One run per thread at a time (a second concurrent request gets 409; in-process lock).
 
 **Limits (all bounded).** Message 2000 characters; `top_k` 1-20 (default 5); 20 candidates per retriever; 2 clarifications; 2 answer model
-calls (one retry); 8 statements per answer with quotes of at least 8 characters; tool agent 3 model calls, 2 tool calls, 2 chunks per read; model
+calls (one retry); 5 statements per answer with quotes of at least 8 characters; tool agent 3 model calls, 2 tool calls, 2 chunks per read; model
 call 30 s timeout with 2 retries; thread id `[A-Za-z0-9_-]`, 1-64 characters.
 
 **Logging.** One INFO line per node start and end with `request_id`, `thread_id`, search mode, seconds and list sizes (never document text);
@@ -334,4 +334,4 @@ easy to separate the modes or to show that reranking helps.
 ## Frontend
 
 `frontend/` is a React + Vite + TypeScript page (Tailwind CSS 4, shadcn/ui, axios) that only calls the API above. Setup is in [Setup and run](#setup-and-run).
-The Assistant chat works against the real API (answers with sources, clarification and resume, plain-language errors); the Search Inspector is next. The backend is complete without it.
+The Assistant chat works against the real API (answers with sources, clarification and resume, plain-language errors) and keeps past conversations in the browser (they continue on the same server thread, also after a server restart); the Search Inspector is next. The backend is complete without it.
