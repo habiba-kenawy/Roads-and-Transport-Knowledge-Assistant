@@ -1,0 +1,315 @@
+{
+  "capturedAt": "2026-11-26T14:24:48.439Z",
+  "source": "http://127.0.0.1:8010",
+  "chat": {
+    "How much is the departure fee for passengers leaving through Dubai airports, and who is exempt from it?": {
+      "thread_id": "a02de401e48d4e1198ffcf641ec2bef5",
+      "status": "answered",
+      "answer": "A departure fee of seventy-five dirhams (AED 75.00) will be collected from every passenger departing the United Arab Emirates through Dubai airports [1]. Passengers below the age of two (2) years are exempted from payment of the fee [1]. On-duty pilots and cabin crew are exempted from payment of the fee [1]. Transit passengers whose arrival and departure flight number is the same are exempted from payment of the fee [1]. Transfer passengers whose final destination is not the United Arab Emirates and whose departure is within twenty-four (24) hours from the time of arrival are exempted from payment of the fee [1].\n\nThis is not legal advice. The indexed documents are a limited set and may not be complete or current.",
+      "citations": [
+        {
+          "document_id": "dlp-1432",
+          "chunk_id": "dlp-1432-001-44caaf5f",
+          "title": "Law No. (13) of 2022 Concerning the Dubai Airports Departure Fee",
+          "source_url": "https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoMTMpIG9mIDIwMjIgQ29uY2VybmluZyB0aGUgRHViYWkgQWlycG9ydHMgRGVwYXJ0dXJlIEZlZQ==&year=2022",
+          "locator_type": "page",
+          "locator": "pp. 1-2"
+        }
+      ],
+      "clarification": null,
+      "request_id": "cdcee0a6137d"
+    },
+    "Who is exempt from it?": {
+      "thread_id": "a02de401e48d4e1198ffcf641ec2bef5",
+      "status": "answered",
+      "answer": "The following categories are hereby exempted from payment of the fee referred to in paragraph (a) of this Article: 1. passengers below the age of two (2) years; 2. on-duty pilots and cabin crew; 3. transit passengers whose arrival and departure flight number is the same; 4. transfer passengers whose final destination is not the United Arab Emirates and whose departure is within twenty-four (24) hours from the time of arrival [1].\n\nThis is not legal advice. The indexed documents are a limited set and may not be complete or current.",
+      "citations": [
+        {
+          "document_id": "dlp-1432",
+          "chunk_id": "dlp-1432-001-44caaf5f",
+          "title": "Law No. (13) of 2022 Concerning the Dubai Airports Departure Fee",
+          "source_url": "https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoMTMpIG9mIDIwMjIgQ29uY2VybmluZyB0aGUgRHViYWkgQWlycG9ydHMgRGVwYXJ0dXJlIEZlZQ==&year=2022",
+          "locator_type": "page",
+          "locator": "pp. 1-2"
+        }
+      ],
+      "clarification": null,
+      "request_id": "8656e18ab190"
+    },
+    "What is the fine?": {
+      "thread_id": "6bbd97591a9c4c8c927c073484b98ae3",
+      "status": "needs_clarification",
+      "answer": null,
+      "citations": [],
+      "clarification": {
+        "interrupt_id": "e61f2c41516d10b1d889b8ee280be322",
+        "question": "What specific violation or law are you asking about regarding the fine?"
+      },
+      "request_id": "058acbbb52be"
+    },
+    "What is a good recipe for pasta carbonara?": {
+      "thread_id": "660570348d6e40848a4575027a758acd",
+      "status": "out_of_scope",
+      "answer": "I can only help with questions about Dubai Roads and Transport legislation in the indexed documents. This is not legal advice.",
+      "citations": [],
+      "clarification": null,
+      "request_id": "ef2f80ba6932"
+    },
+    "What is the fine for parking a camel outside a mosque in Dubai?": {
+      "thread_id": "f454e0de88d744218cb478eb0cdc7fb0",
+      "status": "insufficient_evidence",
+      "answer": "The indexed documents do not contain enough evidence to answer this question. This is not legal advice.",
+      "citations": [],
+      "clarification": null,
+      "request_id": "e77ba1dbb829"
+    }
+  },
+  "resume": {
+    "the fees for passengers leaving through Dubai airports": {
+      "thread_id": "6bbd97591a9c4c8c927c073484b98ae3",
+      "status": "answered",
+      "answer": "A departure fee of seventy-five dirhams (AED 75.00) will be collected from every passenger departing the United Arab Emirates through Dubai airports [1]. Passengers below the age of two (2) years are exempted from payment of the fee [1]. On-duty pilots and cabin crew are exempted from payment of the fee [1]. Transit passengers whose arrival and departure flight number is the same are exempted from payment of the fee [1]. Transfer passengers whose final destination is not the United Arab Emirates and whose departure is within twenty-four (24) hours from the time of arrival are exempted from payment of the fee [1].\n\nThis is not legal advice. The indexed documents are a limited set and may not be complete or current.",
+      "citations": [
+        {
+          "document_id": "dlp-1432",
+          "chunk_id": "dlp-1432-001-44caaf5f",
+          "title": "Law No. (13) of 2022 Concerning the Dubai Airports Departure Fee",
+          "source_url": "https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoMTMpIG9mIDIwMjIgQ29uY2VybmluZyB0aGUgRHViYWkgQWlycG9ydHMgRGVwYXJ0dXJlIEZlZQ==&year=2022",
+          "locator_type": "page",
+          "locator": "pp. 1-2"
+        }
+      ],
+      "clarification": null,
+      "request_id": "594785baf709"
+    }
+  },
+  "search": {
+    "departure fee airports|hybrid||": {
+      "mode": "hybrid",
+      "ranking_stage": "reranked",
+      "filters_applied": {
+        "year": null,
+        "doc_type": null
+      },
+      "results": [
+        {
+          "rank": 1,
+          "score": 10,
+          "score_type": "llm_relevance_0_10",
+          "stage": "reranked",
+          "chunk_id": "dlp-1432-001-44caaf5f",
+          "doc_id": "dlp-1432",
+          "title": "Law No. (13) of 2022 Concerning the Dubai Airports Departure Fee",
+          "source_url": "https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoMTMpIG9mIDIwMjIgQ29uY2VybmluZyB0aGUgRHViYWkgQWlycG9ydHMgRGVwYXJ0dXJlIEZlZQ==&year=2022",
+          "locator_type": "page",
+          "locator": "pp. 1-2",
+          "article": "Article (1)",
+          "year": 2022,
+          "doc_type": "Law",
+          "status": "In Force",
+          "text": "Article (1)\na. A departure fee of seventy-five dirhams (AED 75.00) will be collected from every passenger\ndeparting the United Arab Emirates through Dubai airports.\nb. The following categories are hereby exempted from payment of the fee referred to in\nparagraph (a) of this Article:\n1. passengers below the age of two (2) years;\n2. on-duty pilots and cabin crew;\n3. transit passengers whose arrival and departure flight number is the same ; and\n©2022 The Supreme Legislation Committee in the Emirate of Dubai\n1Every effort has been made to produce an accurate and complete English version of this legislation. However, for the\npurpose of its interpretation and application, reference must be made to the original Arabic text. In case of conflict,\nthe Arabic text will prevail.\n4. transfer passengers whose final destination is not the United Arab Emirates and whose\ndeparture is within twenty-four (24) hours from the time of arrival.\nCollection of the Fee"
+        },
+        {
+          "rank": 2,
+          "score": 9,
+          "score_type": "llm_relevance_0_10",
+          "stage": "reranked",
+          "chunk_id": "dlp-1432-002-f16113aa",
+          "doc_id": "dlp-1432",
+          "title": "Law No. (13) of 2022 Concerning the Dubai Airports Departure Fee",
+          "source_url": "https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoMTMpIG9mIDIwMjIgQ29uY2VybmluZyB0aGUgRHViYWkgQWlycG9ydHMgRGVwYXJ0dXJlIEZlZQ==&year=2022",
+          "locator_type": "page",
+          "locator": "p. 2",
+          "article": "Article (2)",
+          "year": 2022,
+          "doc_type": "Law",
+          "status": "In Force",
+          "text": "Article (2)\nAirlines operating in Dubai airports will be responsible for collecting the fee referred to in Article\n(1) of this Law upon issuing air tickets to customers within or outside of the United Arab Emirates.\nThe airlines must transfer the proceeds generated from collecting such a fee to the Corporation,\nin accordance with the processes, procedures, and time frames stipulated in the document stating\nthe conditions for using airports, as adopted by the Corporation in this respect.\nFee Payment"
+        },
+        {
+          "rank": 3,
+          "score": 8,
+          "score_type": "llm_relevance_0_10",
+          "stage": "reranked",
+          "chunk_id": "dlp-1432-000-82e5035a",
+          "doc_id": "dlp-1432",
+          "title": "Law No. (13) of 2022 Concerning the Dubai Airports Departure Fee",
+          "source_url": "https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoMTMpIG9mIDIwMjIgQ29uY2VybmluZyB0aGUgRHViYWkgQWlycG9ydHMgRGVwYXJ0dXJlIEZlZQ==&year=2022",
+          "locator_type": "page",
+          "locator": "p. 1",
+          "article": null,
+          "year": 2022,
+          "doc_type": "Law",
+          "status": "In Force",
+          "text": "Law No. (13) of 2022\nConcerning the\nDubai Airports Departure Fee1\nWe, Mohammed bin Rashid Al Maktoum, Ruler of Dubai,\nAfter perusal of:\nCabinet Resolution No. (10) of 2010 Concerning the Departure Fee through Sea, Air, and Land\nPorts of Entry of the United Arab Emirates;\nLaw No. (5) of 1995 Establishing the Department of Finance;\nLaw No. (3) of 2003 Establishing the Executive Council of the Emirate of Dubai;\nLaw No. (3) of 2004 Imposing the Dubai International Airport Departure Fee and its amendments;\nLaw No. (23) of 2007 Establishing the Dubai Airports Corporation (the “Corporation”);\nLaw No. (14) of 2009 Concerning the Pricing of Government Services in the Emirate of Dubai and\nits amendments; and\nLaw No. (1) of 2016 Concerning the Financial Regulations of the Government of Dubai,\nDo hereby issue this Law.\nCharging the Fee"
+        },
+        {
+          "rank": 4,
+          "score": 7,
+          "score_type": "llm_relevance_0_10",
+          "stage": "reranked",
+          "chunk_id": "dlp-1432-003-f262e976",
+          "doc_id": "dlp-1432",
+          "title": "Law No. (13) of 2022 Concerning the Dubai Airports Departure Fee",
+          "source_url": "https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoMTMpIG9mIDIwMjIgQ29uY2VybmluZyB0aGUgRHViYWkgQWlycG9ydHMgRGVwYXJ0dXJlIEZlZQ==&year=2022",
+          "locator_type": "page",
+          "locator": "p. 2",
+          "article": "Article (3)",
+          "year": 2022,
+          "doc_type": "Law",
+          "status": "In Force",
+          "text": "Article (3)\nThe fee collected pursuant to this Law will be paid to the Public Treasury of the Government of\nDubai.\nChanging the Fee"
+        },
+        {
+          "rank": 5,
+          "score": 6,
+          "score_type": "llm_relevance_0_10",
+          "stage": "reranked",
+          "chunk_id": "dlp-1729-010-ae830c42",
+          "doc_id": "dlp-1729",
+          "title": "Administrative Resolution No. (67) of 2011 Concerning the Conditions and Rules for Operating Water Taxis in the Emirate of Dubai",
+          "source_url": "https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=QWRtaW5pc3RyYXRpdmUgUmVzb2x1dGlvbiBOby4gKDY3KSBvZiAyMDExIENvbmNlcm5pbmcgdGhlIENvbmRpdGlvbnMgYW5kIFJ1bGVzIGZvciBPcGVyYXRpbmcgV2F0ZXIgVGF4aXMgaW4gdGhlIEVtaXJhdGUgb2YgRHViYWk=&year=2011",
+          "locator_type": "page",
+          "locator": "p. 5",
+          "article": "Article (5)",
+          "year": 2011,
+          "doc_type": "Resolution",
+          "status": "In Force",
+          "text": "Article (5)\nThe Fare will be collected from a passenger through any of the following methods:\n1. in cash against a receipt issued to the passenger for the paid amount; or\n2. by credit card, in which case, a payment confirmation receipt will be printed and delivered to the\npassenger. In case of network breakdown, the Fare will be collected manually by scanning the credit\ncard and printing a receipt.\nWater Taxis Charter"
+        }
+      ],
+      "candidates_before_rerank": [
+        "dlp-1432-000-82e5035a",
+        "dlp-1432-001-44caaf5f",
+        "dlp-1432-002-f16113aa",
+        "dlp-1432-003-f262e976",
+        "dlp-1718-020-c972355b",
+        "dlp-1718-035-28e318f0",
+        "dlp-1729-010-ae830c42",
+        "dlp-1718-021-bd055122",
+        "dlp-191-005-416fe2c8",
+        "dlp-1718-036-10b6734c"
+      ],
+      "rerank_note": null
+    },
+    "departure fee airports|lexical||": {
+      "mode": "lexical",
+      "ranking_stage": "lexical",
+      "filters_applied": {
+        "year": null,
+        "doc_type": null
+      },
+      "results": [
+        {
+          "rank": 1,
+          "score": 17.84943541821902,
+          "score_type": "bm25",
+          "stage": "lexical",
+          "chunk_id": "dlp-1432-000-82e5035a",
+          "doc_id": "dlp-1432",
+          "title": "Law No. (13) of 2022 Concerning the Dubai Airports Departure Fee",
+          "source_url": "https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoMTMpIG9mIDIwMjIgQ29uY2VybmluZyB0aGUgRHViYWkgQWlycG9ydHMgRGVwYXJ0dXJlIEZlZQ==&year=2022",
+          "locator_type": "page",
+          "locator": "p. 1",
+          "article": null,
+          "year": 2022,
+          "doc_type": "Law",
+          "status": "In Force",
+          "text": "Law No. (13) of 2022\nConcerning the\nDubai Airports Departure Fee1\nWe, Mohammed bin Rashid Al Maktoum, Ruler of Dubai,\nAfter perusal of:\nCabinet Resolution No. (10) of 2010 Concerning the Departure Fee through Sea, Air, and Land\nPorts of Entry of the United Arab Emirates;\nLaw No. (5) of 1995 Establishing the Department of Finance;\nLaw No. (3) of 2003 Establishing the Executive Council of the Emirate of Dubai;\nLaw No. (3) of 2004 Imposing the Dubai International Airport Departure Fee and its amendments;\nLaw No. (23) of 2007 Establishing the Dubai Airports Corporation (the “Corporation”);\nLaw No. (14) of 2009 Concerning the Pricing of Government Services in the Emirate of Dubai and\nits amendments; and\nLaw No. (1) of 2016 Concerning the Financial Regulations of the Government of Dubai,\nDo hereby issue this Law.\nCharging the Fee"
+        },
+        {
+          "rank": 2,
+          "score": 15.346280189126091,
+          "score_type": "bm25",
+          "stage": "lexical",
+          "chunk_id": "dlp-1432-001-44caaf5f",
+          "doc_id": "dlp-1432",
+          "title": "Law No. (13) of 2022 Concerning the Dubai Airports Departure Fee",
+          "source_url": "https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoMTMpIG9mIDIwMjIgQ29uY2VybmluZyB0aGUgRHViYWkgQWlycG9ydHMgRGVwYXJ0dXJlIEZlZQ==&year=2022",
+          "locator_type": "page",
+          "locator": "pp. 1-2",
+          "article": "Article (1)",
+          "year": 2022,
+          "doc_type": "Law",
+          "status": "In Force",
+          "text": "Article (1)\na. A departure fee of seventy-five dirhams (AED 75.00) will be collected from every passenger\ndeparting the United Arab Emirates through Dubai airports.\nb. The following categories are hereby exempted from payment of the fee referred to in\nparagraph (a) of this Article:\n1. passengers below the age of two (2) years;\n2. on-duty pilots and cabin crew;\n3. transit passengers whose arrival and departure flight number is the same ; and\n©2022 The Supreme Legislation Committee in the Emirate of Dubai\n1Every effort has been made to produce an accurate and complete English version of this legislation. However, for the\npurpose of its interpretation and application, reference must be made to the original Arabic text. In case of conflict,\nthe Arabic text will prevail.\n4. transfer passengers whose final destination is not the United Arab Emirates and whose\ndeparture is within twenty-four (24) hours from the time of arrival.\nCollection of the Fee"
+        },
+        {
+          "rank": 3,
+          "score": 11.29026522519096,
+          "score_type": "bm25",
+          "stage": "lexical",
+          "chunk_id": "dlp-1432-002-f16113aa",
+          "doc_id": "dlp-1432",
+          "title": "Law No. (13) of 2022 Concerning the Dubai Airports Departure Fee",
+          "source_url": "https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoMTMpIG9mIDIwMjIgQ29uY2VybmluZyB0aGUgRHViYWkgQWlycG9ydHMgRGVwYXJ0dXJlIEZlZQ==&year=2022",
+          "locator_type": "page",
+          "locator": "p. 2",
+          "article": "Article (2)",
+          "year": 2022,
+          "doc_type": "Law",
+          "status": "In Force",
+          "text": "Article (2)\nAirlines operating in Dubai airports will be responsible for collecting the fee referred to in Article\n(1) of this Law upon issuing air tickets to customers within or outside of the United Arab Emirates.\nThe airlines must transfer the proceeds generated from collecting such a fee to the Corporation,\nin accordance with the processes, procedures, and time frames stipulated in the document stating\nthe conditions for using airports, as adopted by the Corporation in this respect.\nFee Payment"
+        },
+        {
+          "rank": 4,
+          "score": 6.908404209252343,
+          "score_type": "bm25",
+          "stage": "lexical",
+          "chunk_id": "dlp-1718-020-c972355b",
+          "doc_id": "dlp-1718",
+          "title": "Law No. (4) of 2020 Regulating Unmanned Aircraft in the Emirate of Dubai",
+          "source_url": "https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoNCkgb2YgMjAyMCBBaXJjcmFmdCBpbiB0aGUgRW1pcmF0ZQ==&year=2020",
+          "locator_type": "page",
+          "locator": "p. 10",
+          "article": "Article (7)",
+          "year": 2020,
+          "doc_type": "Law",
+          "status": "In Force as Amended",
+          "text": "Article (7)\nFor the purposes of this Law, the Dubai Aviation Engineering Projects Corporation will have the\nduties and powers to:\n1. establish the specifications, standards, and requirements that must be met by Unmanned\nAircraft Airports, and submit the same to the DCAA for approval;\n2. develop and approve the engineering designs of the Unmanned Aircraft Airports designated\nfor government use, and their stations, facilities, and Infrastructure; and supervise the\nconstruction of these Airports and implementation of such designs;\n3. approve the engineering designs and plans of the Unmanned Aircraft Airports designated for\nnon-government use, and their stations, facilities, and Infrastructure; supervise and oversee\nthe implementation of these designs and plans; and issue the relevant completion certificates,\nprovided that the designs and plans are compliant with the adopted urban planning\nrequirements and with the procedures for control of traffic and transport in the Emirate;"
+        },
+        {
+          "rank": 5,
+          "score": 6.7618391239906686,
+          "score_type": "bm25",
+          "stage": "lexical",
+          "chunk_id": "dlp-1718-035-28e318f0",
+          "doc_id": "dlp-1718",
+          "title": "Law No. (4) of 2020 Regulating Unmanned Aircraft in the Emirate of Dubai",
+          "source_url": "https://dlp.dubai.gov.ae/en/Pages/HTMLViewer.aspx?file=TGF3IE5vLiAoNCkgb2YgMjAyMCBBaXJjcmFmdCBpbiB0aGUgRW1pcmF0ZQ==&year=2020",
+          "locator_type": "page",
+          "locator": "p. 15",
+          "article": "Article (21)",
+          "year": 2020,
+          "doc_type": "Law",
+          "status": "In Force as Amended",
+          "text": "Article (21)\nNo Person may establish or operate Unmanned Aircraft Airports or make any modification thereto\nwithout first obtaining the relevant Permit from the DCAA. This Permit will be issued in\ncoordination with the Dubai Aviation Engineering Projects Corporation and the concerned entities\nas per the relevant conditions and requirements approved by the DCAA and these entities.\nUsing Airports and Heliports"
+        }
+      ],
+      "candidates_before_rerank": null,
+      "rerank_note": null
+    },
+    "departure fee airports|lexical|2026|Law": {
+      "mode": "lexical",
+      "ranking_stage": "lexical",
+      "filters_applied": {
+        "year": 2026,
+        "doc_type": "Law"
+      },
+      "results": [],
+      "candidates_before_rerank": null,
+      "rerank_note": null
+    },
+    "departure fee airports|hybrid|2026|Law": {
+      "mode": "hybrid",
+      "ranking_stage": "reranked",
+      "filters_applied": {
+        "year": 2026,
+        "doc_type": "Law"
+      },
+      "results": [],
+      "candidates_before_rerank": [],
+      "rerank_note": null
+    }
+  }
+}

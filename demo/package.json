@@ -1,0 +1,23 @@
+{
+  "name": "tareeq-demo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Records the TAREEQ frontend demo video (Playwright + ffmpeg)",
+  "type": "module",
+  "scripts": {
+    "setup": "playwright install chromium",
+    "demo": "node run.js",
+    "capture": "node capture-fixtures.js",
+    "record": "node record.js",
+    "build": "node build.js",
+    "verify": "node verify.js"
+  },
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "1.1.0",
+    "@ffprobe-installer/ffprobe": "2.1.2",
+    "playwright": "1.65.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

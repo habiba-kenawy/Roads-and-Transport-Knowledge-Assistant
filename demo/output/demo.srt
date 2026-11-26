@@ -1,0 +1,87 @@
+1
+00:00:00,400 --> 00:00:04,000
+TAREEQ answers questions about Dubai Roads and Transport legislation.
+
+2
+00:00:04,200 --> 00:00:10,200
+Choose how to search: hybrid, keywords or meaning. Filter by year and document type.
+
+3
+00:00:10,400 --> 00:00:13,600
+Pick an example question, or type your own.
+
+4
+00:00:13,700 --> 00:00:17,700
+A loading card shows while the assistant searches, ranks and writes.
+
+5
+00:00:17,900 --> 00:00:23,900
+Every answer has numbered sources, and each sentence is checked against the document.
+
+6
+00:00:24,100 --> 00:00:30,000
+Click [1] to open that source: the document, the page, and the sentences that rely on it.
+
+7
+00:00:30,100 --> 00:00:34,000
+A button opens the official page. Not legal advice: always check the source.
+
+8
+00:00:34,300 --> 00:00:39,500
+Follow-up questions work: the conversation is remembered.
+
+9
+00:00:39,600 --> 00:00:43,600
+"It" is understood from the earlier question.
+
+10
+00:00:43,900 --> 00:00:48,000
+A vague question: start a new conversation and ask "What is the fine?"
+
+11
+00:00:48,100 --> 00:00:53,000
+The assistant pauses and asks. The answer box is right inside the card.
+
+12
+00:00:53,300 --> 00:00:59,000
+Typing the answer resumes the paused question.
+
+13
+00:00:59,100 --> 00:01:02,600
+Same conversation, now answered with sources.
+
+14
+00:01:02,900 --> 00:01:08,100
+Outside the topic? It refuses politely and invents no answer.
+
+15
+00:01:08,400 --> 00:01:15,800
+Not covered by the documents? It says so instead of guessing.
+
+16
+00:01:16,000 --> 00:01:20,500
+Past conversations are saved in this browser. Open one to continue it.
+
+17
+00:01:20,600 --> 00:01:25,000
+Delete one: a toast offers Undo.
+
+18
+00:01:25,300 --> 00:01:30,000
+The Search Inspector shows what the search finds, before any answer is written.
+
+19
+00:01:30,100 --> 00:01:36,000
+Each passage shows its rank, page, a labelled score, and its position before reranking.
+
+20
+00:01:36,300 --> 00:01:41,600
+Lexical mode uses keyword scores (BM25): a different scale, never compared with the others.
+
+21
+00:01:41,800 --> 00:01:49,000
+A filter that matches no document returns an empty result.
+
+22
+00:01:49,300 --> 00:01:54,200
+The About page explains how it works and states its limits.
