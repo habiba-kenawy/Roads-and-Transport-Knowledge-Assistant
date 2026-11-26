@@ -4,6 +4,8 @@ import { mkdirSync, readFileSync, rmSync } from 'node:fs'
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg'
 import ffprobeInstaller from '@ffprobe-installer/ffprobe'
 
+import { WITH_MUSIC } from './flow.js'
+
 const FILE = 'output/demo.mp4'
 const captions = JSON.parse(readFileSync('captions.json', 'utf-8'))
 const probe = JSON.parse(execFileSync(ffprobeInstaller.path, ['-v', 'error', '-show_streams', '-show_format', '-of', 'json', FILE]).toString())
@@ -28,18 +30,22 @@ const checks = [
   ['resolution 1280x720', video.width === 1280 && video.height === 720, `${video.width}x${video.height}`],
   ['30 fps', Math.abs(fps - 30) < 0.01, `${fps.toFixed(2)} fps`],
   ['video H.264', video.codec_name === 'h264', video.codec_name],
-  ['audio AAC present', audio?.codec_name === 'aac', audio ? `${audio.codec_name}, ${audio.channels} ch, ${audio.sample_rate} Hz` : 'no audio stream'],
+  WITH_MUSIC
+    ? ['audio AAC present', audio?.codec_name === 'aac', audio ? `${audio.codec_name}, ${audio.channels} ch, ${audio.sample_rate} Hz` : 'no audio stream']
+    : ['no audio track (music removed)', audio === undefined, audio ? `found ${audio.codec_name}` : 'none'],
   ['container MP4', probe.format.format_name.includes('mp4'), probe.format.format_name],
   ['duration 120 s or less', duration <= 120, `${duration.toFixed(1)} s`],
   ['duration near 1:50 (100-120 s)', duration >= 100 && duration <= 120, `${duration.toFixed(1)} s`],
 ]
-const total = loudness()
-const intro = meanVolume(0, 1)
-const middle = meanVolume(50, 10)
-const outro = meanVolume(duration - 1.2, 1.0)
-checks.push(['music is quiet (integrated loudness between -24 and -14 LUFS)', total <= -14 && total >= -24, `${total} LUFS`])
-checks.push(['fades in (first second quieter than the middle)', intro < middle - 3, `first second ${intro} dB, middle ${middle} dB`])
-checks.push(['fades out (last second quieter than the middle)', outro < middle - 6, `last second ${outro} dB, middle ${middle} dB`])
+if (WITH_MUSIC) {
+  const total = loudness()
+  const intro = meanVolume(0, 1)
+  const middle = meanVolume(50, 10)
+  const outro = meanVolume(duration - 1.2, 1.0)
+  checks.push(['music is quiet (integrated loudness between -24 and -14 LUFS)', total <= -14 && total >= -24, `${total} LUFS`])
+  checks.push(['fades in (first second quieter than the middle)', intro < middle - 3, `first second ${intro} dB, middle ${middle} dB`])
+  checks.push(['fades out (last second quieter than the middle)', outro < middle - 6, `last second ${outro} dB, middle ${middle} dB`])
+}
 
 let failed = 0
 for (const [name, ok, detail] of checks) {

@@ -15,6 +15,9 @@ export const QUESTIONS = {
 // The key a recorded /search answer is stored under.
 export const searchKey = (query, mode, year, docType) => [query, mode, year ?? '', docType ?? ''].join('|')
 
+// Background music is off: the video has no audio track. DEMO_MUSIC=1 mixes assets/music.mp3 back in (see build.js).
+export const WITH_MUSIC = process.env.DEMO_MUSIC === '1'
+
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export async function isUp(url) {

@@ -1,9 +1,12 @@
-// Turns work/recording.webm into output/demo.mp4 (1280x720, 30 fps, H.264 + AAC) and writes output/demo.srt from captions.json.
+// Turns work/recording.webm into output/demo.mp4 (1280x720, 30 fps, H.264, no audio) and writes output/demo.srt from captions.json.
 //  - captions are burned into the bottom strip with ffmpeg's subtitle renderer (Roboto Medium from assets/fonts)
-//  - the music (assets/music.mp3) is looped or trimmed to the video length, levelled to about -18 LUFS, faded in over 2 s and out over the last 3 s
+//  - no music by default. With DEMO_MUSIC=1 the music (assets/music.mp3) is looped or trimmed to the video length, levelled to about
+//    -18 LUFS, faded in over 2 s and out over the last 3 s, and the audio track is AAC
 import { execFileSync, spawnSync } from 'node:child_process'
 import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg'
+
+import { WITH_MUSIC } from './flow.js'
 
 const FADE_IN = 2
 const FADE_OUT = 3
@@ -53,11 +56,11 @@ const audio = `[1:a]atrim=0:${duration},asetpts=N/SR/TB,loudnorm=I=-18:LRA=7:TP=
 const args = [
   '-y', '-hide_banner', '-loglevel', 'error',
   '-ss', lead.toFixed(3), '-i', 'recording.webm',
-  '-stream_loop', '-1', '-i', '../assets/music.mp3',
-  '-filter_complex', `${video};${audio}`,
-  '-map', '[v]', '-map', '[a]', '-t', duration.toFixed(3),
+  ...(WITH_MUSIC ? ['-stream_loop', '-1', '-i', '../assets/music.mp3'] : []),
+  '-filter_complex', WITH_MUSIC ? `${video};${audio}` : video,
+  '-map', '[v]', ...(WITH_MUSIC ? ['-map', '[a]'] : ['-an']), '-t', duration.toFixed(3),
   '-c:v', 'libx264', '-preset', 'slow', '-crf', '20', '-r', '30', '-pix_fmt', 'yuv420p', '-movflags', '+faststart',
-  '-c:a', 'aac', '-b:a', '160k', '-ar', '44100',
+  ...(WITH_MUSIC ? ['-c:a', 'aac', '-b:a', '160k', '-ar', '44100'] : []),
   '../output/demo.mp4',
 ]
 execFileSync(ffmpegInstaller.path, args, { cwd: 'work', stdio: 'inherit' })
