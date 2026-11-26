@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from app.retrieval.filters import SearchFilters
 from app.schemas.document import ChunkRecord
+from app.schemas.examples import SEARCH_REQUEST, SEARCH_RESPONSE
 
 
 class RankedChunk(BaseModel):
@@ -33,7 +34,7 @@ class RerankResult(BaseModel):
 class SearchRequest(BaseModel):
     """POST /search input; the corpus restriction is not an option, it is always applied in code."""
 
-    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid", json_schema_extra={"examples": [SEARCH_REQUEST]})
 
     query: str = Field(min_length=1, max_length=500)
     mode: Literal["lexical", "semantic", "hybrid"] = "hybrid"
@@ -63,6 +64,8 @@ class SearchHit(BaseModel):
 
 class SearchResponse(BaseModel):
     """POST /search output."""
+
+    model_config = ConfigDict(json_schema_extra={"examples": [SEARCH_RESPONSE]})
 
     mode: str
     ranking_stage: str  # stage of the returned ranking

@@ -16,8 +16,11 @@ describe('toFriendlyError', () => {
     expect(error.message).toMatch(/Cannot reach/)
   })
 
-  it('reports a timeout separately', () => {
+  it('reports a timeout separately, whether the page or the server gave up', () => {
     expect(toFriendlyError(new AxiosError('timeout', 'ECONNABORTED'), 'chat').kind).toBe('timeout')
+    const serverGaveUp = toFriendlyError(answered(504, { detail: 'the request took longer than 60 seconds' }), 'chat')
+    expect(serverGaveUp).toMatchObject({ kind: 'timeout', canRetry: true })
+    expect(serverGaveUp.message).not.toMatch(/504/)
   })
 
   it('tells a busy thread from a question that is no longer waiting (both are 409)', () => {

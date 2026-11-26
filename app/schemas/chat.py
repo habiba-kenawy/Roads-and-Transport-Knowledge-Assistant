@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 from app.retrieval.filters import SearchFilters
 from app.schemas.answer import Citation
+from app.schemas.examples import CHAT_REQUEST, CHAT_RESPONSES, RESUME_REQUEST
 
 MAX_MESSAGE_CHARS = 2000  # documented maximum message length
 ThreadId = Annotated[str, StringConstraints(pattern=r"^[A-Za-z0-9_-]{1,64}$")]  # safe to use as a key and in logs
@@ -13,7 +14,7 @@ ThreadId = Annotated[str, StringConstraints(pattern=r"^[A-Za-z0-9_-]{1,64}$")]  
 class ChatRequest(BaseModel):
     """One user message on a conversation thread; omit thread_id to start a new conversation."""
 
-    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid", json_schema_extra={"examples": [CHAT_REQUEST]})
 
     message: str = Field(min_length=1, max_length=MAX_MESSAGE_CHARS)
     thread_id: ThreadId | None = None
@@ -25,7 +26,7 @@ class ChatRequest(BaseModel):
 class ResumeRequest(BaseModel):
     """The user's answer to a pending clarification, tied to the interrupt it answers."""
 
-    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid", json_schema_extra={"examples": [RESUME_REQUEST]})
 
     thread_id: ThreadId
     interrupt_id: str = Field(min_length=1, max_length=64)
@@ -41,6 +42,8 @@ class Clarification(BaseModel):
 
 class ChatResponse(BaseModel):
     """Every chat reply: the thread id to reuse, the outcome, the answer and its verified citations."""
+
+    model_config = ConfigDict(json_schema_extra={"examples": CHAT_RESPONSES})
 
     thread_id: str
     status: Literal["answered", "needs_clarification", "insufficient_evidence", "out_of_scope"]

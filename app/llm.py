@@ -14,6 +14,6 @@ def make_chat_model(settings: Settings) -> ChatOpenAI:
         base_url=settings.azure_openai_endpoint,
         api_key=settings.azure_openai_api_key.get_secret_value(),
         temperature=0,  # deterministic ranking and answers
-        timeout=30,
-        max_retries=2,
+        timeout=settings.model_timeout_seconds,
+        max_retries=settings.model_max_retries,
     )

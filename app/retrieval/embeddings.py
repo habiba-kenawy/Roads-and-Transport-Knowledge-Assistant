@@ -19,8 +19,8 @@ def make_embedder(settings: Settings) -> OpenAIEmbeddings:
         base_url=settings.embedding_base_url,
         api_key=settings.azure_openai_api_key.get_secret_value(),
         check_embedding_ctx_length=False,  # our chunks are far below the token limit; avoids tiktoken downloads
-        max_retries=2,
-        timeout=30,
+        max_retries=settings.model_max_retries,
+        timeout=settings.model_timeout_seconds,
         chunk_size=BATCH,
     )
 

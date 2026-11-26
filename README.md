@@ -20,7 +20,7 @@ Built with Python, FastAPI, LangChain, LangGraph and Pydantic. A React frontend 
 │   ├── chat.py           runs or resumes one conversation thread
 │   └── config.py, errors.py, llm.py, indexing.py
 ├── frontend/             React + Vite page
-├── tests/                184 automated tests (fake models, no network needed)
+├── tests/                205 automated tests (fake models, no network needed)
 ├── scripts/              manifest and download scripts, and scripts that regenerate the evidence
 ├── data/                 manifest.csv, eval_questions.json, download_log.csv (committed);
 │                         PDFs, parsed text and SQLite files are created locally and git-ignored
@@ -38,7 +38,7 @@ python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
 copy .env.example .env          # fill in AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY; .env is git-ignored
-python -m pytest -q             # 184 passed; no key needed
+python -m pytest -q             # 205 passed; no key needed
 python -I scripts/download_pdfs.py data/manifest.csv data/raw data/download_log.csv   # one time: the 45 PDFs listed in the manifest
 python -m uvicorn app.api.main:app --port 8010                                         # start the API from the project root
 curl -X POST http://127.0.0.1:8010/ingest                                              # one time: parse, chunk and embed
@@ -51,7 +51,7 @@ langchain-openai 1.8.1, rank-bm25 0.2.2, pypdf 7.1.0, numpy 2.5.5). A fresh envi
 and all tests.
 
 ### Models and configuration
-Chat model `gpt-4.1-mini` (planner, reranker, answer, tool agent; temperature 0, 30 s timeout, 2 retries) and embeddings
+Chat model `gpt-4.1-mini` (planner, reranker, answer, tool agent; temperature 0) and embeddings
 `text-embedding-3-small` (batches of 64). Settings come from environment variables or `.env` (see [.env.example](.env.example)):
 
 | Variable | Meaning | Default |
@@ -61,6 +61,8 @@ Chat model `gpt-4.1-mini` (planner, reranker, answer, tool agent; temperature 0,
 | `CHAT_DEPLOYMENT`, `EMBEDDING_DEPLOYMENT` | model names | `gpt-4.1-mini`, `text-embedding-3-small` |
 | `CHUNK_SIZE`, `CHUNK_OVERLAP` | chunking, in characters | 1000, 150 |
 | `RETRIEVAL_CANDIDATES` | candidates per retriever, and what the reranker sees (never fewer than `top_k`) | 10 |
+| `MODEL_TIMEOUT_SECONDS`, `MODEL_MAX_RETRIES` | one model call (chat or embeddings): how long to wait, and extra tries after a failure | 30, 2 |
+| `REQUEST_TIMEOUT_SECONDS` | the whole `/chat` or `/chat/resume` call; after this the caller gets a 504 | 60 |
 | `DB_PATH`, `CHECKPOINT_DB_PATH` | SQLite files for chunks and for conversation memory | `data/index.sqlite`, `data/checkpoints.sqlite` |
 | `CORS_ORIGINS` | web page origins allowed to call the API (comma-separated, no wildcard) | `http://localhost:5180` |
 
@@ -213,11 +215,12 @@ times and logs every tool call and turns a tool failure into a message the model
 and costs about 1.6 s ([evidence/AT-10_tool_effect.txt](evidence/AT-10_tool_effect.txt)); it stays, gated to messages that mention pages.
 
 **Persistence.** A LangGraph `SqliteSaver` checkpointer saves state after every step under the `thread_id`: short-term, per-conversation memory,
-not a long-term store. One run per thread at a time (a second concurrent request gets 409; in-process lock).
+not a long-term store. One run per thread at a time (a second concurrent request gets 409; in-process lock). A request that outlives
+`REQUEST_TIMEOUT_SECONDS` gets 504; its run cannot be stopped, so it ends in the background and its thread answers 409 until then.
 
 **Limits (all bounded).** Message 2000 characters; `top_k` 1-20 (default 5); 10 candidates per retriever (never fewer than `top_k`); 2 clarifications; 2 answer model
 calls (one retry); 5 statements per answer with quotes of at least 8 characters; tool agent 3 model calls, 2 tool calls, 2 chunks per read; model
-call 30 s timeout with 2 retries; thread id `[A-Za-z0-9_-]`, 1-64 characters.
+call `MODEL_TIMEOUT_SECONDS` (30 s) with 2 retries; whole request `REQUEST_TIMEOUT_SECONDS` (60 s); thread id `[A-Za-z0-9_-]`, 1-64 characters.
 
 **Logging.** One INFO line per node start and end with `request_id`, `thread_id`, search mode, seconds and list sizes (never document text);
 tool calls and middleware events are logged the same way. Credentials are never logged.
@@ -261,10 +264,11 @@ POST /chat/resume {"thread_id":"t1","interrupt_id":"59670c64e4be8f02d8cc5705aff4
 | 409 | same thread already running; resume with no pending clarification or a wrong `interrupt_id`; new message on a paused thread |
 | 502 | a model call failed |
 | 503 | no index yet (run `/ingest`) or credentials missing |
+| 504 | the whole request took longer than `REQUEST_TIMEOUT_SECONDS`; the run finishes in the background and its thread stays busy (409) until it ends |
 
 ## Tests, acceptance checklist and evaluation
 
-`python -m pytest -q` runs 184 tests with fake models and no network (parsing and chunk metadata, filters, deduplication and fusion, routing,
+`python -m pytest -q` runs 205 tests with fake models and no network (parsing and chunk metadata, filters, deduplication and fusion, routing,
 schema validation, citation verification, interrupt and resume, thread isolation, CORS, tool and middleware).
 [evidence/pytest_results.txt](evidence/pytest_results.txt) is a full run in a fresh environment with no `.env`, PDFs or index. Real-model evidence
 is regenerated with `python -m scripts.evidence_search` (AT-03, AT-04), `python -m scripts.run_eval` (AT-12) and `python -m scripts.trace_graph`
@@ -285,7 +289,7 @@ All run on the real corpus with the real models (except the unit tests).
 | AT-08 Memory, isolation | PASS: follow-up works in thread A, thread B has no history, survives restart | [AT-08](evidence/AT-08_memory.txt) |
 | AT-09 Interrupt, restart | PASS: real pause; after a restart the same `thread_id` resumes it | [AT-09](evidence/AT-09_interrupt.txt) |
 | AT-10 Tool, middleware | PASS: model-issued tool call, validated arguments, result, middleware logs, controlled failure, call limit | [AT-10](evidence/AT-10_tool_middleware.txt) |
-| AT-11 API, schemas | PASS: invalid input -> 422; invalid or non-pending resume -> 409 | [AT-09](evidence/AT-09_interrupt.txt), tests |
+| AT-11 API, schemas | PASS: invalid input -> 422; invalid or non-pending resume -> 409; slow request -> 504; valid responses validated against the Pydantic models | [AT-11](evidence/AT-11_api.txt), [AT-09](evidence/AT-09_interrupt.txt), tests |
 | AT-12 Retrieval evaluation | PASS: 10/10 in the top 5 in every mode (below) | [AT-12](evidence/AT-12_eval.txt) |
 
 ### Retrieval evaluation (AT-12)
@@ -315,7 +319,7 @@ easy to separate the modes or to show that reranking helps.
 (the departure-fee question above). 4. Add `{"year": 2022, "doc_type": "Law"}` filters. 5. Same `thread_id`: "Who is exempt from it?".
 6. "What is the fine?" -> `needs_clarification`. 7. Restart the server, then `POST /chat/resume` with the same `thread_id` and `interrupt_id`.
 8. "What is the fine for parking a camel outside a mosque in Dubai?" -> `insufficient_evidence`; "What is a good recipe for pasta carbonara?" ->
-`out_of_scope`. 9. Show [evidence/graph.mmd](evidence/graph.mmd), the server log and [evidence/AT-10_tool_middleware.txt](evidence/AT-10_tool_middleware.txt).
+`out_of_scope`. 9. Show [evidence/graph.mmd](evidence/graph.mmd), the server log and [evidence/AT-10_tool_middleware.txt](evidence/AT-10_tool_middleware.txt). 10. Open http://127.0.0.1:8010/docs: every endpoint has an example request and response; try an invalid body (422), see [evidence/AT-11_api.txt](evidence/AT-11_api.txt) for all error cases and the 504. 11. In the page (http://localhost:5180): start from an example question, click a `[n]` marker to open its source, answer a clarifying question inside its card, reopen a past conversation and continue it, and use the Search Inspector to compare the three modes (scores are labelled by type).
 
 ## Known limitations
 
@@ -325,11 +329,14 @@ easy to separate the modes or to show that reranking helps.
   mitigated by a prompt rule and one retry, not fixed at the source. Tables are flattened to text. No OCR and no Arabic.
 - The evaluation is document-level and too easy; reranking is not shown to beat fusion alone; the tool did not measurably improve answers.
 - If some statements fail the quote check, the answer step retries once, naming the rejected quotes, and keeps whichever attempt verified more statements. If the retry still drops some, a shorter answer is shown with no note that part of the question was left out (the fee-and-exemptions question has shown this: [AT-06a](evidence/AT-06_07_answers.txt) answered both parts in the latest run, an earlier run only the fee).
+- The wording of an answer varies between runs: the same question has produced full sentences and, once, list items as fragments ("passengers below the age of two (2) years [1]."). The quote check proves a quote is in the cited chunk; it cannot judge style.
 - The planner's rewrite of a follow-up varies between runs. A full answer takes several seconds (about 8-15 s measured, varying with the model service; planning, reranking and
   answering are separate model calls).
 - The per-thread lock is in-process (one server process); SqliteSaver suits small single-process use. A paused thread stays paused until
   answered. Memory is per thread only; there is no long-term cross-thread memory.
-- Model calls time out after 30 s with 2 retries, but there is **no overall deadline for one HTTP request**. No authentication or rate
+- A request that outlives `REQUEST_TIMEOUT_SECONDS` gets a 504, but the run itself **cannot be stopped** (a Python thread cannot be killed, and
+  LangGraph's `step_timeout` was measured: in a synchronous run it only raises after the slow step has finished). It ends in the background, still
+  using model calls, and its thread answers 409 until then. No authentication or rate
   limiting; CORS allows only the configured origin and is meant for local use.
 
 ## Frontend

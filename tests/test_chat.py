@@ -4,7 +4,9 @@ Models are FAKES; documents are FAKE records from tests.test_search; the checkpo
 """
 import logging
 import threading
+import time
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from fastapi.testclient import TestClient
@@ -12,7 +14,7 @@ from fastapi.testclient import TestClient
 from app.api import main
 from app.chat import make_checkpointer, resume_chat, run_chat, thread_lock
 from app.config import Settings
-from app.errors import IndexNotReadyError, InvalidResumeError, ModelCallError, ModelNotConfiguredError, ThreadBusyError
+from app.errors import IndexNotReadyError, InvalidResumeError, ModelCallError, ModelNotConfiguredError, RequestTimeoutError, ThreadBusyError
 from app.graph.build import build_graph
 from app.graph.nodes import SCOPE_MESSAGE
 from app.schemas.chat import ChatRequest, ChatResponse, ResumeRequest
@@ -252,10 +254,88 @@ def test_chat_route_returns_the_service_response_and_maps_errors(monkeypatch) ->
     monkeypatch.setattr(main, "run_chat", lambda settings, req: ok)
     assert client.post("/chat", json={"message": "hi"}).json()["thread_id"] == "t1"
     for error, status in ((ThreadBusyError("busy"), 409), (IndexNotReadyError("no index"), 503),
-                          (ModelNotConfiguredError("no key"), 503), (ModelCallError("boom"), 502)):
+                          (ModelNotConfiguredError("no key"), 503), (ModelCallError("boom"), 502), (RequestTimeoutError("slow"), 504)):
         def raise_it(settings, req, error=error):
             raise error
 
         monkeypatch.setattr(main, "run_chat", raise_it)
         response = client.post("/chat", json={"message": "hi"})
         assert response.status_code == status and response.json()["detail"] == str(error)
+
+
+class SlowGraph:
+    """FAKE graph whose run lasts until released: it stands in for a model call that hangs."""
+
+    def __init__(self, error: Exception | None = None) -> None:
+        self.release, self.error = threading.Event(), error
+
+    def get_state(self, config):
+        return SimpleNamespace(tasks=[])  # nothing is paused
+
+    def invoke(self, graph_input, config):
+        self.release.wait(timeout=5)
+        if self.error:
+            raise self.error
+        return {"status": "out_of_scope", "answer": "done", "citations": []}
+
+
+def wait_until_free(thread_id: str, graph: SlowGraph) -> ChatResponse:
+    """Retry until the abandoned run has ended (a busy thread answers 409 meanwhile)."""
+    for _ in range(50):
+        try:
+            return run_chat(SETTINGS_FAST, ChatRequest(message="hi", thread_id=thread_id), graph)
+        except ThreadBusyError:
+            time.sleep(0.05)
+    raise AssertionError("the thread never became free")
+
+
+SETTINGS_FAST = Settings(_env_file=None, request_timeout_seconds=1)
+
+
+def test_a_request_that_overruns_its_deadline_gets_a_controlled_timeout() -> None:
+    """7.2 timeouts: the caller is not kept waiting for a hung model call, and gets a clear error instead of a hang."""
+    graph = SlowGraph()
+    started = time.perf_counter()
+    with pytest.raises(RequestTimeoutError, match="1 seconds"):
+        run_chat(SETTINGS_FAST, ChatRequest(message="hi", thread_id="slow-1"), graph)
+    assert time.perf_counter() - started < 3  # it gave up after about a second, not after the 5 s the fake run would take
+    graph.release.set()
+
+
+def test_the_overrunning_run_keeps_its_thread_busy_until_it_ends() -> None:
+    """A run cannot be killed, so a second message on the same thread is refused (409) and never runs alongside it."""
+    graph = SlowGraph()
+    with pytest.raises(RequestTimeoutError):
+        run_chat(SETTINGS_FAST, ChatRequest(message="hi", thread_id="slow-2"), graph)
+    with pytest.raises(ThreadBusyError, match="still finishing"):
+        run_chat(SETTINGS_FAST, ChatRequest(message="again", thread_id="slow-2"), graph)
+    graph.release.set()
+    assert wait_until_free("slow-2", graph).status == "out_of_scope"  # and it works again once the old run has ended
+
+
+def test_an_error_inside_the_run_reaches_the_caller_unchanged_and_frees_the_thread() -> None:
+    """Running on a worker thread must not hide controlled errors (they still map to 502 and so on)."""
+    graph = SlowGraph(error=ModelCallError("answer generation failed: TimeoutError"))
+    graph.release.set()
+    with pytest.raises(ModelCallError, match="answer generation failed"):
+        run_chat(SETTINGS_FAST, ChatRequest(message="hi", thread_id="slow-3"), graph)
+    graph.error = None
+    assert run_chat(SETTINGS_FAST, ChatRequest(message="hi", thread_id="slow-3"), graph).status == "out_of_scope"
+
+
+def test_model_timeouts_come_from_the_settings() -> None:
+    """The assignment lists timeouts as configurable: the clients use the settings, not fixed numbers."""
+    from app.llm import make_chat_model
+    from app.retrieval.embeddings import make_embedder
+
+    configured = Settings(_env_file=None, azure_openai_endpoint="https://example.invalid/v1", azure_openai_api_key="FAKE-KEY",
+                          model_timeout_seconds=7, model_max_retries=1)
+    chat_client, embedder = make_chat_model(configured), make_embedder(configured)
+    assert chat_client.request_timeout == 7 and chat_client.max_retries == 1
+    assert embedder.request_timeout == 7 and embedder.max_retries == 1
+
+
+@pytest.mark.parametrize("field", ["model_timeout_seconds", "request_timeout_seconds"])
+def test_a_timeout_of_zero_is_rejected_at_start_up(field) -> None:
+    with pytest.raises(ValueError):
+        Settings(_env_file=None, **{field: 0})

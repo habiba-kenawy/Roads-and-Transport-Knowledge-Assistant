@@ -1,0 +1,105 @@
+AT-11 API and schemas (real server, real models for the valid chat calls)
+
+=== Invalid requests (expect 422, with the field named)
+
+POST /chat  empty message
+  -> HTTP 422 
+  {"detail":[{"type":"string_too_short","loc":["body","message"],"msg":"String should have at least 1 character","input":"","ctx":{"min_length":1}}]}
+
+POST /chat  message of 2001 characters (limit 2000)
+  -> HTTP 422 
+  {"detail":[{"type":"string_too_long","loc":["body","message"],"msg":"String should have at most 2000 characters","input":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ...
+
+POST /chat  top_k 21 (limit 20)
+  -> HTTP 422 
+  {"detail":[{"type":"less_than_equal","loc":["body","top_k"],"msg":"Input should be less than or equal to 20","input":21,"ctx":{"le":20}}]}
+
+POST /chat  top_k 0 (minimum 1)
+  -> HTTP 422 
+  {"detail":[{"type":"greater_than_equal","loc":["body","top_k"],"msg":"Input should be greater than or equal to 1","input":0,"ctx":{"ge":1}}]}
+
+POST /chat  unsupported search mode
+  -> HTTP 422 
+  {"detail":[{"type":"literal_error","loc":["body","search_mode"],"msg":"Input should be 'lexical', 'semantic' or 'hybrid'","input":"fuzzy","ctx":{"expected":"'lexical', 'semantic' or 'hybrid'"}}]}
+
+POST /chat  filter of the wrong type (year is text)
+  -> HTTP 422 
+  {"detail":[{"type":"int_parsing","loc":["body","filters","year"],"msg":"Input should be a valid integer, unable to parse string as an integer","input":"abc"}]}
+
+POST /chat  invalid thread id
+  -> HTTP 422 
+  {"detail":[{"type":"string_pattern_mismatch","loc":["body","thread_id"],"msg":"String should match pattern '^[A-Za-z0-9_-]{1,64}$'","input":"bad id!","ctx":{"pattern":"^[A-Za-z0-9_-]{1,64}$"}}]}
+
+POST /chat  unknown field
+  -> HTTP 422 
+  {"detail":[{"type":"extra_forbidden","loc":["body","colour"],"msg":"Extra inputs are not permitted","input":"red"}]}
+
+POST /search  empty query
+  -> HTTP 422 
+  {"detail":[{"type":"string_too_short","loc":["body","query"],"msg":"String should have at least 1 character","input":"","ctx":{"min_length":1}}]}
+
+POST /search  unsupported mode
+  -> HTTP 422 
+  {"detail":[{"type":"literal_error","loc":["body","mode"],"msg":"Input should be 'lexical', 'semantic' or 'hybrid'","input":"fuzzy","ctx":{"expected":"'lexical', 'semantic' or 'hybrid'"}}]}
+
+POST /search  top_k 21
+  -> HTTP 422 
+  {"detail":[{"type":"less_than_equal","loc":["body","top_k"],"msg":"Input should be less than or equal to 20","input":21,"ctx":{"le":20}}]}
+
+POST /chat/resume  missing fields
+  -> HTTP 422 
+  {"detail":[{"type":"missing","loc":["body","interrupt_id"],"msg":"Field required","input":{"thread_id":"t1"}},{"type":"missing","loc":["body","message"],"msg":"Field required","input":{"thread_id":"t1"}}]}
+
+=== Valid requests (the response is validated against the Pydantic model)
+
+GET /health
+  -> HTTP 200 
+  {"status":"ok","model_configured":true,"index_available":true}
+
+POST /search  lexical, top_k 2
+  -> HTTP 200 (valid SearchResponse: 2 results, stage=lexical, score_type=bm25)
+  {"mode":"lexical","ranking_stage":"lexical","filters_applied":{"year":null,"doc_type":null},"results":[{"rank":1,"score":17.84943541821902,"score_type":"bm25","stage":"lexical","chunk_id":"dlp-1432-000-82e5035a","doc_id":"dlp-1432","title":"Law No. (13) of 202 ...
+
+POST /chat  a supported question
+  -> HTTP 200 (valid ChatResponse: status=answered, 1 citations)
+  {"thread_id":"d68061600a6f45c3b8bc99670017c00e","status":"answered","answer":"A departure fee of seventy-five dirhams (AED 75.00) will be collected from every passenger departing the United Arab Emirates through Dubai airports [1]. passengers below the age of  ...
+
+POST /chat  an ambiguous question
+  -> HTTP 200 (valid ChatResponse: status=needs_clarification, clarification=True)
+  {"thread_id":"29dfa395613b41719a3e8fe6aa0a7fb2","status":"needs_clarification","answer":null,"citations":[],"clarification":{"interrupt_id":"3b3eb808a25c048027863355970e5931","question":"What specific violation or law are you asking about regarding the fine?"} ...
+
+=== Invalid and valid resumes (expect 409 for the invalid ones, and the pending question stays pending)
+
+POST /chat/resume  a thread that does not exist
+  -> HTTP 409 
+  {"detail":"thread no-such-thread has no pending clarification"}
+
+POST /chat/resume  right thread, wrong interrupt id
+  -> HTTP 409 
+  {"detail":"interrupt_id does not match the pending clarification of thread 29dfa395613b41719a3e8fe6aa0a7fb2"}
+
+POST /chat  a new message on the paused thread
+  -> HTTP 409 
+  {"detail":"thread 29dfa395613b41719a3e8fe6aa0a7fb2 is waiting for a clarification; answer it with POST /chat/resume"}
+
+POST /chat/resume  the correct resume
+  -> HTTP 200 (valid ChatResponse: status=answered)
+  {"thread_id":"29dfa395613b41719a3e8fe6aa0a7fb2","status":"answered","answer":"A departure fee of seventy-five dirhams (AED 75.00) will be collected from every passenger departing the United Arab Emirates through Dubai airports [1]. Passengers below the age of  ...
+
+POST /chat/resume  the same resume again (nothing is pending any more)
+  -> HTTP 409 
+  {"detail":"thread 29dfa395613b41719a3e8fe6aa0a7fb2 has no pending clarification"}
+
+=== A request that outlives the deadline (REQUEST_TIMEOUT_SECONDS=1 on a separate server, port 8011)
+
+POST /chat  a real question, deadline 1 s
+  -> HTTP 504 (returned after 1.3 s)
+  {"detail":"the request took longer than 1 seconds; wait a moment, then try again"}
+
+POST /chat  the same thread straight away
+  -> HTTP 409 (the first run is still finishing)
+  {"detail":"a run is already in progress for thread slow-demo (an earlier request timed out and is still finishing); retry when it finishes"}
+
+POST /chat  the same thread after the first run ended
+  -> HTTP 504 (no longer 409: the thread accepted the new question, which again outlived the 1 s deadline)
+  {"detail":"the request took longer than 1 seconds; wait a moment, then try again"}

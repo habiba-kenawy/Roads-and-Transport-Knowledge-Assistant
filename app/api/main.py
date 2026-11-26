@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import Settings
 from app.chat import resume_chat, run_chat
-from app.errors import IndexNotReadyError, InvalidResumeError, ModelCallError, ModelNotConfiguredError, ThreadBusyError
+from app.errors import IndexNotReadyError, InvalidResumeError, ModelCallError, ModelNotConfiguredError, RequestTimeoutError, ThreadBusyError
 from app.indexing import build_index
 from app.ingestion.store import index_available
 from app.retrieval.search import perform_search
@@ -50,6 +50,8 @@ def controlled(call: Callable[[], T]) -> T:
         raise HTTPException(status_code=503, detail=str(exc))  # service not ready: tell the caller what to do
     except ModelCallError as exc:
         raise HTTPException(status_code=502, detail=str(exc))  # an upstream model call failed
+    except RequestTimeoutError as exc:
+        raise HTTPException(status_code=504, detail=str(exc))  # the whole request ran out of time
 
 
 @app.post("/search", response_model=SearchResponse)

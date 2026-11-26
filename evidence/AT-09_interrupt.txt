@@ -1,29 +1,29 @@
 AT-09 interrupt and restart, AT-11 invalid resumes (real models; checkpoint file: data/checkpoints_demo.sqlite)
 
 --- 1. ambiguous question 'What is the fine?' on a new thread
-status=needs_clarification thread_id=demo-interrupt request_id=63420ea9185c
-clarification: interrupt_id=f268b00c391c11da351ec481baff2c51 question='What specific violation or offense are you asking about regarding the fine?'
-saved state: next=('clarify',) pending_interrupts=[('f268b00c391c11da351ec481baff2c51', {'question': 'What specific violation or offense are you asking about regarding the fine?'})] saved_messages=1
+status=needs_clarification thread_id=demo-interrupt request_id=71da75eeec9b
+clarification: interrupt_id=0714938d83ef6f6edc60e76ee74e04e3 question='What specific violation or law are you asking about regarding the fine?'
+saved state: next=('clarify',) pending_interrupts=[('0714938d83ef6f6edc60e76ee74e04e3', {'question': 'What specific violation or law are you asking about regarding the fine?'})] saved_messages=1
 
 --- 2. simulated restart: a brand-new graph and a brand-new connection to the same file
-saved state: next=('clarify',) pending_interrupts=[('f268b00c391c11da351ec481baff2c51', {'question': 'What specific violation or offense are you asking about regarding the fine?'})] saved_messages=1
+saved state: next=('clarify',) pending_interrupts=[('0714938d83ef6f6edc60e76ee74e04e3', {'question': 'What specific violation or law are you asking about regarding the fine?'})] saved_messages=1
 
 --- 3. invalid resumes are refused (AT-11)
 unknown thread: refused (HTTP 409): thread never-seen has no pending clarification
 wrong interrupt id: refused (HTTP 409): interrupt_id does not match the pending clarification of thread demo-interrupt
 new message on the paused thread: refused (HTTP 409): thread demo-interrupt is waiting for a clarification; answer it with POST /chat/resume
-saved state: next=('clarify',) pending_interrupts=[('f268b00c391c11da351ec481baff2c51', {'question': 'What specific violation or offense are you asking about regarding the fine?'})] saved_messages=1   <- still waiting, untouched by the refused requests
+saved state: next=('clarify',) pending_interrupts=[('0714938d83ef6f6edc60e76ee74e04e3', {'question': 'What specific violation or law are you asking about regarding the fine?'})] saved_messages=1   <- still waiting, untouched by the refused requests
 
 --- 4. resume on the restarted service with the SAME thread_id and the interrupt id from step 1: 'I mean the fees for passengers leaving through Dubai airports'
-status=answered thread_id=demo-interrupt citations=1 request_id=94f50ad2cb7e
+status=answered thread_id=demo-interrupt citations=3 request_id=d0b350106723
 planner's standalone_query after the clarification: 'What are the fees for passengers leaving through Dubai airports?'
 clarification_attempts=1
-answer: A departure fee of seventy-five dirhams (AED 75.00) will be collected from every passenger departing the United Arab Emirates through Dubai airports [1]. Passengers below the age of two (2) years are 
+answer: A departure fee of seventy-five dirhams (AED 75.00) will be collected from every passenger departing the United Arab Emirates through Dubai airports [1]. Passengers below the age of two (2) years, on-
 saved state: next=() pending_interrupts=[] saved_messages=4
 
 --- 5. resuming the finished thread again is refused (HTTP 409): thread demo-interrupt has no pending clarification
 
 --- clarify node log lines (it STARTS twice but ENDS once: on resume the node runs again from its first line)
-+ 1.393s node=clarify event=start mode=hybrid
-+ 1.461s node=clarify event=start mode=hybrid
-+ 1.461s node=clarify event=end seconds=0.000 messages=2
++ 1.425s node=clarify event=start mode=hybrid
++ 1.533s node=clarify event=start mode=hybrid
++ 1.533s node=clarify event=end seconds=0.000 messages=2

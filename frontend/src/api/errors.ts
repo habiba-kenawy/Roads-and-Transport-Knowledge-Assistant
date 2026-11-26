@@ -12,6 +12,7 @@ export interface FriendlyError {
 }
 type ApiAction = 'chat' | 'resume' | 'search'
 
+const TOO_SLOW = 'This is taking too long. The server may still be working on it: wait a moment, then try again.'
 const MAX_QUERY_CHARS = 500 // /search is stricter than /chat
 
 function validationMessage(detail: unknown): string {
@@ -27,7 +28,7 @@ function validationMessage(detail: unknown): string {
 
 // Turn anything a request can throw into a FriendlyError. The backend's answers are: 422 validation (a list of issues),
 // 409 (this thread is busy, or the resume does not match a pending question), 502 (the model call failed),
-// 503 (no index yet, or no model credentials), and no answer at all when the server is unreachable.
+// 503 (no index yet, or no model credentials), 504 (the request ran out of time), and no answer at all when the server is unreachable.
 export function toFriendlyError(error: unknown, action: ApiAction): FriendlyError {
   if (!axios.isAxiosError(error)) {
     return { kind: 'unknown', message: 'Something unexpected went wrong. Please try again.', canRetry: true }
@@ -35,11 +36,7 @@ export function toFriendlyError(error: unknown, action: ApiAction): FriendlyErro
   const response = error.response
   if (!response) {
     if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
-      return {
-        kind: 'timeout',
-        message: 'This is taking too long. The server may still be working on it: wait a moment, then try again.',
-        canRetry: true,
-      }
+      return { kind: 'timeout', message: TOO_SLOW, canRetry: true }
     }
     return { kind: 'network', message: "Cannot reach the assistant's server. Check that it is running, then try again.", canRetry: true }
   }
@@ -65,6 +62,8 @@ export function toFriendlyError(error: unknown, action: ApiAction): FriendlyErro
             : 'This conversation is waiting for your answer to the question above. Answer it, or start a new conversation.',
         canRetry: false,
       }
+    case 504:
+      return { kind: 'timeout', message: TOO_SLOW, canRetry: true }
     case 502:
       return { kind: 'model', message: 'The AI model could not finish this request. Please try again.', canRetry: true }
     case 503:

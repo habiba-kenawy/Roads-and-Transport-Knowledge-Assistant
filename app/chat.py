@@ -13,7 +13,7 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.types import Command
 
 from app.config import Settings
-from app.errors import InvalidResumeError, ThreadBusyError
+from app.errors import InvalidResumeError, RequestTimeoutError, ThreadBusyError
 from app.graph.build import build_graph
 from app.graph.tracing import request_context
 from app.llm import make_chat_model
@@ -29,6 +29,7 @@ SAVED_TYPES = [("app.retrieval.filters", "SearchFilters"), ("app.schemas.plan", 
 
 _LOCKS: dict[str, threading.Lock] = {}
 _LOCKS_GUARD = threading.Lock()
+_WORKERS: dict[str, threading.Thread] = {}  # the run in progress per thread; a run that timed out keeps going until it ends
 _GRAPH = None
 
 
@@ -55,6 +56,10 @@ def thread_lock(thread_id: str) -> Iterator[None]:
         lock = _LOCKS.setdefault(thread_id, threading.Lock())
     if not lock.acquire(blocking=False):
         raise ThreadBusyError(f"a run is already in progress for thread {thread_id}; retry when it finishes")
+    worker = _WORKERS.get(thread_id)
+    if worker is not None and worker.is_alive():  # an earlier request gave up waiting, but its run cannot be stopped
+        lock.release()
+        raise ThreadBusyError(f"a run is already in progress for thread {thread_id} (an earlier request timed out and is still finishing); retry when it finishes")
     try:
         yield
     finally:
@@ -77,14 +82,36 @@ def pending_interrupts(graph, thread_id: str) -> list:
     return [i for task in snapshot.tasks for i in task.interrupts]
 
 
-def execute(graph, thread_id: str, graph_input) -> ChatResponse:
-    """Run (or resume) the graph on a thread, with request_id and thread_id in every log line. The caller holds the thread lock."""
+def execute(graph, thread_id: str, graph_input, timeout_seconds: float) -> ChatResponse:
+    """Run (or resume) the graph on a thread and wait at most timeout_seconds; request_id and thread_id are in every log line.
+
+    A Python thread cannot be killed, so a run that overruns keeps going in the background and its thread stays busy until it
+    ends (thread_lock refuses a second run meanwhile). LangGraph's own step_timeout does not help: in a synchronous run it only
+    raises after the slow step has already finished (measured). The caller holds the thread lock.
+    """
     request_id = uuid.uuid4().hex[:12]
-    token = request_context.set({"request_id": request_id, "thread_id": thread_id})
-    try:
-        state = graph.invoke(graph_input, {"configurable": {"thread_id": thread_id}})
-    finally:
-        request_context.reset(token)
+    outcome: dict = {}
+
+    def work() -> None:
+        token = request_context.set({"request_id": request_id, "thread_id": thread_id})
+        try:
+            outcome["state"] = graph.invoke(graph_input, {"configurable": {"thread_id": thread_id}})
+        except Exception as exc:  # handed to the waiting request, which maps it to a controlled response
+            outcome["error"] = exc
+        finally:
+            request_context.reset(token)
+
+    worker = threading.Thread(target=work, name=f"run-{thread_id}", daemon=True)
+    _WORKERS[thread_id] = worker
+    worker.start()
+    worker.join(timeout_seconds)
+    if worker.is_alive():
+        logger.warning("chat timed out request_id=%s thread_id=%s after %ss; the run continues in the background", request_id, thread_id, timeout_seconds)
+        raise RequestTimeoutError(f"the request took longer than {timeout_seconds} seconds; wait a moment, then try again")
+    _WORKERS.pop(thread_id, None)
+    if "error" in outcome:
+        raise outcome["error"]
+    state = outcome["state"]
     response = to_response(state, thread_id, request_id)
     logger.info("chat done request_id=%s thread_id=%s status=%s", request_id, thread_id, response.status)
     return response
@@ -98,7 +125,7 @@ def run_chat(settings: Settings, request: ChatRequest, graph=None) -> ChatRespon
         if pending_interrupts(graph, thread_id):  # a new message would silently abandon the question we asked
             raise InvalidResumeError(f"thread {thread_id} is waiting for a clarification; answer it with POST /chat/resume")
         return execute(graph, thread_id, {"messages": [HumanMessage(request.message)], "search_mode": request.search_mode,
-                                          "top_k": request.top_k, "filters": request.filters})
+                                          "top_k": request.top_k, "filters": request.filters}, settings.request_timeout_seconds)
 
 
 def resume_chat(settings: Settings, request: ResumeRequest, graph=None) -> ChatResponse:
@@ -110,4 +137,4 @@ def resume_chat(settings: Settings, request: ResumeRequest, graph=None) -> ChatR
             raise InvalidResumeError(f"thread {request.thread_id} has no pending clarification")
         if pending[0].id != request.interrupt_id:
             raise InvalidResumeError(f"interrupt_id does not match the pending clarification of thread {request.thread_id}")
-        return execute(graph, request.thread_id, Command(resume={request.interrupt_id: request.message}))
+        return execute(graph, request.thread_id, Command(resume={request.interrupt_id: request.message}), settings.request_timeout_seconds)
