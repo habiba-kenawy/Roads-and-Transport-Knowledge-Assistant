@@ -9,8 +9,8 @@
 /* 1) Raw colours: the ONLY place a hex value is written. Approximate values, adjust here. */
 :root {
   --brand: #0536a8; /* royal blue: utility bar, ASK button, links, focus ring */
-  --ink: #111111; /* near black: nav bar and body text */
-  --panel: #262626; /* charcoal: hero panel */
+  --ink: #343b46; /* soft charcoal: body text, dark buttons and badges (was #111111, too black) */
+  --panel: #343b46; /* soft charcoal: the user message bubble (same as --ink) */
   --accent-red: #c8102e; /* the small rule under card titles and error states */
   --surface: #f4f5f7; /* light grey page background */
 
@@ -40,6 +40,15 @@
 @theme inline {
   --font-sans: 'Roboto', ui-sans-serif, system-ui, sans-serif;
   --font-heading: var(--font-sans);
+
+  /* Type scale, about one pixel smaller than Tailwind's default at every step (line heights follow the size) */
+  --text-xs: 0.6875rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-lg: 1.0625rem;
+  --text-xl: 1.1875rem;
+  --text-2xl: 1.375rem;
+  --text-4xl: 2rem;
 
   --color-brand: var(--brand);
   --color-ink: var(--ink);

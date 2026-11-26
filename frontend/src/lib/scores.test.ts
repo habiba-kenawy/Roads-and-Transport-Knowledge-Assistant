@@ -8,7 +8,7 @@ describe('score labels', () => {
     expect(scoreLabel('bm25')).toMatch(/BM25/)
     expect(scoreLabel('cosine')).toMatch(/cosine/)
     expect(scoreLabel('rrf')).toMatch(/RRF/)
-    expect(scoreLabel('llm_relevance_0_10')).toMatch(/0 to 10/)
+    expect(scoreLabel('llm_relevance_0_10')).toMatch(/Reranker/)
   })
 
   it('shows an unknown kind as it is rather than hiding it', () => {
@@ -16,8 +16,9 @@ describe('score labels', () => {
     expect(stageLabel('something_new')).toBe('something_new')
   })
 
-  it('gives the reranker score as a whole number and the others with three decimals', () => {
-    expect(formatScore('llm_relevance_0_10', 9.6)).toBe('10')
+  it('writes the reranker score as score:10 (a whole number out of 10) and the others with three decimals', () => {
+    expect(formatScore('llm_relevance_0_10', 3)).toBe('3:10')
+    expect(formatScore('llm_relevance_0_10', 9.6)).toBe('10:10')
     expect(formatScore('bm25', 17.8494)).toBe('17.849')
   })
 })

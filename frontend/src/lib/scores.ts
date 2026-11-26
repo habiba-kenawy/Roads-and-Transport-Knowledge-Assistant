@@ -5,7 +5,7 @@ const SCORES: Record<string, string> = {
   bm25: 'Keyword score (BM25)',
   cosine: 'Meaning similarity (cosine)',
   rrf: 'Fusion score (RRF, from ranks only)',
-  llm_relevance_0_10: 'Reranker relevance, 0 to 10',
+  llm_relevance_0_10: 'Reranker relevance',
 }
 
 const STAGES: Record<string, string> = {
@@ -18,5 +18,5 @@ const STAGES: Record<string, string> = {
 export const scoreLabel = (type: string) => SCORES[type] ?? type
 export const stageLabel = (stage: string) => STAGES[stage] ?? stage
 
-// Scores are shown with the precision that fits their scale.
-export const formatScore = (type: string, value: number) => (type === 'llm_relevance_0_10' ? String(Math.round(value)) : value.toFixed(3))
+// Scores are shown with the precision that fits their scale; the reranker's 0-10 rating is written as "score:10" so the scale is part of it.
+export const formatScore = (type: string, value: number) => (type === 'llm_relevance_0_10' ? `${Math.round(value)}:10` : value.toFixed(3))
