@@ -21,6 +21,7 @@ interface Props {
 export function ChatView({ items, busy, waiting, onRetry, onReply }: Props) {
   const end = useRef<HTMLDivElement>(null)
   const [source, setSource] = useState<{ response: ChatResponse; n: number } | null>(null)
+  const opener = useRef<HTMLElement | null>(null) // the marker or list entry that opened the drawer, to give focus back when it closes
   useEffect(() => {
     end.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }, [items.length, busy])
@@ -36,7 +37,10 @@ export function ChatView({ items, busy, waiting, onRetry, onReply }: Props) {
           <AnswerCard
             key={item.id}
             response={item.response}
-            onOpenSource={(n) => setSource({ response: item.response, n })}
+            onOpenSource={(n) => {
+              opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+              setSource({ response: item.response, n })
+            }}
             waiting={waiting && item.id === lastAnswerId}
             onReply={onReply}
             busy={busy}
@@ -47,7 +51,7 @@ export function ChatView({ items, busy, waiting, onRetry, onReply }: Props) {
       )}
       {busy && <ThinkingCard />}
       <div ref={end} />
-      <SourceDrawer response={source?.response ?? null} n={source?.n ?? null} onClose={() => setSource(null)} />
+      <SourceDrawer response={source?.response ?? null} n={source?.n ?? null} onClose={() => setSource(null)} returnFocusTo={opener} />
     </div>
   )
 }

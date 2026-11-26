@@ -34,11 +34,18 @@ export default function App() {
     setMenuOpen(false)
   }
 
+  // The composer is rebuilt when the first message turns the start screen into the chat, which would drop the keyboard focus:
+  // put the cursor back in the new box once it exists.
+  function focusComposer() {
+    requestAnimationFrame(() => composerBox.current?.querySelector('textarea')?.focus())
+  }
+
   function submit() {
     const text = question.trim()
     if (view === 'assistant') {
       chat.send(text)
       setQuestion('')
+      focusComposer()
     } else {
       void search.run(text)
     }
@@ -55,6 +62,7 @@ export default function App() {
         chat.reset() // the finished conversation is already saved
         setQuestion('')
         go('assistant')
+        focusComposer()
       }}
       conversations={chat.conversations}
       activeId={chat.id}
@@ -64,6 +72,8 @@ export default function App() {
         go('assistant')
       }}
       onDeleteConversation={deleteConversation}
+      onOpenAbout={() => go('about')}
+      aboutActive={view === 'about'}
     />
   )
 
@@ -116,7 +126,8 @@ export default function App() {
           <Menu aria-hidden />
         </Button>
 
-        <main id="main" className="flex min-h-0 flex-1 flex-col pt-12 lg:pt-0">
+        {/* tabIndex -1: the skip link can move keyboard focus here (a bare <main> only scrolls) */}
+        <main id="main" tabIndex={-1} className="flex min-h-0 flex-1 flex-col pt-12 outline-none lg:pt-0">
           {view === 'assistant' && !conversationStarted && (
             <div className="flex-1 overflow-y-auto">
               <EmptyState composer={composer} onPick={pickExample} />

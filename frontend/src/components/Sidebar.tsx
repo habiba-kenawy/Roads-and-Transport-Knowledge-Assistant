@@ -11,6 +11,8 @@ interface Props {
   activeId: string
   onOpenConversation: (id: string) => void
   onDeleteConversation: (id: string) => void
+  onOpenAbout: () => void
+  aboutActive: boolean
 }
 
 const MAIN_PAGES = [
@@ -23,9 +25,14 @@ const PAGE_LINK =
   'h-10 flex-none justify-start gap-3 rounded-xl border-0 px-3 text-sm font-medium text-foreground/80 shadow-none after:hidden ' +
   'hover:bg-accent hover:text-foreground data-[state=active]:bg-accent data-[state=active]:font-semibold data-[state=active]:text-brand'
 const LIST = 'h-auto w-full flex-col items-stretch gap-1 rounded-none bg-transparent p-0'
+// About is a plain button, not a third "tab": a second tab group at the bottom of the sidebar broke the keyboard order (Tab from it
+// left the page instead of entering the main area, measured). It looks the same and is marked aria-current when it is the open page.
+const ABOUT =
+  'h-10 w-full justify-start gap-3 rounded-xl px-3 text-sm font-medium text-foreground/80 hover:bg-accent hover:text-foreground ' +
+  'aria-[current=page]:bg-accent aria-[current=page]:font-semibold aria-[current=page]:text-brand'
 
 // Left column: wordmark, New conversation, the two working pages, past conversations (scrolls), and About at the bottom.
-export function Sidebar({ onNewConversation, conversations, activeId, onOpenConversation, onDeleteConversation }: Props) {
+export function Sidebar({ onNewConversation, conversations, activeId, onOpenConversation, onDeleteConversation, onOpenAbout, aboutActive }: Props) {
   return (
     <div className="flex h-full flex-col gap-5 p-4">
       <div className="px-1 pt-1">
@@ -54,11 +61,11 @@ export function Sidebar({ onNewConversation, conversations, activeId, onOpenConv
         </div>
       </div>
 
-      <TabsList aria-label="Information" className={`${LIST} border-t border-border pt-4`}>
-        <TabsTrigger value="about" className={PAGE_LINK}>
+      <div className="border-t border-border pt-4">
+        <Button variant="ghost" className={ABOUT} onClick={onOpenAbout} aria-current={aboutActive ? 'page' : undefined}>
           <Info aria-hidden /> About
-        </TabsTrigger>
-      </TabsList>
+        </Button>
+      </div>
     </div>
   )
 }

@@ -22,6 +22,7 @@ export function AboutPage() {
           <li>Amendments are not combined: a later amendment may change an article you are reading.</li>
           <li>Tables are flattened to plain text. Scanned documents and Arabic are not supported.</li>
           <li>A full answer takes several seconds.</li>
+          <li>Your past conversations are kept only in this browser on this device. Deleting one here removes it from this list only.</li>
         </ul>
       </Panel>
     </div>

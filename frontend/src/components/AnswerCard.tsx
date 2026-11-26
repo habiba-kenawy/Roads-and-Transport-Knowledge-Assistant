@@ -13,7 +13,7 @@ const LOOK: Record<ChatStatus, { label: string; Icon: LucideIcon; badge: string;
   out_of_scope: { label: 'Out of scope', Icon: Ban, badge: 'bg-muted text-foreground border-border', edge: 'border-l-muted-foreground' },
 }
 
-const MARKER = 'mx-0.5 rounded bg-accent px-1 text-xs font-semibold text-brand hover:bg-brand hover:text-white focus-visible:ring-2 focus-visible:ring-brand'
+const MARKER = 'ml-0.5 rounded bg-accent px-1 text-xs font-semibold text-brand hover:bg-brand hover:text-white focus-visible:ring-2 focus-visible:ring-brand'
 
 interface Props {
   response: ChatResponse

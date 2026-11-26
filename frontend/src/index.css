@@ -134,3 +134,20 @@
   .brand-orb, .brand-orb:hover, .brand-orb::after { animation: none; }
   .brand-orb::after { opacity: 0.5; }
 }
+
+/* Printing (Ctrl+P): the screen layout is a fixed-height frame with scrolling panels, which would print as one clipped page.
+   Print the conversation (or the search results) as a normal flowing document: no sidebar, no boxes to type in, no pop-ups. */
+@media print {
+  aside, form, [data-sonner-toaster], a[href="#main"], button[aria-label="Open menu"], [data-slot="sheet-overlay"] {
+    display: none !important;
+  }
+  html, body, #root, [data-slot="tabs"], main, main > div, .h-dvh {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+  article, section, li { break-inside: avoid; }
+  * { print-color-adjust: exact; }
+}
