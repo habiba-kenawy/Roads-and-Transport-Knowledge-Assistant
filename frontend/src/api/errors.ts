@@ -56,7 +56,7 @@ export function toFriendlyError(error: unknown, action: ApiAction): FriendlyErro
         kind: 'not_pending',
         message:
           action === 'resume'
-            ? 'This question is no longer waiting for an answer. Start a new conversation.'
+            ? 'This question is no longer waiting for an answer. Type your next question and it will be answered as a new one.'
             : 'This conversation is waiting for your answer to the question above. Answer it, or start a new conversation.',
         canRetry: false,
       }

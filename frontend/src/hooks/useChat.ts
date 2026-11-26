@@ -49,8 +49,18 @@ function reducer(state: State, action: Action): State {
       }
       return { ...state, busy: false, threadId: action.response.thread_id, pending, items, conversations: withEntry(state.conversations, saved) }
     }
-    case 'failed':
-      return { ...state, busy: false, items: [...state.items, { id: newId(), type: 'error', error: action.error, text: action.text }] }
+    case 'failed': {
+      // The server refused a resume ("not waiting for an answer"): stop treating the next message as an answer, here and in the saved copy,
+      // or the conversation would try the same refused resume forever.
+      const staleQuestion = action.error.kind === 'not_pending' && state.pending !== null
+      return {
+        ...state,
+        busy: false,
+        pending: staleQuestion ? null : state.pending,
+        conversations: staleQuestion ? state.conversations.map((c) => (c.id === state.id ? { ...c, pending: null } : c)) : state.conversations,
+        items: [...state.items, { id: newId(), type: 'error', error: action.error, text: action.text }],
+      }
+    }
     case 'retrying':
       return { ...state, busy: true, items: state.items.filter((item) => item.type !== 'error') }
     case 'reset':

@@ -6,6 +6,7 @@ import { AboutPage } from '@/components/AboutPage'
 import { ChatView } from '@/components/ChatView'
 import { Composer } from '@/components/Composer'
 import { EmptyState } from '@/components/EmptyState'
+import { InspectorResults } from '@/components/InspectorResults'
 import { Panel } from '@/components/Panel'
 import { Sidebar } from '@/components/Sidebar'
 import { Button } from '@/components/ui/button'
@@ -13,11 +14,12 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/
 import { Tabs } from '@/components/ui/tabs'
 import { Toaster } from '@/components/ui/sonner'
 import { useChat } from '@/hooks/useChat'
+import { useSearch } from '@/hooks/useSearch'
 import { DEFAULT_CONTROLS, type Controls } from '@/lib/options'
 
 type View = 'assistant' | 'inspector' | 'about'
 
-// The Assistant talks to the API and remembers past conversations in this browser. The Search Inspector is wired up in the next chunk.
+// The Assistant talks to the API and remembers past conversations in this browser. The Search Inspector shows what a search finds, without an answer.
 export default function App() {
   const [view, setView] = useState<View>('assistant')
   const [question, setQuestion] = useState('')
@@ -25,6 +27,7 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const composerBox = useRef<HTMLDivElement>(null)
   const chat = useChat(controls)
+  const search = useSearch(controls)
 
   function go(next: View) {
     setView(next)
@@ -37,7 +40,7 @@ export default function App() {
       chat.send(text)
       setQuestion('')
     } else {
-      toast.info('The Search Inspector is built in the next chunk.')
+      void search.run(text)
     }
   }
 
@@ -72,7 +75,7 @@ export default function App() {
         controls={controls}
         onControlsChange={setControls}
         submitLabel={view === 'assistant' ? 'Ask' : 'Search'}
-        busy={view === 'assistant' && chat.busy}
+        busy={view === 'assistant' ? chat.busy : search.busy}
         placeholder={
           view === 'assistant' && chat.waitingForClarification ? 'Type your answer to the question above...' : 'Ask about Roads and Transport legislation...'
         }
@@ -122,7 +125,7 @@ export default function App() {
           {view === 'assistant' && conversationStarted && (
             <>
               <div className="flex-1 overflow-y-auto">
-                <ChatView items={chat.items} busy={chat.busy} onRetry={chat.retry} />
+                <ChatView key={chat.id} items={chat.items} busy={chat.busy} waiting={chat.waitingForClarification} onRetry={chat.retry} onReply={chat.send} />
               </div>
               <div className="shrink-0 border-t border-border bg-card px-4 py-3">
                 <div className="mx-auto w-full max-w-3xl">{composer}</div>
@@ -134,7 +137,7 @@ export default function App() {
               <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6">
                 {composer}
                 <Panel title="Search results">
-                  <p className="text-sm text-muted-foreground">Search above to see the ranked passages, the ranking stage and the score each one carries.</p>
+                  <InspectorResults state={search.state} />
                 </Panel>
               </div>
             </div>
