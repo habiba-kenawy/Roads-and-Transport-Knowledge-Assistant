@@ -1,6 +1,6 @@
 import { Ban, CircleCheck, MessageCircleQuestion, SearchX, type LucideIcon } from 'lucide-react'
 
-import { ClarificationReply } from '@/components/ClarificationReply'
+import { ClarificationReply } from '@/components/chat/ClarificationReply'
 import { Badge } from '@/components/ui/badge'
 import { splitMarkers } from '@/lib/citations'
 import type { ChatResponse, ChatStatus } from '@/types'
@@ -9,11 +9,17 @@ import type { ChatResponse, ChatStatus } from '@/types'
 const LOOK: Record<ChatStatus, { label: string; Icon: LucideIcon; badge: string; edge: string }> = {
   answered: { label: 'Answered', Icon: CircleCheck, badge: 'bg-accent text-brand', edge: 'border-l-brand' },
   needs_clarification: { label: 'Needs clarification', Icon: MessageCircleQuestion, badge: 'bg-ink text-white', edge: 'border-l-ink' },
-  insufficient_evidence: { label: 'Not enough evidence', Icon: SearchX, badge: 'bg-accent-red/10 text-accent-red', edge: 'border-l-accent-red' },
+  insufficient_evidence: {
+    label: 'Not enough evidence',
+    Icon: SearchX,
+    badge: 'bg-accent-red/10 text-accent-red',
+    edge: 'border-l-accent-red',
+  },
   out_of_scope: { label: 'Out of scope', Icon: Ban, badge: 'bg-muted text-foreground border-border', edge: 'border-l-muted-foreground' },
 }
 
-const MARKER = 'ml-0.5 rounded bg-accent px-1 text-xs font-semibold text-brand hover:bg-brand hover:text-white focus-visible:ring-2 focus-visible:ring-brand'
+const MARKER =
+  'ml-0.5 rounded bg-accent px-1 text-xs font-semibold text-brand hover:bg-brand hover:text-white focus-visible:ring-2 focus-visible:ring-brand'
 
 interface Props {
   response: ChatResponse

@@ -3,31 +3,32 @@ import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { AboutPage } from '@/components/AboutPage'
-import { ChatView } from '@/components/ChatView'
+import { ChatView } from '@/components/chat/ChatView'
 import { Composer } from '@/components/Composer'
-import { EmptyState } from '@/components/EmptyState'
-import { InspectorResults } from '@/components/InspectorResults'
+import { EmptyState } from '@/components/chat/EmptyState'
+import { InspectorResults } from '@/components/inspector/InspectorResults'
 import { Panel } from '@/components/Panel'
-import { Sidebar } from '@/components/Sidebar'
+import { Sidebar, type View } from '@/components/layout/Sidebar'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
-import { Tabs } from '@/components/ui/tabs'
 import { Toaster } from '@/components/ui/sonner'
 import { useChat } from '@/hooks/useChat'
 import { useSearch } from '@/hooks/useSearch'
 import { DEFAULT_CONTROLS, type Controls } from '@/lib/options'
 
-type View = 'assistant' | 'inspector' | 'about'
-
 // The Assistant talks to the API and remembers past conversations in this browser. The Search Inspector shows what a search finds, without an answer.
 export default function App() {
   const [view, setView] = useState<View>('assistant')
-  const [question, setQuestion] = useState('')
+  const [drafts, setDrafts] = useState({ assistant: '', inspector: '' }) // each page keeps its own unsent text
   const [controls, setControls] = useState<Controls>(DEFAULT_CONTROLS)
   const [menuOpen, setMenuOpen] = useState(false)
   const composerBox = useRef<HTMLDivElement>(null)
   const chat = useChat(controls)
   const search = useSearch(controls)
+
+  const composing = view === 'inspector' ? 'inspector' : 'assistant'
+  const question = drafts[composing]
+  const setDraft = (page: 'assistant' | 'inspector', text: string) => setDrafts((current) => ({ ...current, [page]: text }))
 
   function go(next: View) {
     setView(next)
@@ -42,13 +43,13 @@ export default function App() {
 
   function submit() {
     const text = question.trim()
-    if (view === 'assistant') {
-      chat.send(text)
-      setQuestion('')
-      focusComposer()
-    } else {
+    if (view === 'inspector') {
       void search.run(text)
+      return
     }
+    chat.send(text)
+    setDraft('assistant', '')
+    focusComposer()
   }
 
   function deleteConversation(id: string) {
@@ -58,9 +59,11 @@ export default function App() {
 
   const sidebar = (
     <Sidebar
+      view={view}
+      onNavigate={go}
       onNewConversation={() => {
         chat.reset() // the finished conversation is already saved
-        setQuestion('')
+        setDraft('assistant', '')
         go('assistant')
         focusComposer()
       }}
@@ -68,41 +71,44 @@ export default function App() {
       activeId={chat.id}
       onOpenConversation={(id) => {
         chat.open(id)
-        setQuestion('')
+        setDraft('assistant', '')
         go('assistant')
       }}
       onDeleteConversation={deleteConversation}
-      onOpenAbout={() => go('about')}
-      aboutActive={view === 'about'}
     />
   )
+
+  const placeholder =
+    view === 'inspector'
+      ? 'Search the Roads and Transport legislation...'
+      : chat.waitingForClarification
+        ? 'Type your answer to the question above...'
+        : 'Ask about Roads and Transport legislation...'
 
   const composer = (
     <div ref={composerBox} className="w-full">
       <Composer
         question={question}
-        onQuestionChange={setQuestion}
+        onQuestionChange={(text) => setDraft(composing, text)}
         controls={controls}
         onControlsChange={setControls}
-        submitLabel={view === 'assistant' ? 'Ask' : 'Search'}
-        busy={view === 'assistant' ? chat.busy : search.busy}
-        placeholder={
-          view === 'assistant' && chat.waitingForClarification ? 'Type your answer to the question above...' : 'Ask about Roads and Transport legislation...'
-        }
+        submitLabel={view === 'inspector' ? 'Search' : 'Ask'}
+        busy={view === 'inspector' ? search.busy : chat.busy}
+        placeholder={placeholder}
         onSubmit={submit}
       />
     </div>
   )
 
   function pickExample(text: string) {
-    setQuestion(text)
+    setDraft('assistant', text)
     composerBox.current?.querySelector('textarea')?.focus()
   }
 
   const conversationStarted = chat.items.length > 0 || chat.busy
 
   return (
-    <Tabs value={view} onValueChange={(v) => go(v as View)} orientation="vertical" className="h-dvh gap-4 p-3 lg:p-4">
+    <div className="flex h-dvh gap-4 p-3 lg:p-4">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-white focus:px-3 focus:py-2 focus:text-ink"
@@ -122,7 +128,13 @@ export default function App() {
 
       <div className="relative flex min-w-0 flex-1 flex-col rounded-2xl bg-card shadow-md">
         {/* Small screens only: the sidebar is hidden, so a floating button opens it as a drawer */}
-        <Button variant="ghost" size="icon" className="absolute top-2 left-2 z-10 lg:hidden" onClick={() => setMenuOpen(true)} aria-label="Open menu">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-2 left-2 z-10 lg:hidden"
+          onClick={() => setMenuOpen(true)}
+          aria-label="Open menu"
+        >
           <Menu aria-hidden />
         </Button>
 
@@ -136,7 +148,14 @@ export default function App() {
           {view === 'assistant' && conversationStarted && (
             <>
               <div className="flex-1 overflow-y-auto">
-                <ChatView key={chat.id} items={chat.items} busy={chat.busy} waiting={chat.waitingForClarification} onRetry={chat.retry} onReply={chat.send} />
+                <ChatView
+                  key={chat.id}
+                  items={chat.items}
+                  busy={chat.busy}
+                  waiting={chat.waitingForClarification}
+                  onRetry={chat.retry}
+                  onReply={chat.send}
+                />
               </div>
               <div className="shrink-0 border-t border-border bg-card px-4 py-3">
                 <div className="mx-auto w-full max-w-3xl">{composer}</div>
@@ -146,6 +165,7 @@ export default function App() {
           {view === 'inspector' && (
             <div className="flex-1 overflow-y-auto">
               <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6">
+                <h1 className="sr-only">Search Inspector</h1>
                 {composer}
                 <Panel title="Search results">
                   <InspectorResults state={search.state} />
@@ -163,6 +183,6 @@ export default function App() {
         </main>
       </div>
       <Toaster position="top-right" />
-    </Tabs>
+    </div>
   )
 }

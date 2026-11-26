@@ -1,15 +1,25 @@
 import path from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 
-// https://vite.dev/config/
 export default defineConfig({
-  // tailwindcss(): turns the utility classes we write into CSS (Tailwind 4 needs no config file)
   plugins: [react(), tailwindcss()],
-  // "@/x" means "src/x", so imports do not climb with ../../..
   resolve: { alias: { '@': path.resolve(import.meta.dirname, './src') } },
-  // 5180, not Vite's default 5173 (other projects use that one). strictPort: if it is busy, stop with an error instead of
-  // silently moving to a port the backend CORS list does not allow
+  // Port 5180 is in the backend's CORS list (5173 is used by other projects here). strictPort: fail instead of moving to a port CORS refuses.
   server: { port: 5180, strictPort: true },
+  test: { include: ['src/**/*.test.ts'] },
+  build: {
+    rolldownOptions: {
+      output: {
+        // Keep the libraries in their own files: each stays under the size warning, and a change to our code does not reload them.
+        codeSplitting: {
+          groups: [
+            { name: 'react', test: /node_modules\/(react|react-dom|scheduler)\// },
+            { name: 'radix', test: /node_modules\/(radix-ui|@radix-ui)\// },
+          ],
+        },
+      },
+    },
+  },
 })

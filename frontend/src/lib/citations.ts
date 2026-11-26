@@ -1,7 +1,7 @@
 // The server writes every answer sentence as "<statement> [n]." where n is the number of a source in the citations list.
 // These helpers only READ that text so the page can make the markers clickable; nothing here decides what is true.
 
-export type AnswerPart = { kind: 'text'; text: string } | { kind: 'marker'; n: number }
+type AnswerPart = { kind: 'text'; text: string } | { kind: 'marker'; n: number }
 
 // Split the answer into plain text and source markers. A marker counts only if it names a real source (1..sourceCount);
 // anything else that happens to look like "[7]" stays plain text.

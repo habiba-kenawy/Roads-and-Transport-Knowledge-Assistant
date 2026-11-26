@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 
-import { AnswerCard } from '@/components/AnswerCard'
-import { ErrorCard } from '@/components/ErrorCard'
-import { SourceDrawer } from '@/components/SourceDrawer'
-import { ThinkingCard } from '@/components/ThinkingCard'
-import { UserBubble } from '@/components/UserBubble'
+import { AnswerCard } from '@/components/chat/AnswerCard'
+import { ErrorCard } from '@/components/chat/ErrorCard'
+import { SourceDrawer } from '@/components/chat/SourceDrawer'
+import { ThinkingCard } from '@/components/chat/ThinkingCard'
+import { UserBubble } from '@/components/chat/UserBubble'
 import type { Item } from '@/lib/history'
 import type { ChatResponse } from '@/types'
 
@@ -30,6 +30,7 @@ export function ChatView({ items, busy, waiting, onRetry, onReply }: Props) {
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-4 py-6">
+      <h1 className="sr-only">Conversation</h1>
       {items.map((item) =>
         item.type === 'user' ? (
           <UserBubble key={item.id} text={item.text} />

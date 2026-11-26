@@ -11,7 +11,17 @@ const safeHref = (url: string) => (url.startsWith('https://') ? url : undefined)
 
 // The side panel behind a [n] marker: which document and page the claim comes from, which answer sentences rely on it,
 // and a link to the official page. (The chat API returns the reference, not the passage text: that is in the Search Inspector.)
-export function SourceDrawer({ response, n, onClose, returnFocusTo }: { response: ChatResponse | null; n: number | null; onClose: () => void; returnFocusTo: RefObject<HTMLElement | null> }) {
+export function SourceDrawer({
+  response,
+  n,
+  onClose,
+  returnFocusTo,
+}: {
+  response: ChatResponse | null
+  n: number | null
+  onClose: () => void
+  returnFocusTo: RefObject<HTMLElement | null>
+}) {
   const citation = response && n ? response.citations[n - 1] : undefined
   const uses = response && n && response.answer ? sentencesCiting(response.answer, n) : []
   const href = citation ? safeHref(citation.source_url) : undefined

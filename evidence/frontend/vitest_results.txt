@@ -1,0 +1,13 @@
+
+> tareeq-frontend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.1.0 D:/Documents/GitHub/Roads and Transport Knowledge Assistant/frontend
+
+
+ Test Files  6 passed (6)
+      Tests  51 passed (51)
+   Start at  13:00:39
+   Duration  720ms (import 74%, transform 10%, tests 8%, worker 7%)
+

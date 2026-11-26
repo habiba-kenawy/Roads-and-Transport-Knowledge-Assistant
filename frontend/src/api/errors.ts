@@ -4,13 +4,13 @@ import { MAX_MESSAGE_CHARS } from '@/lib/options'
 import type { ValidationIssue } from '@/types'
 
 // What the screens show when a request fails: plain words, never a status code or a stack trace.
-export type ErrorKind = 'network' | 'timeout' | 'busy' | 'not_pending' | 'validation' | 'not_ready' | 'model' | 'unknown'
+type ErrorKind = 'network' | 'timeout' | 'busy' | 'not_pending' | 'validation' | 'not_ready' | 'model' | 'unknown'
 export interface FriendlyError {
   kind: ErrorKind
   message: string
   canRetry: boolean // true when sending the same thing again could work
 }
-export type ApiAction = 'chat' | 'resume' | 'search'
+type ApiAction = 'chat' | 'resume' | 'search'
 
 const MAX_QUERY_CHARS = 500 // /search is stricter than /chat
 
@@ -19,7 +19,8 @@ function validationMessage(detail: unknown): string {
   const field = issue?.loc.at(-1)
   if (issue && (field === 'message' || field === 'query')) {
     if (issue.type === 'string_too_short') return 'Please type something first.'
-    if (issue.type === 'string_too_long') return `That is too long: please keep it under ${field === 'query' ? MAX_QUERY_CHARS : MAX_MESSAGE_CHARS} characters.`
+    if (issue.type === 'string_too_long')
+      return `That is too long: please keep it under ${field === 'query' ? MAX_QUERY_CHARS : MAX_MESSAGE_CHARS} characters.`
   }
   return issue ? `The server did not accept that request (${issue.msg}).` : 'The server did not accept that request.'
 }
@@ -50,7 +51,11 @@ export function toFriendlyError(error: unknown, action: ApiAction): FriendlyErro
       return { kind: 'validation', message: validationMessage(detail), canRetry: false }
     case 409:
       if (text.includes('already in progress')) {
-        return { kind: 'busy', message: 'The assistant is still working on your previous message. Wait a moment, then try again.', canRetry: true }
+        return {
+          kind: 'busy',
+          message: 'The assistant is still working on your previous message. Wait a moment, then try again.',
+          canRetry: true,
+        }
       }
       return {
         kind: 'not_pending',
@@ -63,8 +68,14 @@ export function toFriendlyError(error: unknown, action: ApiAction): FriendlyErro
     case 502:
       return { kind: 'model', message: 'The AI model could not finish this request. Please try again.', canRetry: true }
     case 503:
-      if (text.includes('index')) return { kind: 'not_ready', message: 'The documents have not been indexed yet. The server needs its ingestion step first.', canRetry: false }
-      if (text.includes('configured')) return { kind: 'not_ready', message: 'The AI model is not configured on the server.', canRetry: false }
+      if (text.includes('index'))
+        return {
+          kind: 'not_ready',
+          message: 'The documents have not been indexed yet. The server needs its ingestion step first.',
+          canRetry: false,
+        }
+      if (text.includes('configured'))
+        return { kind: 'not_ready', message: 'The AI model is not configured on the server.', canRetry: false }
       return { kind: 'not_ready', message: 'The service is not ready yet.', canRetry: false }
     default:
       return { kind: 'unknown', message: `Something went wrong (code ${response.status}). Please try again.`, canRetry: true }

@@ -42,14 +42,15 @@ function Summary({ response, query }: { response: SearchResponse; query: string 
   return (
     <div className="text-sm">
       <p>
-        <span className="font-medium">&ldquo;{query}&rdquo;</span> · {response.results.length} passage{response.results.length === 1 ? '' : 's'}
+        <span className="font-medium">&ldquo;{query}&rdquo;</span> · {response.results.length} passage
+        {response.results.length === 1 ? '' : 's'}
       </p>
       <p className="mt-1 text-xs text-muted-foreground">
         Mode: {response.mode} · Ranking stage: {stageLabel(response.ranking_stage)}
       </p>
       <p className="mt-1 text-xs text-muted-foreground">
-        Scores use different scales and cannot be compared with each other. A score only orders passages inside its own list; it is not
-        how sure the system is.
+        Scores use different scales and cannot be compared with each other. A score only orders passages inside its own list; it is not how
+        sure the system is.
       </p>
     </div>
   )
@@ -58,14 +59,18 @@ function Summary({ response, query }: { response: SearchResponse; query: string 
 // The Search Inspector's output: what the search found before any answer is written.
 export function InspectorResults({ state }: { state: SearchState }) {
   if (state.status === 'idle') {
-    return <p className="text-sm text-muted-foreground">Search above to see the ranked passages, the ranking stage and the score each one carries.</p>
+    return (
+      <p className="text-sm text-muted-foreground">
+        Search above to see the ranked passages, the ranking stage and the score each one carries.
+      </p>
+    )
   }
   if (state.status === 'loading') {
     return (
-      <div role="status" aria-label="Searching" className="space-y-3">
+      <output aria-label="Searching" className="block space-y-3">
         <Skeleton className="h-24 w-full rounded-xl" />
         <Skeleton className="h-24 w-full rounded-xl" />
-      </div>
+      </output>
     )
   }
   if (state.status === 'error') {

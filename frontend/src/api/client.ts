@@ -7,10 +7,10 @@ import type { ChatRequest, ChatResponse, ResumeRequest, SearchRequest, SearchRes
 // Every function rejects with an AxiosError on failure; screens turn it into a friendly message with toFriendlyError().
 const REQUEST_TIMEOUT_MS = 90_000
 
-const http = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8010',
-  timeout: REQUEST_TIMEOUT_MS,
-})
+const baseURL = import.meta.env.VITE_API_BASE_URL
+if (!baseURL) throw new Error('VITE_API_BASE_URL is not set: copy frontend/.env.example to frontend/.env')
+
+const http = axios.create({ baseURL, timeout: REQUEST_TIMEOUT_MS })
 
 // `signal` lets the caller cancel a request that is no longer wanted (for example on "New conversation").
 export async function sendChat(body: ChatRequest, signal?: AbortSignal): Promise<ChatResponse> {

@@ -1,10 +1,8 @@
-// What the controls in the hero panel can hold. These mirror the backend's rules (search modes, top_k 1-20,
-// message length 2000). The year and type lists are a copy of the corpus facts: the API has no endpoint that lists
-// them, so they must be updated by hand if the corpus changes (a known limitation).
+// What the composer's controls can hold. These mirror the backend's rules (search modes, top_k 1-20, message length 2000).
+// The year and type lists are a copy of the corpus facts: the API has no endpoint that lists them, so they must be
+// updated by hand if the corpus changes.
 
 import type { SearchMode } from '@/types'
-
-export type { SearchMode } // defined once, in types.ts (it mirrors the API)
 
 // label = what the list shows; short = what the chip shows (short enough for three chips to fit on one phone-width row)
 export const MODES: { value: SearchMode; label: string; short: string }[] = [
@@ -19,6 +17,8 @@ export const DOC_TYPES = ['Law', 'Regulation', 'Resolution']
 export const TOP_K_MIN = 1
 export const TOP_K_MAX = 20
 export const MAX_MESSAGE_CHARS = 2000
+
+export const isSearchMode = (value: string): value is SearchMode => MODES.some((mode) => mode.value === value)
 
 // Radix Select cannot use an empty string as an item value, so "no filter" is this word.
 export const ANY = 'any'

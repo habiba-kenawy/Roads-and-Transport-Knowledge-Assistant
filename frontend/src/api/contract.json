@@ -1,0 +1,233 @@
+{
+  "ChatRequest": {
+    "properties": [
+      "filters",
+      "message",
+      "search_mode",
+      "thread_id",
+      "top_k"
+    ],
+    "required": [
+      "message"
+    ],
+    "enums": {
+      "search_mode": [
+        "lexical",
+        "semantic",
+        "hybrid"
+      ]
+    }
+  },
+  "ChatResponse": {
+    "properties": [
+      "answer",
+      "citations",
+      "clarification",
+      "request_id",
+      "status",
+      "thread_id"
+    ],
+    "required": [
+      "answer",
+      "citations",
+      "clarification",
+      "request_id",
+      "status",
+      "thread_id"
+    ],
+    "enums": {
+      "status": [
+        "answered",
+        "needs_clarification",
+        "insufficient_evidence",
+        "out_of_scope"
+      ]
+    }
+  },
+  "Citation": {
+    "properties": [
+      "chunk_id",
+      "document_id",
+      "locator",
+      "locator_type",
+      "source_url",
+      "title"
+    ],
+    "required": [
+      "chunk_id",
+      "document_id",
+      "locator",
+      "locator_type",
+      "source_url",
+      "title"
+    ],
+    "enums": {}
+  },
+  "Clarification": {
+    "properties": [
+      "interrupt_id",
+      "question"
+    ],
+    "required": [
+      "interrupt_id",
+      "question"
+    ],
+    "enums": {}
+  },
+  "HTTPValidationError": {
+    "properties": [
+      "detail"
+    ],
+    "required": [],
+    "enums": {}
+  },
+  "HealthResponse": {
+    "properties": [
+      "index_available",
+      "model_configured",
+      "status"
+    ],
+    "required": [
+      "index_available",
+      "model_configured",
+      "status"
+    ],
+    "enums": {}
+  },
+  "IngestError": {
+    "properties": [
+      "doc_id",
+      "reason"
+    ],
+    "required": [
+      "doc_id",
+      "reason"
+    ],
+    "enums": {}
+  },
+  "IngestReport": {
+    "properties": [
+      "embedded",
+      "embedding_error",
+      "errors",
+      "failed",
+      "indexed",
+      "skipped"
+    ],
+    "required": [
+      "errors",
+      "failed",
+      "indexed",
+      "skipped"
+    ],
+    "enums": {}
+  },
+  "ResumeRequest": {
+    "properties": [
+      "interrupt_id",
+      "message",
+      "thread_id"
+    ],
+    "required": [
+      "interrupt_id",
+      "message",
+      "thread_id"
+    ],
+    "enums": {}
+  },
+  "SearchFilters": {
+    "properties": [
+      "doc_type",
+      "year"
+    ],
+    "required": [],
+    "enums": {}
+  },
+  "SearchHit": {
+    "properties": [
+      "article",
+      "chunk_id",
+      "doc_id",
+      "doc_type",
+      "locator",
+      "locator_type",
+      "rank",
+      "score",
+      "score_type",
+      "source_url",
+      "stage",
+      "status",
+      "text",
+      "title",
+      "year"
+    ],
+    "required": [
+      "article",
+      "chunk_id",
+      "doc_id",
+      "doc_type",
+      "locator",
+      "locator_type",
+      "rank",
+      "score",
+      "score_type",
+      "source_url",
+      "stage",
+      "status",
+      "text",
+      "title",
+      "year"
+    ],
+    "enums": {}
+  },
+  "SearchRequest": {
+    "properties": [
+      "filters",
+      "mode",
+      "query",
+      "top_k"
+    ],
+    "required": [
+      "query"
+    ],
+    "enums": {
+      "mode": [
+        "lexical",
+        "semantic",
+        "hybrid"
+      ]
+    }
+  },
+  "SearchResponse": {
+    "properties": [
+      "candidates_before_rerank",
+      "filters_applied",
+      "mode",
+      "ranking_stage",
+      "rerank_note",
+      "results"
+    ],
+    "required": [
+      "filters_applied",
+      "mode",
+      "ranking_stage",
+      "results"
+    ],
+    "enums": {}
+  },
+  "ValidationError": {
+    "properties": [
+      "ctx",
+      "input",
+      "loc",
+      "msg",
+      "type"
+    ],
+    "required": [
+      "loc",
+      "msg",
+      "type"
+    ],
+    "enums": {}
+  }
+}

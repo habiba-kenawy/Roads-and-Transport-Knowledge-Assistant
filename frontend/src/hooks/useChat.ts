@@ -7,7 +7,7 @@ import { loadConversations, saveConversations, storable, titleOf, type Conversat
 import type { Controls } from '@/lib/options'
 import type { ChatResponse, Clarification } from '@/types'
 
-interface State {
+export interface State {
   conversations: Conversation[] // saved conversations, newest first; the open one is in here once it has an answered turn
   // the open conversation:
   id: string // our own id (the key it is saved under); the SERVER's id is threadId
@@ -17,7 +17,7 @@ interface State {
   busy: boolean // true from sending until the answer arrives: the UI blocks a second send, like the server's one-run-per-thread rule
 }
 
-type Action =
+export type Action =
   | { type: 'sent'; text: string }
   | { type: 'received'; response: ChatResponse; at: number }
   | { type: 'failed'; error: FriendlyError; text: string }
@@ -28,11 +28,18 @@ type Action =
   | { type: 'restore'; conversation: Conversation }
 
 const newId = () => crypto.randomUUID()
-const fresh = (conversations: Conversation[]): State => ({ id: newId(), items: [], threadId: null, pending: null, busy: false, conversations })
+export const freshChat = (conversations: Conversation[]): State => ({
+  id: newId(),
+  items: [],
+  threadId: null,
+  pending: null,
+  busy: false,
+  conversations,
+})
 const newestFirst = (list: Conversation[]) => [...list].sort((a, b) => b.updatedAt - a.updatedAt)
 const withEntry = (list: Conversation[], entry: Conversation) => newestFirst([entry, ...list.filter((c) => c.id !== entry.id)])
 
-function reducer(state: State, action: Action): State {
+export function chatReducer(state: State, action: Action): State {
   switch (action.type) {
     case 'sent':
       return { ...state, busy: true, items: [...state.items, { id: newId(), type: 'user', text: action.text }] }
@@ -47,7 +54,14 @@ function reducer(state: State, action: Action): State {
         items: storable(items),
         pending,
       }
-      return { ...state, busy: false, threadId: action.response.thread_id, pending, items, conversations: withEntry(state.conversations, saved) }
+      return {
+        ...state,
+        busy: false,
+        threadId: action.response.thread_id,
+        pending,
+        items,
+        conversations: withEntry(state.conversations, saved),
+      }
     }
     case 'failed': {
       // The server refused a resume ("not waiting for an answer"): stop treating the next message as an answer, here and in the saved copy,
@@ -57,14 +71,16 @@ function reducer(state: State, action: Action): State {
         ...state,
         busy: false,
         pending: staleQuestion ? null : state.pending,
-        conversations: staleQuestion ? state.conversations.map((c) => (c.id === state.id ? { ...c, pending: null } : c)) : state.conversations,
+        conversations: staleQuestion
+          ? state.conversations.map((c) => (c.id === state.id ? { ...c, pending: null } : c))
+          : state.conversations,
         items: [...state.items, { id: newId(), type: 'error', error: action.error, text: action.text }],
       }
     }
     case 'retrying':
       return { ...state, busy: true, items: state.items.filter((item) => item.type !== 'error') }
     case 'reset':
-      return fresh(state.conversations)
+      return freshChat(state.conversations)
     case 'load': {
       const { id, items, threadId, pending } = action.conversation
       return { ...state, id, items, threadId, pending, busy: false }
@@ -80,7 +96,7 @@ function reducer(state: State, action: Action): State {
 // thread_id is the server's key for a conversation's memory. It is saved WITH the conversation, so reopening a past conversation
 // continues on the same server thread and the assistant still remembers the earlier questions.
 export function useChat(controls: Controls) {
-  const [state, dispatch] = useReducer(reducer, undefined, () => fresh(loadConversations()))
+  const [state, dispatch] = useReducer(chatReducer, undefined, () => freshChat(loadConversations()))
   const inFlight = useRef<AbortController | null>(null)
 
   // The browser's storage is the one outside system this hook has to keep in step with.

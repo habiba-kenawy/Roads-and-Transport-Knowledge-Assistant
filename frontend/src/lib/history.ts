@@ -18,7 +18,7 @@ export interface Conversation {
 }
 
 // Past conversations live in this browser only (localStorage): per browser and per device, and gone if the user clears site data.
-const KEY = 'tareeq.conversations.v1'
+export const STORAGE_KEY = 'tareeq.conversations.v1'
 const MAX_CONVERSATIONS = 50
 
 const isObject = (x: unknown): x is Record<string, unknown> => typeof x === 'object' && x !== null
@@ -26,7 +26,13 @@ const isObject = (x: unknown): x is Record<string, unknown> => typeof x === 'obj
 function isItem(x: unknown): boolean {
   if (!isObject(x) || typeof x.id !== 'string') return false
   if (x.type === 'user') return typeof x.text === 'string'
-  if (x.type === 'answer') return isObject(x.response) && typeof x.response.status === 'string' && typeof x.response.thread_id === 'string' && Array.isArray(x.response.citations)
+  if (x.type === 'answer')
+    return (
+      isObject(x.response) &&
+      typeof x.response.status === 'string' &&
+      typeof x.response.thread_id === 'string' &&
+      Array.isArray(x.response.citations)
+    )
   return false // error items are never saved
 }
 
@@ -44,12 +50,14 @@ function isConversation(x: unknown): x is Conversation {
   )
 }
 
+const newestFirst = (list: Conversation[]) => [...list].sort((a, b) => b.updatedAt - a.updatedAt)
+
 // Read what is stored. Anything unreadable, damaged or from another format is ignored: history just starts empty, nothing crashes.
 export function loadConversations(): Conversation[] {
   try {
-    const raw = localStorage.getItem(KEY)
+    const raw = localStorage.getItem(STORAGE_KEY)
     const parsed: unknown = raw ? JSON.parse(raw) : []
-    return Array.isArray(parsed) ? parsed.filter(isConversation).sort((a, b) => b.updatedAt - a.updatedAt).slice(0, MAX_CONVERSATIONS) : []
+    return Array.isArray(parsed) ? newestFirst(parsed.filter(isConversation)).slice(0, MAX_CONVERSATIONS) : []
   } catch {
     return []
   }
@@ -58,9 +66,9 @@ export function loadConversations(): Conversation[] {
 // Storage can be full or blocked (private windows): then history is simply not saved.
 export function saveConversations(list: Conversation[]): void {
   try {
-    localStorage.setItem(KEY, JSON.stringify(list.slice(0, MAX_CONVERSATIONS)))
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newestFirst(list).slice(0, MAX_CONVERSATIONS)))
   } catch {
-    /* nothing to do */
+    // the history is a convenience: losing a save must not interrupt the chat
   }
 }
 
@@ -76,7 +84,7 @@ export function titleOf(items: Item[]): string {
   return text.length > 60 ? `${text.slice(0, 57)}...` : text
 }
 
-export type DayGroup = 'Today' | 'Yesterday' | 'Previous 7 days' | 'Older'
+type DayGroup = 'Today' | 'Yesterday' | 'Previous 7 days' | 'Older'
 export const DAY_GROUPS: DayGroup[] = ['Today', 'Yesterday', 'Previous 7 days', 'Older']
 
 export function dayGroup(updatedAt: number, now = new Date()): DayGroup {
